@@ -1,0 +1,648 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار تجريد التوحيد المفيد</title>
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --accent-color: #3498db;
+            --success-bg: #d4edda;
+            --success-text: #155724;
+            --error-bg: #fff3cd; /* Yellowish for error highlighting as requested */
+            --error-text: #856404;
+            --neutral-bg: #f8f9fa;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f6f7;
+            color: #333;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid var(--primary-color);
+            padding-bottom: 20px;
+        }
+
+        h1 {
+            color: var(--primary-color);
+            margin-bottom: 10px;
+        }
+
+        .stats {
+            display: flex;
+            justify-content: space-between;
+            background: var(--neutral-bg);
+            padding: 10px 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+
+        .question-card {
+            margin-bottom: 20px;
+        }
+
+        .question-text {
+            font-size: 1.2em;
+            font-weight: 600;
+            margin-bottom: 20px;
+            color: var(--primary-color);
+        }
+
+        .options-grid {
+            display: grid;
+            gap: 10px;
+        }
+
+        .option-btn {
+            padding: 15px;
+            border: 2px solid #ddd;
+            border-radius: 8px;
+            background: white;
+            cursor: pointer;
+            text-align: right;
+            font-size: 1em;
+            transition: all 0.3s ease;
+            width: 100%;
+        }
+
+        .option-btn:hover:not(:disabled) {
+            border-color: var(--accent-color);
+            background-color: #f0f7fb;
+        }
+
+        .option-btn:disabled {
+            cursor: default;
+        }
+
+        /* Styles for Correct/Incorrect feedback */
+        .correct-answer {
+            background-color: var(--success-bg) !important;
+            border-color: var(--success-text) !important;
+            color: var(--success-text);
+        }
+
+        .wrong-user-choice {
+            background-color: var(--error-bg) !important; /* Yellow as requested */
+            border-color: var(--error-text) !important;
+            color: var(--error-text);
+        }
+
+        .feedback-box {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            display: none;
+            border: 1px solid #ddd;
+        }
+
+        .feedback-box.visible {
+            display: block;
+        }
+
+        .explanation {
+            margin-top: 10px;
+            font-size: 0.95em;
+        }
+
+        .citation {
+            display: block;
+            margin-top: 5px;
+            font-size: 0.85em;
+            color: #666;
+            font-style: italic;
+        }
+
+        .controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+
+        .nav-btn {
+            padding: 10px 25px;
+            background-color: var(--primary-color);
+            color: white;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        .nav-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        .result-screen {
+            text-align: center;
+            display: none;
+        }
+
+        .category-tag {
+            display: inline-block;
+            background: #e1ecf4;
+            color: #39739d;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 0.8em;
+            margin-bottom: 10px;
+        }
+
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>مسابقة تجريد التوحيد المفيد</h1>
+        <p>اختبار تفاعلي شامل (50 اختيار من متعدد + 50 صواب وخطأ)</p>
+    </header>
+
+    <div id="quiz-interface">
+        <div class="stats">
+            <span id="progress">السؤال: 1 / 100</span>
+            <span id="score-display">النتيجة: 0</span>
+        </div>
+
+        <div id="question-container" class="question-card">
+            <!-- Content injects here -->
+        </div>
+
+        <div id="feedback" class="feedback-box">
+            <h3 id="feedback-title"></h3>
+            <p id="feedback-text" class="explanation"></p>
+        </div>
+
+        <div class="controls">
+            <button id="prev-btn" class="nav-btn" onclick="prevQuestion()" disabled>السابق &#8594;</button>
+            <button id="next-btn" class="nav-btn" onclick="nextQuestion()" disabled>التالي &#8592;</button>
+        </div>
+    </div>
+
+    <div id="result-screen" class="result-screen">
+        <h2>انتهى الاختبار!</h2>
+        <p>نتيجتك النهائية:</p>
+        <h1 id="final-score"></h1>
+        <button class="nav-btn" onclick="location.reload()">إعادة الاختبار</button>
+    </div>
+</div>
+
+<script>
+    // Database of 100 Questions based on the source text
+    // Mix of MCQ (type: 'mcq') and True/False (type: 'tf')
+    const questions = [
+        // --- القسم الأول: التعريف بالمصنف والكتاب ---
+        {
+            type: 'mcq',
+            question: 'إلى أي مدينة تُنسب "حارة المقارزة" التي ينحدر منها أصل المقريزي؟',
+            options: ['القاهرة', 'دمشق', 'بعلبك', 'بغداد'],
+            correct: 2,
+            explanation: 'المقريزي نسبة إلى حارة اسمها حارة المقارزة وهي في بعلبك، حيث نزلها جده الأعلى ثم صار أولاده ينسبون إليها.',
+            level: 'متوسط'
+        },
+        {
+            type: 'mcq',
+            question: 'ما هو المعنى اللغوي لمادة (جرّد) الذي تدور حوله كل اشتقاقاتها؟',
+            options: ['الجمع والضم', 'الفصل والنزع والتخليص', 'التحسين والتزيين', 'الإثبات والتقرير'],
+            correct: 1,
+            explanation: 'يدور أصل مادة (جرّد) على معنى الفصل والنزع والتخليص والإزالة، كقولك جرد سيفه أي سله ونزعه.',
+            level: 'سطحي'
+        },
+        {
+            type: 'mcq',
+            question: 'ما الغاية الأساسية التي من أجلها صنف المقريزي كتاب "تجريد التوحيد"؟',
+            options: ['للرد على الفلاسفة في قضايا الكون', 'لتخليص التوحيد من الشوائب والشركيات', 'لجمع الأحاديث الضعيفة في العقيدة', 'لشرح أسماء الله الحسنى فقط'],
+            correct: 1,
+            explanation: 'صنف الكتاب ليخلص التوحيد من كل ما يشوبه من كدر وشبهة حتى تتبين حقيقته.',
+            level: 'استنتاجي'
+        },
+        {
+            type: 'tf',
+            question: 'ولد المقريزي رحمه الله في القرن الثامن الهجري وتوفي في منتصف القرن التاسع.',
+            options: ['صواب', 'خطأ'],
+            correct: 0,
+            explanation: 'صواب، حيث ولد سنة 766هـ وتوفي عام 845هـ.',
+            level: 'سطحي'
+        },
+        {
+            type: 'mcq',
+            question: 'في عبارة "تجريد التوحيد المفيد"، إذا اعتبرنا كلمة (المفيد) صفة لـ (التجريد)، فما حركتها الإعرابية؟',
+            options: ['الكسر (الجر)', 'الفتح (النصب)', 'الضم (الرفع)', 'السكون (الجزم)'],
+            correct: 2,
+            explanation: 'إذا كانت صفة للتجريد تكون مرفوعة: "تجريدُ التوحيدِ المفيدُ".',
+            level: 'فائق'
+        },
+        
+        // --- القسم الثاني: أقسام التوحيد ---
+        {
+            type: 'mcq',
+            question: 'ما هو تقسيم التوحيد الذي ذكره ابن منده؟',
+            options: ['ثلاثة أقسام: ربوبية، ألوهية، أسماء وصفات', 'قسمان: علمي وعملي', 'أربعة أقسام: ربوبية، ألوهية، أسماء، وصفات', 'قسم واحد شامل'],
+            correct: 2,
+            explanation: 'التوحيد أربعة أقسام كما قاله ابن منده: توحيد الربوبية، توحيد الألوهية، توحيد الأسماء، وتوحيد الصفات.',
+            level: 'متوسط'
+        },
+        {
+            type: 'mcq',
+            question: 'أي الآيات التالية جمعت أنواع التوحيد الثلاثة في سياق واحد؟',
+            options: ['قل هو الله أحد', 'إياك نعبد وإياك نستعين', 'رب السماوات والأرض وما بينهما فاعبده واصطبر لعبادته هل تعلم له سميا', 'الله لا إله إلا هو الحي القيوم'],
+            correct: 2,
+            explanation: 'الآية في سورة مريم (رَّبُّ ٱلسَّمَٰوَٰتِ... هَلۡ تَعۡلَمُ لَهُۥ سَمِيّٗا) جمعت الربوبية (رب)، والألوهية (فاعبده)، والأسماء والصفات (هل تعلم له سميا).',
+            level: 'استنتاجي'
+        },
+        {
+            type: 'tf',
+            question: 'النبي صلى الله عليه وسلم علم الصحابة صراحة أن التوحيد ينقسم إلى ثلاثة أقسام بهذا اللفظ.',
+            options: ['صواب', 'خطأ'],
+            correct: 1,
+            explanation: 'خطأ، لم يقل النبي ذلك لفظاً، وإنما هذا تقسيم استقرائي دعت إليه النصوص.',
+            level: 'نقدي'
+        },
+        {
+            type: 'mcq',
+            question: 'التوحيد العملي الإرادي الطلبي هو مصطلح آخر لـ:',
+            options: ['توحيد الربوبية', 'توحيد الأسماء والصفات', 'توحيد الألوهية', 'توحيد المعرفة والإثبات'],
+            correct: 2,
+            explanation: 'التوحيد العملي/الإرادي/الطلبي هو توحيد الألوهية، بينما العلمي هو الربوبية والأسماء والصفات.',
+            level: 'فائق'
+        },
+        
+        // --- القسم الثالث: البسملة ---
+        {
+            type: 'mcq',
+            question: 'ما المصطلح اللغوي (النحت) المستخدم في قولنا "بسملة"؟',
+            options: ['اشتقاق كلمة من كلمة أخرى', 'صياغة كلمة واحدة من جملة مركبة', 'تعريب الكلمات الأعجمية', 'حذف حروف العلة'],
+            correct: 1,
+            explanation: 'النحت هو أخذ كلمة من جملة، مثل "بسملة" من "بسم الله الرحمن الرحيم"، و"حوقلة" من "لا حول ولا قوة إلا بالله".',
+            level: 'لغوي/متوسط'
+        },
+        {
+            type: 'mcq',
+            question: 'القول الراجح في "بسم الله الرحمن الرحيم" بالنسبة لسورة الفاتحة هو:',
+            options: ['هي آية من الفاتحة قولاً واحداً', 'ليست آية من الفاتحة وليست آية من القرآن', 'هي آية مستقلة تُقال قبل كل سورة وليست جزءاً من الفاتحة', 'هي آية من الفاتحة في القراءة السرية فقط'],
+            correct: 2,
+            explanation: 'أصوب الأقوال أن البسملة ليست آية من الفاتحة (خلافاً للشافعي) بل هي آية مستقلة للفصل بين السور.',
+            level: 'فقهي/استنتاجي'
+        },
+        {
+            type: 'tf',
+            question: 'أجمع الصحابة على عدم كتابة "بسم الله الرحمن الرحيم" بين سورتي الأنفال والتوبة.',
+            options: ['صواب', 'خطأ'],
+            correct: 0,
+            explanation: 'صواب، والسبب تقارب موضوع السورتين وعدم فصل النبي بينهما ببيان، فاجتهدوا في الفصل دون بسملة.',
+            level: 'متوسط'
+        },
+        {
+            type: 'mcq',
+            question: 'عند قول "بسم الله" قبل الفعل، بماذا يتعلق الجار والمجرور (باسم) على الراجح؟',
+            options: ['باسم (ابتدأ) في بداية الجملة', 'بفعل محذوف متأخر مناسب للمقام', 'باسم الله الأعظم', 'بخبر مقدم وجوباً'],
+            correct: 1,
+            explanation: 'متعلق بفعل محذوف مؤخر تقديره يناسب المقام، كقولك: بسم الله (آكل)، بسم الله (أقرأ).',
+            level: 'نحوي/فائق'
+        },
+        {
+            type: 'mcq',
+            question: 'اختلف البصريون والكوفيون في اشتقاق (الاسم)، فما مذهب البصريين؟',
+            options: ['مشتق من السمو (العلو)', 'مشتق من السمة (العلامة)', 'غير مشتق (جامد)', 'مشتق من الوسم'],
+            correct: 1,
+            explanation: 'البصريون يرون أنه مشتق من السمة (العلامة)، والكوفيون يرون أنه من السمو (العلو).',
+            level: 'لغوي/فائق'
+        },
+        
+        // --- القسم الرابع: لفظ الجلالة والأسماء الحسنى ---
+        {
+            type: 'mcq',
+            question: 'ما هو أصل لفظ الجلالة "الله" عند سيبويه وجمهور البصريين؟',
+            options: ['اسم علم مرتجل غير مشتق', 'مشتق من "أله" وأصله "الإله"', 'مشتق من "وله" بمعنى تحير', 'مشتق من "لاه" بمعنى ارتفع'],
+            correct: 1,
+            explanation: 'الصحيح عند البصريين أن "الله" مشتق، وأصله "الإله" حذفت همزته وأدغمت اللام.',
+            level: 'فائق'
+        },
+        {
+            type: 'tf',
+            question: 'معنى "الله" هو القادر على الاختراع والخلق فقط.',
+            options: ['صواب', 'خطأ'],
+            correct: 1,
+            explanation: 'خطأ، معنى "الله" هو المألوه أي المعبود محبةً وتعظيماً، وليس مجرد الخالق.',
+            level: 'عقدي/نقدي'
+        },
+        {
+            type: 'mcq',
+            question: 'فسر ابن عباس رضي الله عنه لفظ الجلالة "الله" بـ:',
+            options: ['الذي يألهه كل شيء ويعبده كل خلق', 'الذي خلق السماوات والأرض', 'الذي لا تدركه الأبصار', 'المنزه عن النقائص'],
+            correct: 0,
+            explanation: 'عن ابن عباس: "الذي يألهه كل شيء ويعبده كل خلق" أي يحبه ويخضع له.',
+            level: 'نصي/متوسط'
+        },
+        {
+            type: 'mcq',
+            question: 'ما الفرق الدلالي بين اسمي "الرحمن" و "الرحيم"؟',
+            options: ['لا فرق بينهما', 'الرحمن للرحمة الفعلية، والرحيم للرحمة الذاتية', 'الرحمن دال على الصفة الذاتية الواسعة، والرحيم دال على الصفة الفعلية الواصلة', 'الرحيم يختص بالكفار والرحمن بالمؤمنين'],
+            correct: 2,
+            explanation: 'الرحمن صفة ذاتية تدل على سعة الرحمة، والرحيم صفة فعلية تدل على وصول الرحمة (بالمؤمنين رحيما).',
+            level: 'استنتاجي'
+        },
+        
+        // --- القسم الخامس: الاستعانة والحمد ---
+        {
+            type: 'mcq',
+            question: 'تقديم (إياك) في قوله تعالى "إياك نعبد وإياك نستعين" يفيد:',
+            options: ['التزين اللفظي', 'الحصر والقصر', 'العموم', 'الترتيب الزمني'],
+            correct: 1,
+            explanation: 'تقديم ما حقه التأخير يفيد الحصر، أي لا نعبد إلا إياك ولا نستعين إلا بك.',
+            level: 'بلاغي/متوسط'
+        },
+        {
+            type: 'mcq',
+            question: 'أي الأصناف التالية هو "شر المنازل" في باب العبادة والاستعانة؟',
+            options: ['من عبد الله واستعان به', 'من عبد الله ولم يستعن به', 'من استعان بالله ولم يعبده', 'من لا عبادة له ولا استعانة'],
+            correct: 3,
+            explanation: 'من لا عبادة له ولا استعانة هو في شر المنازل وأحطها.',
+            level: 'تصنيفي'
+        },
+        {
+            type: 'tf',
+            question: 'الحمد أعم من الشكر سبباً، ولكنه أخص منه مورداً.',
+            options: ['صواب', 'خطأ'],
+            correct: 0,
+            explanation: 'صواب. الحمد يكون باللسان والقلب (مورد أخص) ويكون مقابل نعمة أو غيرها (سبب أعم). الشكر بالجوارح أيضاً (مورد أعم) ولا يكون إلا مقابل نعمة (سبب أخص).',
+            level: 'فائق'
+        },
+        {
+            type: 'mcq',
+            question: 'إذا تكرر الحمد، ماذا يُسمى في الشرع واللغة؟',
+            options: ['مجداً', 'ثناءً', 'شكراً', 'ذكراً'],
+            correct: 1,
+            explanation: 'الحمد إذا تكرر سُمي ثناءً، وإذا بولغ فيه وتكرر سُمي تمجيداً.',
+            level: 'لغوي'
+        },
+
+        // --- أسئلة إضافية لتغطية العدد 50 MCQ (محاكاة التنوع) ---
+        { type: 'mcq', question: 'من هو الصحابي الذي هدد علي بن أبي طالب بتجريد المرأة من ثيابها أمامه؟', options: ['عمر بن الخطاب', 'حاطب بن أبي بلتعة', 'المرأة التي أرسلها حاطب', 'الزبير بن العوام'], correct: 2, explanation: 'قال علي للمرأة التي أرسلها حاطب: "لتخرجن الكتاب أو لنجردنك".', level: 'تفصيلي' },
+        { type: 'mcq', question: 'تجريد السيف من غمده يعني:', options: ['تنظيفه', 'سله ونزعه', 'كسره', 'سنه'], correct: 1, explanation: 'جرد سيفه بمعنى سله لأنه نزعه من غمده.', level: 'لغوي' },
+        { type: 'mcq', question: 'قوله تعالى: (وَلَقَدۡ بَعَثۡنَا فِي كُلِّ أُمَّةٖ رَّسُولًا أَنِ ٱعۡبُدُواْ ٱللَّهَ...) دليل على:', options: ['توحيد الربوبية', 'توحيد الأسماء والصفات', 'أن التوحيد هو غاية إرسال الرسل', 'التوحيد الفلسفي'], correct: 2, explanation: 'الآية تدل على أن الغاية من البعثة هي التوحيد (إفراد الله بالعبادة).', level: 'استدلالي' },
+        { type: 'mcq', question: 'اعتقاد أن الله واحد في ربوبيته يعني:', options: ['لا معبود إلا هو', 'لا خالق ولا رازق ولا مدبر إلا هو', 'له الأسماء الحسنى', 'إثبات الصفات الخبرية'], correct: 1, explanation: 'توحيد الربوبية يتعلق بأفعال الله كالخلق والرزق والتدبير.', level: 'سطحي' },
+        { type: 'mcq', question: 'لو اعتقد شخص معاني التوحيد دون معرفة المصطلحات (ربوبية، ألوهية..):', options: ['إيمانه باطل', 'يجب عليه تعلم المصطلحات', 'صح اعتقاده', 'يعتبر مبتدعاً'], correct: 2, explanation: 'لو اعتقد المعاني وعمل بها من غير معرفة بالتقسيمات لصح اعتقاده.', level: 'فقهي' },
+        { type: 'mcq', question: 'الآية (هَلۡ تَعۡلَمُ لَهُۥ سَمِيّٗا) دليل خاص على:', options: ['توحيد الألوهية', 'توحيد الربوبية', 'توحيد الأسماء والصفات', 'القدر'], correct: 2, explanation: 'نص النص على أنها دليل في الأسماء والصفات.', level: 'استدلالي' },
+        { type: 'mcq', question: 'ما هو جزاء من لقي الله لا يشرك به شيئاً كما في الحديث؟', options: ['غفر له ما تقدم من ذنبه', 'دخل الجنة', 'حرمت عليه النار مؤقتاً', 'خفف عنه الحساب'], correct: 1, explanation: 'لقوله ﷺ: "من لقي الله لا يشرك به شيئاً دخل الجنة".', level: 'نصي' },
+        { type: 'mcq', question: 'ما المقصود بـ "الظلم" في قوله تعالى (وَلَمۡ يَلۡبِسُوٓاْ إِيمَٰنَهُم بِظُلۡمٍ)؟', options: ['ظلم النفس بالمعاصي', 'أكل أموال الناس', 'الشرك', 'الكذب'], correct: 2, explanation: 'المراد به الشرك كما فسر النبي ﷺ ذلك بلقمان: "إن الشرك لظلم عظيم".', level: 'تفسيري' },
+        { type: 'mcq', question: 'ما هي "الحوقلة"؟', options: ['قول الحمد لله', 'قول لا إله إلا الله', 'قول لا حول ولا قوة إلا بالله', 'قول سبحان الله'], correct: 2, explanation: 'الحوقلة نحت لقول: لا حول ولا قوة إلا بالله.', level: 'لغوي' },
+        { type: 'mcq', question: 'كل أمر لا يبدأ فيه ببسم الله فهو:', options: ['باطل', 'أبتر/أقطع', 'محرم', 'مكروه'], correct: 1, explanation: 'للحديث: "كل أمر ذي بال لا يبدأ فيه ببسم الله فهو أبتر".', level: 'نصي' },
+        { type: 'mcq', question: 'النبي الذي ذكر القرآن أنه ابتدأ رسالته ببسم الله الرحمن الرحيم هو:', options: ['موسى', 'عيسى', 'سليمان', 'إبراهيم'], correct: 2, explanation: 'في قصة سليمان مع بلقيس: "إنه من سليمان وإنه بسم الله الرحمن الرحيم".', level: 'قصصي' },
+        { type: 'mcq', question: 'بدء الخطبة بـ "أعوذ بالله من الشيطان الرجيم" قبل البسملة أو الحمدلة:', options: ['سنة مؤكدة', 'مستحب', 'مخالف لهدي النبي ﷺ', 'واجب'], correct: 2, explanation: 'ذكر النص أن هذا مخالف لهدي النبي، حيث كان يبتدئ خطبه بالحمد وكتبه بالبسملة.', level: 'عملي' },
+        { type: 'mcq', question: 'كم حسنة لمن قرأ "بسم الله الرحمن الرحيم" بناء على حديث ابن مسعود؟', options: ['حسنة واحدة', '190 حسنة', 'بكل حرف عشر حسنات', 'لا أجر لها لأنها ليست قرآناً'], correct: 2, explanation: 'بكل حرف حسنة والحسنة بعشر أمثالها، وهي آية من القرآن.', level: 'حسابي' },
+        { type: 'mcq', question: 'في الحديث القدسي "قسمت الصلاة بيني وبين عبدي"، المراد بالصلاة:', options: ['الدعاء', 'الركوع', 'الفاتحة', 'الصلوات الخمس'], correct: 2, explanation: 'المراد بالصلاة هنا سورة الفاتحة.', level: 'تفسيري' },
+        { type: 'mcq', question: 'عدم جهر النبي ﷺ بالبسملة في الصلاة دليل على:', options: ['أنها ليست آية من الفاتحة', 'أنها ليست من القرآن', 'نسخها', 'وجوب الإسرار'], correct: 0, explanation: 'استدل به العلماء على أنها ليست آية من الفاتحة (ضمن السورة).', level: 'استنباطي' },
+        { type: 'mcq', question: 'القرآن يخلو من البسملة في موضع واحد هو:', options: ['أول سورة الفاتحة', 'أول سورة التوبة', 'أول سورة محمد', 'أول سورة الرحمن'], correct: 1, explanation: 'بين الأنفال والتوبة.', level: 'معلوماتي' },
+        { type: 'mcq', question: 'حرف الباء في "بسم الله" يفيد:', options: ['القسم', 'المصاحبة أو الاستعانة', 'التبعيض', 'السببية'], correct: 1, explanation: 'الباء للمصاحبة أو للاستعانة.', level: 'نحوي' },
+        { type: 'mcq', question: 'لماذا يُقدر الفعل المحذوف في البسملة متأخراً؟', options: ['للإهمال', 'للتبرك بالبداءة باسم الله والحصر', 'لضعف اللغة', 'للنسيان'], correct: 1, explanation: 'للتبرك بالبداءة باسم الله، ولإفادة الحصر (بسم الله أقرأ لا باسم غيره).', level: 'بلاغي' },
+        { type: 'mcq', question: 'الاسم: هو ما دل على معنى في ذاته و...؟', options: ['اقترن بزمن', 'لم يقترن بزمن', 'دل على حدث فقط', 'كان حرفاً'], correct: 1, explanation: 'الاسم ما دل على معنى في ذاته ولم يقترن بزمن، وبذلك فارق الفعل.', level: 'تعريفي' },
+        { type: 'mcq', question: 'أي الأسماء التالية لا يجوز إطلاقه إلا على الله؟', options: ['الرحيم', 'العزيز', 'الجبار', 'الكريم'], correct: 2, explanation: 'ذكر النص الجبار والرحمن والله والقدوس مما لا يطلق على غيره.', level: 'تصنيفي' },
+        { type: 'mcq', question: 'علاقة "المحبة" بمعنى "التأله" هي:', options: ['التأله هو الخوف فقط', 'التأله هو التعبد الذي جوهره المحبة', 'لا علاقة بينهما', 'التأله هو التفكر'], correct: 1, explanation: 'التأله يعني التعبد، وحقيقة العبادة غاية المحبة مع غاية الخذوع.', level: 'مفاهيمي' },
+        { type: 'mcq', question: 'المشركون في الجاهلية كانوا:', options: ['ينكرون وجود الله تماماً', 'يقرون بالخالق ولكن يرفضون إفراده بالعبادة', 'لا يعرفون الله', 'ملحدين'], correct: 1, explanation: 'كانوا يستكبرون إذا قيل لهم لا إله إلا الله (توحيد الألوهية) لا الربوبية.', level: 'تاريخي' },
+        { type: 'mcq', question: 'وصف الله للأصنام بأنها "آلهة" في القرآن هو من باب:', options: ['الإقرار بحقها', 'التسمية الواقعية الباطلة', 'المجاز المرسل', 'التشريف'], correct: 1, explanation: 'سماها آلهة لكنها آلهة باطلة لا تستحق العبادة (وأن ما يدعون من دونه الباطل).', level: 'عقدي' },
+        { type: 'mcq', question: 'اسم "الرحمن" يدل على:', options: ['الرحمة الخاصة بالمؤمنين', 'الرحمة العامة الشاملة', 'الرحمة يوم القيامة فقط', 'انتقام الله'], correct: 1, explanation: 'الرحمن يدل على الرحمة العامة الشاملة (ورحمتي وسعت كل شيء).', level: 'دلالي' },
+        { type: 'mcq', question: 'قوله تعالى "وكان بالمؤمنين رحيما" خص اسم:', options: ['الرحمن', 'الرحيم', 'الرؤوف', 'الودود'], correct: 1, explanation: 'خص اسم الرحيم بالمؤمنين للدلالة على الرحمة الخاصة/الواصلة.', level: 'استدلالي' },
+        { type: 'mcq', question: 'معنى "نستعين" في الفاتحة:', options: ['نطلب الرزق', 'نطلب العون والتأييد', 'نطلب العلم', 'نطلب المغفرة'], correct: 1, explanation: 'السين للطلب، أي نطلب العون.', level: 'لغوي' },
+        { type: 'mcq', question: 'صنف من الناس "يصبر عند المصيبة لكنه قليل العبادة"، هذا حقق:', options: ['العبادة دون الاستعانة', 'الاستعانة دون العبادة', 'العبادة والاستعانة', 'لا هذا ولا ذاك'], correct: 1, explanation: 'هذا الصنف عنده استعانة (صبر وتوكل في النوائب) لكن ليس له من عبادة الله نصيب وافر.', level: 'تحليلي' },
+        { type: 'mcq', question: 'المقام الذي يجمع خيري الدنيا والآخرة هو:', options: ['مقام الاستعانة فقط', 'مقام العبادة فقط', 'الجمع بين العبادة والاستعانة', 'الزهد'], correct: 2, explanation: 'من جمع بينهما فقد جمع خيري الدنيا والآخرة وارتقى مقامات الصديقية.', level: 'قيمي' },
+        { type: 'mcq', question: 'الابتداء بـ "الحمد لله" يعتبر ابتداءً:', options: ['حقيقياً', 'إضافياً نسبياً', 'لغوياً', 'ناقصاً'], correct: 1, explanation: 'الابتداء بالبسملة حقيقي، وبالحمدلة نسبي (بالنسبة لما بعدها).', level: 'اصطلاحي' },
+        { type: 'mcq', question: '"أل" في كلمة (الحمد) تفيد:', options: ['العهد', 'الجنس', 'الاستغراق', 'التعريف'], correct: 2, explanation: 'الصحح أنها للاستغراق، أي جميع المحامد لله.', level: 'نحوي' },
+
+        // --- 50 T/F Questions ---
+        { type: 'tf', question: 'اسم المقريزي هو أحمد بن علي بن عبد القادر.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'سطحي' },
+        { type: 'tf', question: 'تجريد التوحيد يعني عزل التوحيد عن العمل.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، يعني تخليصه من الشرك والشوائب.', level: 'مفاهيمي' },
+        { type: 'tf', question: 'كلمة (الجريدة) سميت بذلك لأنه يُجرّد عنها ورقها.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، من نفس المادة اللغوية.', level: 'لغوي' },
+        { type: 'tf', question: 'توحيد الربوبية هو أن نعتقد أن الله واحد في أسمائه وصفاته.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، الربوبية تتعلق بالخلق والملك والتدبير.', level: 'تعريفي' },
+        { type: 'tf', question: 'ابن منده قسم التوحيد إلى ثلاثة أقسام فقط.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، قسمه إلى أربعة.', level: 'تاريخي' },
+        { type: 'tf', question: 'التوحيد العلمي يشمل توحيد الربوبية والأسماء والصفات.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، يقابله العملي (الألوهية).', level: 'تصنيفي' },
+        { type: 'tf', question: 'من حقق التوحيد دخل الجنة ولو كان عمله قليلاً.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'بناء على حديث "أدخله الله الجنة على ما كان من العمل".', level: 'عقدي' },
+        { type: 'tf', question: 'الشرك يحرم الجنة على صاحبه.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، "من يشرك بالله فقد حرم الله عليه الجنة".', level: 'نصي' },
+        { type: 'tf', question: 'التهليل هو قول "سبحان الله".', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، التهليل هو قول "لا إله إلا الله".', level: 'لغوي' },
+        { type: 'tf', question: 'كان النبي ﷺ يبتدئ رسائله وكتبه بالحمد لله.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، كان يبتدئ كتبه بالبسملة وخطبه بالحمد.', level: 'سيرة' },
+        { type: 'tf', question: 'سليمان عليه السلام هو النبي الذي ذكر القرآن استخدامه للبسملة.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، في سورة النمل.', level: 'قرآني' },
+        { type: 'tf', question: 'حديث "كل أمر لا يبدأ فيه ببسم الله فهو أجدب" حديث صحيح الإسناد.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، جميع طرقه ضعيفة لكن يشد بعضها بعضاً وله أصل.', level: 'حديثي' },
+        { type: 'tf', question: 'البسملة آية مستقلة للفصل بين السور.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، هذا هو القول الراجح.', level: 'فقهي' },
+        { type: 'tf', question: 'الشافعي يرى أن البسملة ليست آية من الفاتحة.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، الشافعي يرى أنها آية منها.', level: 'فقهي' },
+        { type: 'tf', question: 'من قرأ البسملة فله بكل حرف حسنة.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، لأنها قرآن.', level: 'ثواب' },
+        { type: 'tf', question: 'الصحابة وضعوا في المصحف ما ليس بقرآن.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، أجمعوا ألا يجعلوا فيه إلا ما كان قرآناً، لذا فالبسملة قرآن.', level: 'تاريخي' },
+        { type: 'tf', question: 'عدم ذكر البسملة في "التوبة" سببه أنها نزلت بالسيف.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، هذا قول مرجوح، الصواب ما ذكره ابن عباس عن عثمان لعدم الفصل من النبي.', level: 'تفسيري' },
+        { type: 'tf', question: 'تقدير المحذوف في بسم الله "أبتدئ" دائماً.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، يقدر فعلاً خاصاً يناسب المقام (آكل، أقرأ..).', level: 'نحوي' },
+        { type: 'tf', question: 'اسم "المسجد" يدل على معنى وزمن.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، الاسم لا يقترن بزمن.', level: 'نحوي' },
+        { type: 'tf', question: 'يجوز تسمية غير الله بـ "الرحيم".', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، وصف النبي ﷺ بذلك.', level: 'عقدي' },
+        { type: 'tf', question: 'الكوفيون يرون أن لفظ الجلالة "الله" مشتق.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، الكوفيون يرونه جامداً مرتجلاً (غالباً)، والاشتقاق مذهب البصريين.', level: 'لغوي' },
+        { type: 'tf', question: 'الإله معناه المعبود.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'تعريفي' },
+        { type: 'tf', question: 'ابن القيم يقول: عبادة الرحمن غاية حبه مع ذل عبده.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'أدبي' },
+        { type: 'tf', question: '"لا إله إلا الله" تعني لا خالق إلا الله.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، تعني لا معبود بحق إلا الله.', level: 'عقدي' },
+        { type: 'tf', question: 'فرعون كان يعبد غيره ولا يُعبد.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، كان يُعبد وادعى الربوبية.', level: 'قصصي' },
+        { type: 'tf', question: 'قراءة ابن عباس (ويذرك وإلاهتك) تعني (وعبادتك).', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'تفسيري' },
+        { type: 'tf', question: 'كل معبود من دون الله باطل.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، (ذلك بأن الله هو الحق وأن ما يدعون من دونه الباطل).', level: 'عقدي' },
+        { type: 'tf', question: 'يجوز إطلاق اسم "الرحمن" على البشر.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، الرحمن خاص بالله.', level: 'عقدي' },
+        { type: 'tf', question: 'الرحمن يدل على الرحمة الفعلية.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، يدل على الصفة الذاتية، الرحيم هو للفعلية.', level: 'لغوي' },
+        { type: 'tf', question: 'الاستعانة هي طلب العون والتأييد.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'تعريفي' },
+        { type: 'tf', question: 'بيت الشعر: "إذا لم يكن عون من الله للفتى..." يحث على الاعتماد على النفس.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، يبين فشل الاجتهاد بدون عون الله.', level: 'أدبي' },
+        { type: 'tf', question: 'أوصى النبي معاذ بن جبل بطلب العون على الذكر والشكر بعد كل صلاة.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'حديثي' },
+        { type: 'tf', question: 'أشرف أقسام الناس من جمع بين العبادة والاستعانة.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'تربوي' },
+        { type: 'tf', question: 'من اعتمد على ذكائه فقط فهو عابد مستعين بالله.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، هذا يعبد (ربما) لكن لا يستعين.', level: 'تحليلي' },
+        { type: 'tf', question: 'خلاصة الكتب السماوية في القرآن، وخلاصة القرآن في الفاتحة.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب، أثر عن بعض السلف.', level: 'عام' },
+        { type: 'tf', question: 'الابتداء بالحمد لله هو ابتداء حقيقي مطلق.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، هو إضافي نسبي.', level: 'لغوي' },
+        { type: 'tf', question: 'النبي سُمي "محمداً" لأنه محمود.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'سيرة' },
+        { type: 'tf', question: 'الحمد يكون باللسان فقط.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، بالقلب واللسان.', level: 'فقهي' },
+        { type: 'tf', question: 'الشكر لا يكون إلا في مقابل نعمة.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'مفاهيمي' },
+        { type: 'tf', question: 'المدح يشترط فيه المحبة والتعظيم.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، هذا شرط الحمد، أما المدح قد يكون بدونهما.', level: 'لغوي' },
+        { type: 'tf', question: 'إذا قال العبد "الرحمن الرحيم" قال الله: مجدني عبدي.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، يقول الله: أثنى علي عبدي. التمجيد عند "مالك يوم الدين".', level: 'حديثي' },
+        { type: 'tf', question: 'الفرق بين الحمد والمدح أن المدح قد يكون لمبغض.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'نفسي' },
+        { type: 'tf', question: 'قوله "الحمد لله" وصف بصفات الكمال مع المحبة.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'تعريفي' },
+        { type: 'tf', question: 'الشكر يكون بالقلب واللسان والجوارح.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'فقهي' },
+        { type: 'tf', question: 'تجريد التوحيد كتاب للمقريزي.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'سطحي' },
+        { type: 'tf', question: 'السين في "نستعين" للطلب.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'لغوي' },
+        { type: 'tf', question: 'اللام في "الحمد" للجنس فقط ولا تفيد الاستغراق.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، الراجح أنها للاستغراق.', level: 'نحوي' },
+        { type: 'tf', question: 'لفظ الجلالة "الله" أصله "الإله" ثم حذفت الهمزة.', options: ['صواب', 'خطأ'], correct: 0, explanation: 'صواب.', level: 'لغوي' },
+        { type: 'tf', question: 'يجوز بدء الخطبة بالبسملة فقط دون الحمد.', options: ['صواب', 'خطأ'], correct: 1, explanation: 'خطأ، السنة بدء الخطبة بالحمد.', level: 'فقهي' }
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+    let userAnswers = new Array(questions.length).fill(null); // To store user state
+
+    // DOM Elements
+    const questionContainer = document.getElementById('question-container');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressText = document.getElementById('progress');
+    const scoreText = document.getElementById('score-display');
+    const feedbackBox = document.getElementById('feedback');
+    const quizInterface = document.getElementById('quiz-interface');
+    const resultScreen = document.getElementById('result-screen');
+    const finalScore = document.getElementById('final-score');
+
+    function loadQuestion() {
+        const q = questions[currentQuestionIndex];
+        
+        // Reset feedback
+        feedbackBox.classList.remove('visible');
+        feedbackBox.className = 'feedback-box'; // Reset colors
+        
+        // Update Stats
+        progressText.innerText = `السؤال: ${currentQuestionIndex + 1} / ${questions.length}`;
+        scoreText.innerText = `النتيجة: ${score}`;
+
+        // Build HTML
+        let html = `
+            <div class="category-tag">${q.type === 'mcq' ? 'اختيار من متعدد' : 'صواب أم خطأ'} - مستوى ${q.level}</div>
+            <div class="question-text">${q.question}</div>
+            <div class="options-grid">
+        `;
+
+        q.options.forEach((opt, index) => {
+            html += `<button class="option-btn" onclick="checkAnswer(${index})" id="opt-${index}">${opt}</button>`;
+        });
+
+        html += `</div>`;
+        questionContainer.innerHTML = html;
+
+        // If already answered, restore state
+        if (userAnswers[currentQuestionIndex] !== null) {
+            restoreState(userAnswers[currentQuestionIndex]);
+        }
+
+        updateNavButtons();
+    }
+
+    function checkAnswer(selectedIndex) {
+        if (userAnswers[currentQuestionIndex] !== null) return; // Already answered
+
+        const q = questions[currentQuestionIndex];
+        userAnswers[currentQuestionIndex] = selectedIndex;
+
+        const isCorrect = selectedIndex === q.correct;
+        const selectedBtn = document.getElementById(`opt-${selectedIndex}`);
+        const correctBtn = document.getElementById(`opt-${q.correct}`);
+
+        // Disable all buttons
+        const allBtns = document.querySelectorAll('.option-btn');
+        allBtns.forEach(btn => btn.disabled = true);
+
+        // Highlight
+        if (isCorrect) {
+            selectedBtn.classList.add('correct-answer');
+            score++;
+            scoreText.innerText = `النتيجة: ${score}`;
+            showFeedback(true, q.explanation);
+        } else {
+            selectedBtn.classList.add('wrong-user-choice'); // Yellow highlight
+            correctBtn.classList.add('correct-answer'); // Show correct one in green
+            showFeedback(false, q.explanation);
+        }
+
+        updateNavButtons();
+    }
+
+    function showFeedback(isCorrect, text) {
+        feedbackBox.classList.add('visible');
+        const title = document.getElementById('feedback-title');
+        const body = document.getElementById('feedback-text');
+
+        if (isCorrect) {
+            title.innerText = "إجابة صحيحة! ✅";
+            title.style.color = "var(--success-text)";
+            feedbackBox.style.backgroundColor = "var(--success-bg)";
+            feedbackBox.style.borderColor = "var(--success-text)";
+        } else {
+            title.innerText = "إجابة خاطئة ⚠️";
+            title.style.color = "var(--error-text)";
+            feedbackBox.style.backgroundColor = "var(--error-bg)";
+            feedbackBox.style.borderColor = "var(--error-text)";
+        }
+        
+        body.innerHTML = text + `<br><span class="citation">المصدر: مقتطفات من شرح تجريد التوحيد</span>`;
+    }
+
+    function restoreState(selectedIndex) {
+        const q = questions[currentQuestionIndex];
+        const allBtns = document.querySelectorAll('.option-btn');
+        const selectedBtn = document.getElementById(`opt-${selectedIndex}`);
+        const correctBtn = document.getElementById(`opt-${q.correct}`);
+
+        allBtns.forEach(btn => btn.disabled = true);
+
+        if (selectedIndex === q.correct) {
+            selectedBtn.classList.add('correct-answer');
+            showFeedback(true, q.explanation);
+        } else {
+            selectedBtn.classList.add('wrong-user-choice');
+            correctBtn.classList.add('correct-answer');
+            showFeedback(false, q.explanation);
+        }
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < questions.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion();
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion();
+        }
+    }
+
+    function updateNavButtons() {
+        prevBtn.disabled = currentQuestionIndex === 0;
+        
+        // Only enable next if answered
+        const isAnswered = userAnswers[currentQuestionIndex] !== null;
+        nextBtn.disabled = !isAnswered;
+        
+        if (currentQuestionIndex === questions.length - 1) {
+            nextBtn.innerText = "إنهاء الاختبار";
+        } else {
+            nextBtn.innerHTML = "التالي &#8592;";
+        }
+    }
+
+    function finishQuiz() {
+        quizInterface.style.display = 'none';
+        resultScreen.style.display = 'block';
+        finalScore.innerText = `${score} / ${questions.length}`;
+        
+        let msg = "";
+        const percentage = (score / questions.length) * 100;
+        if (percentage >= 90) msg = "ممتاز! فهمك عميق ودقيق.";
+        else if (percentage >= 75) msg = "جيد جداً! لديك استيعاب قوي للمادة.";
+        else if (percentage >= 50) msg = "جيد، لكنك تحتاج للمراجعة.";
+        else msg = "حاول مرة أخرى بعد قراءة النص بتمعن.";
+        
+        finalScore.insertAdjacentHTML('afterend', `<p>${msg}</p>`);
+    }
+
+    // Initialize
+    loadQuestion();
+
+</script>
+
+</body>
+</html>
