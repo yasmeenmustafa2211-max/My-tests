@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار تفاعلي: أصول الفقه والعلوم الشرعية</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            line-height: 1.6;
+            padding: 20px;
+            max-width: 850px;
+            margin: 0 auto;
+        }
+        h1 {
+            text-align: center;
+            color: #2c3e50;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 15px;
+            margin-bottom: 30px;
+        }
+        .question-container {
+            background-color: #fff;
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 25px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        }
+        .question-title {
+            font-size: 1.2em;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        .options {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .options li {
+            background-color: #f8f9fa;
+            border: 1px solid #dae0e5;
+            margin-bottom: 10px;
+            padding: 12px 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: background-color 0.2s, border-color 0.2s;
+        }
+        .options li:hover {
+            background-color: #e2e6ea;
+        }
+        
+        /* حالة الإجابة الصحيحة - أخضر فاتح */
+        .options li.correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+            color: #155724;
+            font-weight: bold;
+        }
+        
+        /* حالة الإجابة الخاطئة - أصفر فاتح */
+        .options li.incorrect {
+            background-color: #fff3cd !important;
+            border-color: #ffeeba !important;
+            color: #856404;
+        }
+
+        /* تعطيل النقر بعد الإجابة */
+        .options.answered li {
+            cursor: default;
+            pointer-events: none;
+        }
+
+        /* تنسيق التفسير المخفي في البداية */
+        .explanation {
+            display: none;
+            margin-top: 15px;
+            padding: 15px;
+            background-color: #e9ecef;
+            border-right: 4px solid #17a2b8;
+            border-radius: 4px;
+            font-size: 0.95em;
+            color: #495057;
+        }
+        .explanation strong {
+            color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>اختبار قياس الاستيعاب (تفاعلي)</h1>
+
+    <!-- السؤال 1 -->
+    <div class="question-container">
+        <div class="question-title">1. أي من العلوم التالية يُصنف ضمن علوم الغايات (المقاصد) التي تُدرس لذاتها؟</div>
+        <ul class="options">
+            <li>أ. أصول الفقه</li>
+            <li>ب. مصطلح الحديث</li>
+            <li data-correct="true">ج. الفقه</li>
+            <li>د. علم التاريخ</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> الفقه يُعد من علوم الغايات (المقاصد) لأنه يُدرس لذاته لمعرفة الأحكام الشرعية العملية، بينما أصول الفقه ومصطلح الحديث من علوم الآلات، وعلم التاريخ من علوم المكملات.
+        </div>
+    </div>
+
+    <!-- السؤال 2 -->
+    <div class="question-container">
+        <div class="question-title">2. ما هو العلم الذي يُعنى بكيفية استنباط الأحكام الشرعية من الأدلة الإجمالية؟</div>
+        <ul class="options">
+            <li>أ. الفقه</li>
+            <li data-correct="true">ب. أصول الفقه</li>
+            <li>ج. القواعد الفقهية</li>
+            <li>د. مصطلح الحديث</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> علم أصول الفقه هو العلم الخاص باستنباط الأحكام الشرعية من خلال الاجتهاد والاستدلال باستخدام الأدلة الإجمالية وصناعة الدليل.
+        </div>
+    </div>
+
+    <!-- السؤال 3 -->
+    <div class="question-container">
+        <div class="question-title">3. يُعد علم الدعوة وتاريخ الإسلام من فئة:</div>
+        <ul class="options">
+            <li>أ. علوم الآلات</li>
+            <li>ب. علوم الغايات</li>
+            <li data-correct="true">ج. علوم المكملات</li>
+            <li>د. العلوم الضرورية</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> علم التاريخ وعلم السير والأخبار وعلم الدعوة تُصنف جميعها ضمن علوم المكملات، وهي علوم لا تُضم مباشرة لعلوم الآلة أو المقاصد بل تُكمل البناء العلمي والتطبيقي.
+        </div>
+    </div>
+
+    <!-- السؤال 4 -->
+    <div class="question-container">
+        <div class="question-title">4. العلم الذي يعمل كأداة ضابطة لقبول أو رد متون الأحاديث النبوية هو:</div>
+        <ul class="options">
+            <li>أ. علم الحديث</li>
+            <li data-correct="true">ب. علم مصطلح الحديث</li>
+            <li>ج. علم السيرة</li>
+            <li>د. علم أصول الدين</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> علم مصطلح الحديث هو من علوم الآلة وله قوانين يُعرف بها أحوال السند والمتن من حيث القبول والرد، وهو الضابط لعلم الحديث (الذي يمثل الغاية).
+        </div>
+    </div>
+
+    <!-- السؤال 5 -->
+    <div class="question-container">
+        <div class="question-title">5. العلاقة الدلالية بين مصطلحي "الإسلام" و"الإيمان" عند اجتماعهما في نص واحد هي:</div>
+        <ul class="options">
+            <li>أ. الترادف التام</li>
+            <li data-correct="true">ب. التباين واختلاف المعنى</li>
+            <li>ج. التضاد اللفظي</li>
+            <li>د. التداخل المطلق</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> تنطبق عليهما قاعدة "إذا اجتمعا افترقا وإذا افترقا اجتمعا"، فإذا ذُكرا معاً في سياق واحد أصبح لكل منهما دلالة ومعنى مختلف عن الآخر.
+        </div>
+    </div>
+
+    <!-- السؤال 6 -->
+    <div class="question-container">
+        <div class="question-title">6. العالم الذي يمتلك أدوات الاستنباط وقواعده دون أن يستحضر بالضرورة جميع الفروع الفقهية يُسمى:</div>
+        <ul class="options">
+            <li>أ. مجتهداً بالفعل</li>
+            <li data-correct="true">ب. مجتهداً بالقوة</li>
+            <li>ج. متفقهاً فروعياً</li>
+            <li>د. حافظاً للرواية</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> المجتهد بالقوة (كالإمام مالك والإمام ابن سيرين) يمتلك المهارات والأدوات الأصولية لاستخراج الأحكام وإن كان لا يحفظ أو يستحضر كل الفروع وقت السؤال.
+        </div>
+    </div>
+
+    <!-- السؤال 7 -->
+    <div class="question-container">
+        <div class="question-title">7. المتبحر في حفظ الفروع الفقهية المجردة دون إتقان لمهارات وقواعد استنباطها يُعد:</div>
+        <ul class="options">
+            <li>أ. مجتهداً بالقوة</li>
+            <li>ب. أصولياً بارعاً</li>
+            <li data-correct="true">ج. متفقهاً فروعياً</li>
+            <li>د. فقيهاً مستقلاً</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> من يُلم بجميع الفروع الفقهية دون التمرس في علم الأصول وتخريج الفروع على أصولها يُسمى "متفقهاً فروعياً" لامتلاكه المعلومات المجردة بلا أدوات فقهية.
+        </div>
+    </div>
+
+    <!-- السؤال 8 -->
+    <div class="question-container">
+        <div class="question-title">8. بناءً على التفريق الدقيق لمصطلحات اللغة، نزول القرآن الكريم كان بـ:</div>
+        <ul class="options">
+            <li>أ. لغة العرب كافة</li>
+            <li data-correct="true">ب. لسان العرب الفصيح</li>
+            <li>ج. اللغات العجمية المعربة</li>
+            <li>د. الكلام الوحشي</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> القرآن نزل بـ "لسان عربي مبين" (لسان فصحاء العرب) وليس "بلغة العرب" كافة، لأن لغة العرب واسعة جداً وتشمل الألفاظ المهجورة والوحشية التي لم يأتِ بها القرآن قط.
+        </div>
+    </div>
+
+    <!-- السؤال 9 -->
+    <div class="question-container">
+        <div class="question-title">9. الألفاظ المهجورة والوحشية التي كانت تستعمل في البوادي البعيدة تُصنف ضمن:</div>
+        <ul class="options">
+            <li>أ. غريب القرآن</li>
+            <li data-correct="true">ب. غريب اللغة</li>
+            <li>ج. اللسان المبين</li>
+            <li>د. المعربات النبطية</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> غريب اللغة يشير إلى الألفاظ الوحشية والمهجورة التي استعملت في البوادي البعيدة، وهو يختلف عن "غريب القرآن" الذي يعني الألفاظ الدقيقة التي قد تخفى على البعض وتحتاج لبيان معانيها.
+        </div>
+    </div>
+
+    <!-- السؤال 10 -->
+    <div class="question-container">
+        <div class="question-title">10. يُشترط "طول الصحبة والعشرة" لإطلاق وصف "الصحابي" عند:</div>
+        <ul class="options">
+            <li>أ. المحدثين</li>
+            <li data-correct="true">ب. الأصوليين</li>
+            <li>ج. المفسرين</li>
+            <li>د. النحويين</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> الأصوليون يعنيهم في الصحابي فقهه وقدرته على الفتيا ونقل التشريع، ولذلك اشترطوا طول الصحبة والعشرة لرسول الله ﷺ، بخلاف المحدثين الذين يعنيهم مجرد ثبوت اللقاء.
+        </div>
+    </div>
+
+    <!-- السؤال 11 -->
+    <div class="question-container">
+        <div class="question-title">11. من التقى بالنبي مؤمناً به ومات على ذلك، ولو كان أعمى ولم يره، يُعد صحابياً عند:</div>
+        <ul class="options">
+            <li>أ. الأصوليين</li>
+            <li data-correct="true">ب. المحدثين</li>
+            <li>ج. المؤرخين</li>
+            <li>د. اللغويين</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> المحدثون يُعرّفون الصحابي بأنه "من لقي النبي..." واستخدموا كلمة "لقي" بدلاً من "رأى" لكي يشمل التعريف من كان أعمى مثل الصحابي الجليل عبد الله بن أم مكتوم.
+        </div>
+    </div>
+
+    <!-- السؤال 12 -->
+    <div class="question-container">
+        <div class="question-title">12. الخلاف الفقهي الشهير بين المذاهب في مسألة "مسح الرأس" ناتج في أصله عن اختلاف في:</div>
+        <ul class="options">
+            <li>أ. صحة الحديث أو ضعفه</li>
+            <li data-correct="true">ب. دلالة حروف المعاني اللغوية</li>
+            <li>ج. أسباب النزول</li>
+            <li>د. القياس الجلي</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> أرجع الإمام ابن رشد وغيره هذا الخلاف الفقهي إلى قاعدة أصولية لغوية، وهي دلالة حرف "الباء" في (برؤوسكم)؛ هل هي للإلصاق (مسح الكل) أم للتبعيض (مسح البعض).
+        </div>
+    </div>
+
+    <!-- السؤال 13 -->
+    <div class="question-container">
+        <div class="question-title">13. الكلمات ذات الأصل الأعجمي التي استعملها العرب وخضعت لقواعدهم تعتبر:</div>
+        <ul class="options">
+            <li>أ. منافية لقواعد الفصاحة</li>
+            <li data-correct="true">ب. جزءاً من اللسان العربي الفصيح</li>
+            <li>ج. من غريب القرآن المبهم</li>
+            <li>د. كلاماً ملحوناً أو علجياً</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> الكلمات المعربة (مثل سندس وإستبرق) انقطعت صلتها بأصلها وصارت تجري عليها قواعد العرب، فتُعد جزءاً صميماً من اللسان العربي الفصيح.
+        </div>
+    </div>
+
+    <!-- السؤال 14 -->
+    <div class="question-container">
+        <div class="question-title">14. إطلاق الحرف وإرادة الكلمة الكاملة به يُعد في لسان العرب:</div>
+        <ul class="options">
+            <li>أ. كلاماً مهجوراً غير مفهوم</li>
+            <li data-correct="true">ب. أسلوباً بلاغياً مألوفاً</li>
+            <li>ج. خطأً نحوياً شائعاً</li>
+            <li>د. من غريب اللغة المذموم</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> كان من فصاحة العرب وأساليبهم البلاغية إطلاق الحرف وإرادة الكلمة (مثل قولهم قاف ويريدون قفي)، ولذلك لم يستنكر كفار قريش الأحرف المقطعة في فواتح السور.
+        </div>
+    </div>
+
+    <!-- السؤال 15 -->
+    <div class="question-container">
+        <div class="question-title">15. الأساس الأكبر الذي يُبنى عليه علم أصول الفقه ويرتكز عليه في استنباط الأحكام هو:</div>
+        <ul class="options">
+            <li>أ. علم العقيدة</li>
+            <li data-correct="true">ب. لغة العرب ودلالات ألفاظها</li>
+            <li>ج. علم السيرة النبوية</li>
+            <li>د. علم التاريخ</li>
+        </ul>
+        <div class="explanation">
+            <strong>التفسير:</strong> علم أصول الفقه منشأه ومبناه الأساسي على لغة العرب، ويتجلى ذلك في مباحث العام والخاص، والمطلق والمقيد، ودلالات الألفاظ وحروف المعاني.
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            // الحصول على جميع قوائم الخيارات
+            const optionLists = document.querySelectorAll(".options");
+
+            optionLists.forEach(list => {
+                const options = list.querySelectorAll("li");
+                
+                options.forEach(option => {
+                    option.addEventListener("click", function() {
+                        // التأكد من أن السؤال لم تتم الإجابة عليه مسبقاً
+                        if (list.classList.contains("answered")) return;
+                        
+                        // إغلاق القائمة لمنع النقر المتعدد
+                        list.classList.add("answered");
+
+                        // إظهار التفسير
+                        const explanation = list.nextElementSibling;
+                        if (explanation && explanation.classList.contains("explanation")) {
+                            explanation.style.display = "block";
+                        }
+
+                        // التحقق من الإجابة
+                        const isCorrect = this.getAttribute("data-correct") === "true";
+                        
+                        if (isCorrect) {
+                            // إذا كانت صحيحة، لونها بالأخضر
+                            this.classList.add("correct");
+                        } else {
+                            // إذا كانت خاطئة، لونها بالأصفر
+                            this.classList.add("incorrect");
+                            
+                            // ثم ابحث عن الإجابة الصحيحة ولونها بالأخضر ليتعلمها الطالب
+                            options.forEach(opt => {
+                                if (opt.getAttribute("data-correct") === "true") {
+                                    opt.classList.add("correct");
+                                }
+                            });
+                        }
+                    });
+                });
+            });
+        });
+    </script>
+</body>
+</html>
