@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار أصول الفقه - متقدم</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+        }
+        .quiz-container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            padding: 30px;
+            max-width: 800px;
+            width: 100%;
+        }
+        .question-header {
+            font-size: 1.2em;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            line-height: 1.6;
+            font-weight: bold;
+        }
+        .options-container {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+        .option {
+            background-color: #f8f9fa;
+            border: 2px solid #dee2e6;
+            border-radius: 8px;
+            padding: 15px;
+            font-size: 1.1em;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .option:hover {
+            background-color: #e9ecef;
+        }
+        /* الألوان التفاعلية المطلوبة */
+        .option.correct {
+            background-color: #d4edda !important;
+            border-color: #28a745 !important;
+            color: #155724;
+            pointer-events: none;
+        }
+        .option.wrong {
+            background-color: #fff3cd !important;
+            border-color: #ffc107 !important;
+            color: #856404;
+            pointer-events: none;
+        }
+        .option.disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .explanation {
+            display: none;
+            margin-top: 25px;
+            padding: 20px;
+            background-color: #e2eef9;
+            border-right: 5px solid #007bff;
+            border-radius: 5px;
+            font-size: 1em;
+            line-height: 1.6;
+            color: #004085;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            border-top: 1px solid #dee2e6;
+            padding-top: 20px;
+        }
+        .nav-btn {
+            background-color: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1em;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .nav-btn:hover:not(:disabled) {
+            background-color: #0056b3;
+        }
+        .nav-btn:disabled {
+            background-color: #cccccc;
+            cursor: not-allowed;
+        }
+        .progress {
+            text-align: center;
+            font-weight: bold;
+            color: #6c757d;
+        }
+    </style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="progress" id="progress-text">السؤال 1 من 15</div>
+    <div class="question-header" id="question-text"></div>
+    <div class="options-container" id="options-container"></div>
+    <div class="explanation" id="explanation-box"></div>
+    
+    <div class="navigation">
+        <button class="nav-btn" id="prev-btn" onclick="prevQuestion()">السابق</button>
+        <button class="nav-btn" id="next-btn" onclick="nextQuestion()">التالي</button>
+    </div>
+</div>
+
+<script>
+    const quizData = [
+        {
+            question: "المراد بقولنا في تعريف الحكم (المتعلق بأفعال المكلفين) يخرج به ما تعلق بالاعتقاد، ولكن يُستثنى من ذلك ويدخل في التعريف:",
+            options: [
+                "مباحث التوحيد والمنهج.",
+                "أحكام النية الداخلة في الطهارة والعبادات.",
+                "الأحكام الوضعية المتعلقة بالصحة والفساد.",
+                "القضاء الكوني الذي لا راد له."
+            ],
+            correct: 1,
+            explanation: "التفسير من المصدر: قوله تعالى المتعلق بأفعال المكلفين يخرج به ما تعلق بالاعتقاد، أي المباحث العلمية العقدية فلا تسمى أحكاماً شرعية اصطلاحاً، فلا يتعلق 'باعتقادهم' إلا ما كان من أحكام النيَّة الداخلة في الطهارة وفي العبادات بصفة عامة وغيرها من الأبواب."
+        },
+        {
+            question: "رفع القلم عن الصغير والمجنون يعني عدم دخولهما أصولياً في خطاب الشرع المتعلق (بأفعال المكلفين) بأي وجه من الوجوه: هذه العبارة:",
+            options: [
+                "صحيحة، لحديث (رفع القلم عن ثلاث).",
+                "صحيحة في حق الصغير دون المجنون.",
+                "خاطئة، بل يدخلان وتعتورهم كثير من الأحكام كالميراث والضمان.",
+                "خاطئة في حق المجنون دون الصغير."
+            ],
+            correct: 2,
+            explanation: "التفسير من المصدر: العبارة خاطئة. هل معنى هذا أنهم لا يدخلون في هذا التعريف؟ لا، بل يدخلون، لأن الصغير يَعتريه كثير من الأحكام الشرعية وكذلك المجنون من خلال الاهتمام بميراث المجنون كما تتعلق بضمانه وإتلافه."
+        },
+        {
+            question: "قوله تعالى (فَقَضَىٰهُنَّ سَبۡعَ سَمَٰوَاتٖ) وقوله (وَقَضَىٰ رَبُّكَ أَلَّا تَعۡبُدُوٓاْ إِلَّآ إِيَّاهُ)، نوع القضاء فيهما على الترتيب:",
+            options: [
+                "قضاء شرعي، ثم قضاء كوني.",
+                "كلاهما قضاء كوني واقع لا محالة.",
+                "قضاء كوني لا يُرد، ثم قضاء شرعي قد يُفعل وقد لا يُفعل.",
+                "كلاهما قضاء شرعي مبني على المشيئة."
+            ],
+            correct: 2,
+            explanation: "التصويب من المصدر: الآية الأولى تعني (قضى كونًا أنهن سبع سموات) وهو واقع لا محالة، والثانية (قضاء شرعي وليس قضاء كوني) وهو ربما يُفعل أو لا يُفعل؛ أي يوجد من يلتزم به ومن لا يلتزم."
+        },
+        {
+            question: "إذا قام شخص بأداء الزكاة بدافع الشفقة المحضة على المساكين دون قصد استحضار نية أداء الفرض استجابة لأمر الله، فإن فعله هذا أصولياً:",
+            options: [
+                "يُثاب عليه ثواب الواجب لكونه حقق المنفعة المجتمعية.",
+                "لا يُثاب عليه ثواب الواجب لغياب شرط (الامتثال)، وقد ينقلب لمعصية إن صاحبه رياء.",
+                "يُثاب عليه ثواب المندوب فقط.",
+                "صحيح ويُسقط عنه الفريضة ويُثاب ثواباً كاملاً."
+            ],
+            correct: 1,
+            explanation: "التفسير من المصدر: الواجب يثاب فاعله إذا فعله على وجه الامْتِثَال، فمن أخرج الزكاة شفقة على المساكين، فالنية والامْتِثَال لم يكونا لأداء الواجب... وفي حالة فعله وكانت النية مصحوبة بالتقرب لغير الله فهذا يعد من الرٍّيَاء، وينقلب الواجب إلى معصية."
+        },
+        {
+            question: "السفر في ذاته من المباحات التي لا تُطلب ولا تُترك لذاتها، ولكنه قد تجري عليه الأحكام الخمسة، والسبب في ذلك هو:",
+            options: [
+                "اختلاف المذاهب الفقهية في تصنيفه.",
+                "النظر لاعتبارات خارجية عن ذات السفر كالمقصد منه والغاية المتصلة به.",
+                "تغير الزمان والمكان.",
+                "الخلط بين الحكم التكليفي والحكم الوصفي."
+            ],
+            correct: 1,
+            explanation: "التفسير من المصدر: السفر أساسا من المباحات... متى تعتريه الأحكام الخمسة؟! فإذا نظرنا لاعتبارات خارجة عن السفر، كأن يكون السفر للحج واجب، والسفر لمعصية حرام."
+        },
+        {
+            question: "أي العبارات التالية تعتبر الأكثر دقة علمياً وتحقيقاً في التعبير عن حكم (تارك الواجب) عند الأصوليين؟",
+            options: [
+                "الواجب يُثاب فاعله، ويُعاقب تاركه مطلقاً.",
+                "الواجب يُثاب فاعله، ويستحق العقاب تاركه، ولا يُجزم بعقابه فقد يعفو الله عنه.",
+                "الواجب يُثاب فاعله امتثالاً، ويُعاقب تاركه.",
+                "الواجب يُثاب فاعله امتثالاً، ويستحق العقاب تاركه ولو كان ناسيًا أو مكرهًا."
+            ],
+            correct: 1,
+            explanation: "التصويب من المصدر: الأدق أن يقال (يستحق العقاب تاركه) ولا يقال (يعاقب تاركه)، لأن هذه الأخيرة تعني أنه مُستَحقٌ له ولكن ربما يعفوا عنه الله سبحانه وتعالى، ويمكن أن يزاد (ويستحق العقاب تاركه عمداً) لأن المكره والناسي غير مستحق."
+        },
+        {
+            question: "عند مدرسة الأحناف، ترك قراءة الفاتحة في الصلاة لا يُبطلها بخلاف مذهب الجمهور، ويرجع هذا الاختلاف للقاعدة الأصولية الآتية:",
+            options: [
+                "الفاتحة عندهم سنة مؤكدة وليست واجبة.",
+                "الفاتحة ثبتت بدليل ظني الثبوت أو الدلالة فهي (واجبة) وليست (فرضاً).",
+                "لا فرق عند الأحناف بين الواجب والفرض.",
+                "الفاتحة ثبتت بدليل قطعي الثبوت قطعي الدلالة فهي واجبة."
+            ],
+            correct: 1,
+            explanation: "التفسير من المصدر: الأحناف يفرقون بين الفرض والواجب... فالواجب عندهم: ما ثبت بدليل ظنِّي الثبوت أو الدلالة... وقراءة الفاتحة في الصلاة عندهم من الواجبات وليست من الفرائض؛ وهذا يترتب عليه صحة الصلاة عندهم بغير فاتحة."
+        },
+        {
+            question: "السواك ورغيبة الفجر عند فقهاء المالكية لا يسميان (سنة) بالاصطلاح الدقيق للمذهب، بل هما من قبيل:",
+            options: [
+                "السنة المؤكدة التي يأثم تاركها.",
+                "سنة الزوائد التي يأثم تاركها إثماً يسيراً.",
+                "النافلة التي لم يداوم عليها النبي مطلقاً.",
+                "الفضيلة أو الرغيبة التي داوم عليها النبي دون إظهارها، ولا يأثم تاركها."
+            ],
+            correct: 3,
+            explanation: "التفسير من المصدر: الفضيلة أو الرغيبة عند المالكية: هي ما داوم عليه رسول الله غير مظهرًا له، كالسواك ورغيبة الفجر... وتارك الرغيبة أو الفضيلة لا يأثم عندهم."
+        },
+        {
+            question: "وفقاً للتقسيم الدقيق عند المالكية المغاربة، قارن بين إثم تارك (السنة المؤكدة) كصلاة العيد، وبين إثم تارك (الفريضة) كصلاة الظهر:",
+            options: [
+                "تارك السنة لا يأثم، بينما تارك الفريضة يأثم.",
+                "كلاهما يأثم، والإثم في نفس المنزلة تماماً.",
+                "كلاهما يأثم، ولكن الإثم درجات متفاوتة فإثم الفريضة أعظم.",
+                "المالكية لا يفرقون بين السنة والواجب في مقدار الإثم."
+            ],
+            correct: 2,
+            explanation: "التفسير من المصدر: معنى 'يأثم' أنه يأخذ سيئات... ولكن هذا الإثم ليس بالضرورة في نفس منزلة إثم ترك الفريضة، أي لا يشترط أن ترك صلاة العيدين مثلا كإثم ترك صلاة الظهر، قطعا لا، لكن هذا إثم وذاك إثم، والإثم درجات."
+        },
+        {
+            question: "ما داوم عليه النبي ﷺ ولم يتركه إلا أحياناً، ولم يكن من شعائر الدين المعلنة، يُصنف في اصطلاح الحنفية بأنه:",
+            options: [
+                "سنة الهدى.",
+                "النافلة والتطوع.",
+                "سنة الزوائد.",
+                "الفضيلة والرغيبة."
+            ],
+            correct: 2,
+            explanation: "التفسير من المصدر: سنة الزوائد عند الحنفية: وهي ما داوم عليه النبي ﷺ ولم يتركه إلا أحيانا، يعني شيء ليس من شعائر الدين، وليس من الشعائر المعلنة."
+        },
+        {
+            question: "الطالب أو العالم الذي يترك المندوب كحفظ القرآن الكريم بالكلية رغم استطاعته، ما هو حكمه وتوصيفه الأصولي؟",
+            options: [
+                "مسيء ومذموم بالإجماع، ولكنه لا يستحق العقاب كحكم الواجب.",
+                "يستحق العقاب لأنه ترك سنة مؤكدة.",
+                "لا يُذم ولا يُساء به الظن لأن حفظ القرآن ليس بفرض.",
+                "مأجور على الترك إن كانت نيته الانشغال بغيره."
+            ],
+            correct: 0,
+            explanation: "التفسير من المصدر: طالب العلم الذي يترك حفظ القرآن مذموم ومسيء بالاجماع... إلا أنه هناك فرق بين أن يكون الإنسان مسيئًا أو مذمومًا، وأن يكون معاقبًا أو مستحقاً للعقاب، فهاتان درجتان مختلفتان."
+        },
+        {
+            question: "استعمال بعض السلف والصحابة للفظ (النسخ) للتعبير عن (التخصيص) يُمثل من الناحية الأصولية:",
+            options: [
+                "خطأ شرعي يجب رده.",
+                "استعمالاً للفظ بمعناه اللغوي العرفي الواسع وليس الاصطلاحي الأصولي.",
+                "استعمالاً للفظ بمعناه الاصطلاحي الضيق.",
+                "حقيقة شرعية مبتكرة."
+            ],
+            correct: 1,
+            explanation: "التفسير من المصدر: بعض السلف استعمل لفظ 'النسخ' للتخصيص، وهو ليس نسخًا بمعنى الرفع والإبطال، بل نسخ بمعنى التخصيص، فهذا معنى لغوي للفظ النسخ، وهو استعمال لغوي وليس استعمال اصطلاحيّا."
+        },
+        {
+            question: "الأحكام الوضعية هي علامات تحدد النفوذ والإلغاء للعقود، والمقصود بـ (نفوذ العقد) أصولياً:",
+            options: [
+                "أن يُسجل في الدواوين الرسمية.",
+                "أن يكون العقد صحيحاً ويترتب عليه أثره الشرعي كنكاح نافذ.",
+                "أن يكون العقد فاسداً ولاغياً.",
+                "أن يستوفي شروط الإيجاب فقط دون القبول."
+            ],
+            correct: 1,
+            explanation: "التفسير من المصدر: أوصاف النفوذ والإلغاء؛ أي عقد نافذ كعقد نكاح مثلاً أو عقد بيع صحيح، وبالتالي يترتب عليه أثره والأثر المترتب عليه نافذ؛ أي النفوذ نستطيع العمل به."
+        },
+        {
+            question: "الفرق الجوهري الذي يفصل بين (المباح) وباقي الأحكام التكليفية في تعريف خطاب الشرع، هو أن المباح:",
+            options: [
+                "يُثاب فاعله مطلقاً.",
+                "طلب فيه الشارع الفعل طلباً غير جازم.",
+                "ليس مطلوباً فعله ولا تركه في ذاته، بل هو على التخيير والاستواء.",
+                "من الأحكام الوضعية التي ترتبط بالأسباب."
+            ],
+            correct: 2,
+            explanation: "التفسير من المصدر: التخيير وهو المباح-، والمباح لا يُحرَّم ولا يُكره ولا يجب لذاته، فالمباح في نفسه على التخيير."
+        },
+        {
+            question: "إطلاق لفظ (الشارع) على سيدنا محمد ﷺ في عبارات الأصوليين يُعد من باب:",
+            options: [
+                "الحقيقة المطلقة لأنه هو المشرع الأول.",
+                "التجاوز والتجوز، باعتباره ناقلاً ومُبيناً للتشريع.",
+                "الخطأ اللفظي الذي لا يجوز استخدامه.",
+                "القضاء الكوني."
+            ],
+            correct: 1,
+            explanation: "التفسير من المصدر: لفظ 'الشَّارع' يُطلق في الأساس على الله كوصف، وتُطلق تجاوزًا على النبي ﷺ باعتباره ناقل التشريع؛ لكن الأصل والمقصود هو الله."
+        }
+    ];
+
+    let currentQuestionIndex = 0;
+    let userAnswers = new Array(quizData.length).fill(null);
+
+    const questionText = document.getElementById('question-text');
+    const optionsContainer = document.getElementById('options-container');
+    const explanationBox = document.getElementById('explanation-box');
+    const prevBtn = document.getElementById('prev-btn');
+    const nextBtn = document.getElementById('next-btn');
+    const progressText = document.getElementById('progress-text');
+
+    function loadQuestion(index) {
+        const qData = quizData[index];
+        progressText.innerText = `السؤال ${index + 1} من ${quizData.length}`;
+        questionText.innerText = qData.question;
+        optionsContainer.innerHTML = '';
+        explanationBox.style.display = 'none';
+
+        qData.options.forEach((opt, i) => {
+            const div = document.createElement('div');
+            div.className = 'option';
+            div.innerText = opt;
+            
+            // إذا كان المستخدم قد أجاب مسبقاً
+            if (userAnswers[index] !== null) {
+                div.classList.add('disabled');
+                if (i === qData.correct) {
+                    div.classList.add('correct');
+                } else if (i === userAnswers[index]) {
+                    div.classList.add('wrong');
+                }
+                explanationBox.innerText = qData.explanation;
+                explanationBox.style.display = 'block';
+            } else {
+                div.onclick = () => selectOption(i, div);
+            }
+            optionsContainer.appendChild(div);
+        });
+
+        prevBtn.disabled = index === 0;
+        nextBtn.disabled = index === quizData.length - 1;
+    }
+
+    function selectOption(selectedIndex, selectedDiv) {
+        if (userAnswers[currentQuestionIndex] !== null) return; // منع الإجابة مرتين
+
+        userAnswers[currentQuestionIndex] = selectedIndex;
+        const qData = quizData[currentQuestionIndex];
+        const allOptions = optionsContainer.children;
+
+        for (let i = 0; i < allOptions.length; i++) {
+            allOptions[i].classList.add('disabled');
+            if (i === qData.correct) {
+                allOptions[i].classList.add('correct');
+            }
+        }
+
+        if (selectedIndex !== qData.correct) {
+            selectedDiv.classList.add('wrong');
+        }
+
+        explanationBox.innerText = qData.explanation;
+        explanationBox.style.display = 'block';
+    }
+
+    function nextQuestion() {
+        if (currentQuestionIndex < quizData.length - 1) {
+            currentQuestionIndex++;
+            loadQuestion(currentQuestionIndex);
+        }
+    }
+
+    function prevQuestion() {
+        if (currentQuestionIndex > 0) {
+            currentQuestionIndex--;
+            loadQuestion(currentQuestionIndex);
+        }
+    }
+
+    // تهيئة الاختبار عند البداية
+    loadQuestion(0);
+</script>
+
+</body>
+</html>
