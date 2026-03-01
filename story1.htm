@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اخْتِبَارُ قِصَّةِ عُطْلَةٍ سَعِيدَةٍ</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --correct-green: #4CAF50;
+            --wrong-red: #f44336;
+            --wrong-yellow: #FFEB3B;
+            --bg-color: #f9f9f9;
+            --text-color: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.8;
+            font-size: 18px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            color: var(--primary);
+            text-align: center;
+        }
+        .page {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .story-box {
+            background: #e3f2fd;
+            padding: 20px;
+            border-radius: 10px;
+            border-right: 5px solid var(--primary);
+            margin-bottom: 20px;
+        }
+        /* Navigation */
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #eee;
+        }
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 18px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+        button:hover {
+            background-color: #0b7dda;
+        }
+        button:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+        /* Quiz Elements */
+        .question {
+            margin-bottom: 25px;
+            padding: 15px;
+            background: #fdfdfd;
+            border: 1px solid #ddd;
+            border-radius: 8px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option-btn {
+            background-color: #f1f1f1;
+            color: #333;
+            text-align: right;
+            border: 2px solid transparent;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #e0e0e0;
+        }
+        .correct {
+            background-color: var(--correct-green) !important;
+            color: white !important;
+            border-color: darkgreen !important;
+        }
+        .wrong-red {
+            background-color: var(--wrong-red) !important;
+            color: white !important;
+            border-color: darkred !important;
+        }
+        .wrong-yellow {
+            background-color: var(--wrong-yellow) !important;
+            color: black !important;
+            border-color: #FBC02D !important;
+        }
+        /* Fill in Blanks */
+        .word-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            background: #fff3e0;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+        }
+        .word-item {
+            background: white;
+            padding: 5px 15px;
+            border-radius: 20px;
+            border: 1px solid #ffb74d;
+        }
+        select {
+            font-size: 16px;
+            padding: 5px;
+            border-radius: 5px;
+            margin: 0 5px;
+            font-family: inherit;
+        }
+        /* Sentences Creation */
+        textarea {
+            width: 100%;
+            height: 50px;
+            font-size: 16px;
+            font-family: inherit;
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        .check-btn {
+            display: block;
+            margin: 20px auto;
+            background-color: #ff9800;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- الصفحة الأولى: القصة والمعلومات -->
+    <div id="page1" class="page active">
+        <h1>الْقِصَّةُ كَامِلَةً</h1>
+        <div class="story-box">
+            <h3>مَعْلُومَاتُ الْقِصَّةِ:</h3>
+            <p><b>عُنْوَانُ الْقِصَّةِ:</b> عُطْلَةٌ سَعِيدَةٌ عَلَى شَاطِئِ الْبَحْرِ</p>
+            <p><b>زَمَنُ الْقِصَّةِ:</b> عُطْلَةُ الصَّيْفِ</p>
+            <p><b>مَكَانُ الْقِصَّةِ:</b> شَاطِئُ الْبَحْرِ</p>
+            <p><b>شَخْصِيَّاتُ الْقِصَّةِ:</b> الْأَبُ (أَحْمَدُ)، الْأُمُّ (فَاطِمَةُ)، الِابْنُ (عُمَرُ)، وَالْبِنْتُ (لَيْلَى)</p>
+            <p><b>الْمُشْكِلَةُ:</b> هُبُوبُ رِيَاحٍ قَوِيَّةٍ فَجْأَةً كَادَتْ أَنْ تُطَيِّرَ الْخَيْمَةَ</p>
+            <p><b>نَوْعُ الْقِصَّةِ:</b> طَوِيلَةٌ</p>
+        </div>
+        <div class="story-box">
+            <h3>أَحْدَاثُ الْقِصَّةِ:</h3>
+            <p>فِي يَوْمٍ مِنْ أَيَّامِ الصَّيْفِ الْجَمِيلَةِ، قَرَّرَتِ الْأُسْرَةُ السَّفَرَ لِقَضَاءِ الْعُطْلَةِ. ذَهَبَ الْأَبُ «أَحْمَدُ» إِلَى الْمَحَطَّةِ وَحَجَزَ تَذَاكِرَ الْقِطَارِ بَاكِرًا. شَعَرَ الْأَوْلَادُ «عُمَرُ» وَ«لَيْلَى» بِفَرَحٍ شَدِيدٍ، وَبَدَأُوا فِي تَجْهِيزِ الْحَقَائِبِ وَالْمَلَابِسِ بِحَمَاسٍ كَبِيرٍ.</p>
+            <p>فِي صَبَاحِ الْيَوْمِ التَّالِي، رَكِبَتِ الْأُسْرَةُ الْقِطَارَ. كَانَ الطَّرِيقُ طَوِيلًا، لَكِنَّ الرِّحْلَةَ كَانَتْ مُمْتِعَةً جِدًّا. نَظَرَ «عُمَرُ» مِنْ نَافِذَةِ الْقِطَارِ، وَشَاهَدَ أَشْجَارًا خَضْرَاءَ عَالِيَةً وَجِبَالًا ضَخْمَةً، وَكَانَتْ «لَيْلَى» تَلْتَقِطُ الصُّوَرَ لِلْمَنَاظِرِ الطَّبِيعِيَّةِ. وَبَعْدَ سَاعَاتٍ قَلِيلَةٍ، وَصَلُوا إِلَى شَاطِئِ الْبَحْرِ وَنَزَلُوا مِنَ الْقِطَارِ بِسَعَادَةٍ.</p>
+            <p>كَانَ الطَّقْسُ رَائِعًا جِدًّا، وَالشَّمْسُ مُشْرِقَةً، وَالْهَوَاءُ نَقِيًّا وَلَطِيفًا. تَعَاوَنَتِ الْأُسْرَةُ، وَنَصَبَ الْأَبُ خَيْمَةً كَبِيرَةً وَجَمِيلَةً عَلَى الرِّمَالِ الذَّهَبِيَّةِ النَّاعِمَةِ. بَعْدَ ذَلِكَ، بَدَأَتِ الْأَنْشِطَةُ الْمُخْتَلِفَةُ؛ فَقَدْ لَعِبَ «عُمَرُ» بِكُرَةِ الْقَدَمِ مَعَ وَالِدِهِ عَلَى الشَّاطِئِ، بَيْنَمَا ذَهَبَتْ «لَيْلَى» لِتَجْمَعَ الْأَصْدَافَ الْمُلَوَّنَةَ، فَهَذِهِ هِيَ هِوَايَتُهَا الْمُفَضَّلَةُ مُنْذُ صِغَرِهَا.</p>
+            <p>وَعِنْدَمَا جَاءَ وَقْتُ الْغَدَاءِ، شَعَرَ الْجَمِيعُ بِالْجُوعِ بَعْدَ هَذَا اللَّعِبِ، فَجَلَسُوا أَمَامَ الْخَيْمَةِ. قَدَّمَتِ الْأُمُّ «فَاطِمَةُ» طَعَامًا لَذِيذًا وَصِحِّيًّا يَتَكَوَّنُ مِنَ الدَّجَاجِ وَالْخَضْرَوَاتِ، وَشَرِبُوا عَصِيرَ الْبُرْتُقَالِ الطَّازَجَ وَالْبَارِدَ. كَانَتِ الْأُسْرَةُ تَشْعُرُ بِسَعَادَةٍ غَامِرَةٍ وَهُمْ يَأْكُلُونَ مَعًا يَنْظُرُونَ إِلَى أَمْوَاجِ الْبَحْرِ الزَّرْقَاءِ.</p>
+            <p>وَلَكِنْ، حَدَثَ شَيْءٌ مُفَاجِئٌ! بَعْدَ الْعَصْرِ، تَغَيَّرَ الطَّقْسُ تَمَامًا. ظَهَرَتْ غُيُومٌ كَثِيفَةٌ فِي السَّمَاءِ، وَغَابَتِ الشَّمْسُ، ثُمَّ هَبَّتْ رِيَاحٌ قَوِيَّةٌ جِدًّا فَجْأَةً. أَخَذَتِ الْخَيْمَةُ تَتَحَرَّكُ بِشِدَّةٍ يَمِينًا وَيَسَارًا، وَكَادَتْ أَنْ تَطِيرَ فِي الْهَوَاءِ. شَعَرَ «عُمَرُ» وَ«لَيْلَى» بِالْخَوْفِ الشَّدِيدِ، وَصَرَخَتْ «لَيْلَى» قَائِلَةً: «يَا أَبِي! الْخَيْمَةُ سَتَطِيرُ، مَاذَا نَفْعَلُ؟».</p>
+            <p>تَصَرَّفَ الْأَبُ بِشَجَاعَةٍ وَسُرْعَةٍ، وَسَاعَدَتْهُ الْأُمُّ. أَمْسَكَ الْأَبُ بِحِبَالِ الْخَيْمَةِ بِقُوَّةٍ شَدِيدَةٍ، ثُمَّ بَحَثَ عَنْ حِجَارَةٍ ثَقِيلَةٍ وَوَضَعَهَا فَوْقَ الْحِبَالِ وَحَوْلَ أَطْرَافِ الْخَيْمَةِ حَتَّى ثَبَتَتْ فِي مَكَانِهَا جَيِّدًا.</p>
+            <p>وَبَعْدَ وَقْتٍ قَصِيرٍ، هَدَأَتِ الرِّيَاحُ، وَعَادَ الطَّقْسُ لَطِيفًا كَمَا كَانَ. تَنَفَّسَ الْجَمِيعُ بِارْتِيَاحٍ شَدِيدٍ بَعْدَ زَوَالِ الْخَطَرِ. وَفِي الْمَسَاءِ، جَلَسَتِ الْأُسْرَةُ مَعًا خَارِجَ الْخَيْمَةِ يَتَحَدَّثُونَ عَنْ هَذِهِ الْمُغَامَرَةِ وَيَضْحَكُونَ، وَهُمْ يَنْظُرُونَ إِلَى النُّجُومِ اللَّامِعَةِ فِي السَّمَاءِ، حَيْثُ شَعَرُوا بِالْأَمَانِ وَالسَّعَادَةِ فِي هَذِهِ الرِّحْلَةِ الَّتِي لَا تُنْسَى.</p>
+        </div>
+    </div>
+
+    <!-- الصفحة الثانية: القسم الأول -->
+    <div id="page2" class="page">
+        <h2>الْقِسْمُ الْأَوَّلُ: أَسْئِلَةُ الِاخْتِيَارِ مِنْ مُتَعَدِّدٍ</h2>
+        <p>اِخْتَرْ الإِجَابَةَ الصَّحِيحَةَ (يَقِيسُ الْفَهْمَ السَّطْحِيَّ وَالضِّمْنِيَّ):</p>
+        <div id="mcq-container"></div>
+    </div>
+
+    <!-- الصفحة الثالثة: القسم الثاني -->
+    <div id="page3" class="page">
+        <h2>الْقِسْمُ الثَّانِي: أَسْئِلَةُ الصَّوَابِ وَالْخَطَأِ</h2>
+        <p>هَلِ الْجُمْلَةُ صَحِيحَةٌ أَمْ خَاطِئَةٌ؟ (يَقِيسُ الْفَهْمَ الضِّمْنِيَّ وَالِاسْتِنْتَاجِيَّ):</p>
+        <div id="tf-container"></div>
+    </div>
+
+    <!-- الصفحة الرابعة: القسم الثالث -->
+    <div id="page4" class="page">
+        <h2>الْقِسْمُ الثَّالِثُ: اِمْلَأِ الْفَرَاغَ بِالْكَلِمَاتِ الْمُنَاسِبَةِ مِنَ الصُّنْدُوقِ</h2>
+        <div class="word-box">
+            <span class="word-item">بَاكِرًا</span>
+            <span class="word-item">حَمَاسٍ</span>
+            <span class="word-item">نَقِيًّا</span>
+            <span class="word-item">نَصَبَ</span>
+            <span class="word-item">غَامِرَةٍ</span>
+            <span class="word-item">كَثِيفَةٌ</span>
+            <span class="word-item">فَجْأَةً</span>
+            <span class="word-item">ثَقِيلَةٍ</span>
+            <span class="word-item">بِارْتِيَاحٍ</span>
+        </div>
+        <div id="blanks-container"></div>
+        <button class="check-btn" onclick="checkBlanks()">تَحَقَّقْ مِنَ الْإِجَابَاتِ</button>
+    </div>
+
+    <!-- الصفحة الخامسة: القسم الرابع (المفردات) -->
+    <div id="page5" class="page">
+        <h2>الْقِسْمُ الرَّابِعُ: سُؤَالُ الْمُفْرَدَاتِ (إِنْشَاءُ الْجُمَلِ)</h2>
+        <p>اُكْتُبْ جُمْلَةً مُفِيدَةً بِاسْتِخْدَامِ الْكَلِمَاتِ الصَّعْبَةِ التَّالِيَةِ الَّتِي وَرَدَتْ فِي الْقِصَّةِ:</p>
+        <div id="vocab-container"></div>
+    </div>
+
+    <!-- أزرار التنقل -->
+    <div class="navigation">
+        <button id="prevBtn" onclick="changePage(-1)" style="display: none;">السَّابِقُ</button>
+        <button id="nextBtn" onclick="changePage(1)">التَّالِي</button>
+    </div>
+
+</div>
+
+<script>
+    // البيانات
+    const mcqQuestions = [
+        { q: "1. مَتَى ذَهَبَتِ الْأُسْرَةُ فِي رِحْلَةٍ؟", options: ["فِي عُطْلَةِ الرَّبِيعِ", "فِي عُطْلَةِ الصَّيْفِ", "فِي عُطْلَةِ الشِّتَاءِ"], answer: 1 },
+        { q: "2. كَيْفَ سَافَرَتِ الْأُسْرَةُ إِلَى شَاطِئِ الْبَحْرِ؟", options: ["بِالسَّيَّارَةِ", "بِالطَّائِرَةِ", "بِالْقِطَارِ"], answer: 2 },
+        { q: "3. مَاذَا شَاهَدَ «عُمَرُ» مِنْ نَافِذَةِ الْقِطَارِ؟", options: ["أَشْجَارًا وَجِبَالًا", "مَبَانِيَ عَالِيَةً", "حَيَوَانَاتٍ كَثِيرَةً"], answer: 0 },
+        { q: "4. مَا هِيَ هِوَايَةُ «لَيْلَى» الْمُفَضَّلَةُ؟", options: ["لَعِبُ كُرَةِ الْقَدَمِ", "جَمْعُ الْأَصْدَافِ", "الرَّسْمُ عَلَى الرِّمَالِ"], answer: 1 },
+        { q: "5. مَاذَا شَرِبَتِ الْأُسْرَةُ فِي وَقْتِ الْغَدَاءِ؟", options: ["الْمَاءَ الْبَارِدَ", "عَصِيرَ التُّفَّاحِ", "عَصِيرَ الْبُرْتُقَالِ"], answer: 2 },
+        { q: "6. مَتَى تَغَيَّرَ الطَّقْسُ وَهَبَّتْ رِيَاحٌ قَوِيَّةٌ؟", options: ["فِي الصَّبَاحِ", "بَعْدَ الْعَصْرِ", "فِي الْمَسَاءِ"], answer: 1 },
+        { q: "7. مَا هِيَ الْمُشْكِلَةُ الَّتِي حَدَثَتْ لِلْأُسْرَةِ؟", options: ["كَادَتِ الْخَيْمَةُ أَنْ تَطِيرَ", "ضَاعَتِ الْحَقَائِبُ", "سَقَطَ الْمَطَرُ بِغَزَارَةٍ"], answer: 0 },
+        { q: "8. كَيْفَ ثَبَّتَ الْأَبُ الْخَيْمَةَ؟", options: ["بِمِسْمَارٍ كَبِيرٍ", "بِرَبْطِهَا فِي الشَّجَرَةِ", "بِوَضْعِ حِجَارَةٍ ثَقِيلَةٍ عَلَى الْحِبَالِ"], answer: 2 },
+        { q: "9. أَيْنَ جَلَسَتِ الْأُسْرَةُ فِي الْمَسَاءِ؟", options: ["خَارِجَ الْخَيْمَةِ", "دَاخِلَ الْقِطَارِ", "فِي الْمَطْعَمِ"], answer: 0 },
+        { q: "10. كَيْفَ شَعَرَتِ الْأُسْرَةُ فِي نِهَايَةِ الرِّحْلَةِ؟", options: ["بِالْحُزْنِ وَالتَّعَبِ", "بِالْأَمَانِ وَالسَّعَادَةِ", "بِالْخَوْفِ الشَّدِيدِ"], answer: 1 }
+    ];
+
+    const tfQuestions = [
+        { q: "1. حَجَزَ الْأَبُ تَذَاكِرَ الْقِطَارِ فِي الْمَسَاءِ.", answer: false },
+        { q: "2. كَانَتْ رِحْلَةُ الْقِطَارِ قَصِيرَةً وَمُمِلَّةً.", answer: false },
+        { q: "3. نَصَبَ الْأَبُ الْخَيْمَةَ بِمُفْرَدِهِ دُونَ مُسَاعَدَةٍ.", answer: false },
+        { q: "4. لَعِبَ «عُمَرُ» كُرَةَ الْقَدَمِ مَعَ وَالِدِهِ عَلَى الشَّاطِئِ.", answer: true },
+        { q: "5. كَانَ طَعَامُ الْغَدَاءِ صِحِّيًّا وَلَذِيذًا.", answer: true },
+        { q: "6. لَمْ تَكُنْ هُنَاكَ شَمْسٌ عِنْدَمَا وَصَلُوا إِلَى شَاطِئِ الْبَحْرِ فِي الْبِدَايَةِ.", answer: false },
+        { q: "7. شَعَرَ الْأَوْلَادُ بِالْخَوْفِ عِنْدَمَا تَحَرَّكَتِ الْخَيْمَةُ بِشِدَّةٍ.", answer: true },
+        { q: "8. سَاعَدَتِ الْأُمُّ الْأَبَ فِي تَثْبِيتِ الْخَيْمَةِ بِالْحِجَارَةِ.", answer: true },
+        { q: "9. عَادَتِ الْأُسْرَةُ إِلَى الْبَيْتِ فَوْرَ هُبُوبِ الرِّيَاحِ.", answer: false },
+        { q: "10. تَعَلَّمَتِ الْأُسْرَةُ كَيْفِيَّةَ مُوَاجَهَةِ الصِّعَابِ بِالتَّعَاوُنِ.", answer: true }
+    ];
+
+    const blankSentences = [
+        { text: "1. شَعَرَ الطَّلَّابُ بِـ [ ] كَبِيرٍ قَبْلَ بِدَايَةِ الْمُسَابَقَةِ النِّهَائِيَّةِ.", answer: "حَمَاسٍ" },
+        { text: "2. ظَهَرَتْ غُيُومٌ [ ] فِي السَّمَاءِ قَبْلَ نُزُولِ الْمَطَرِ.", answer: "كَثِيفَةٌ" },
+        { text: "3. ذَهَبَ الطَّالِبُ إِلَى الْمَدْرَسَةِ [ ] لِيَحْضُرَ الطَّابُورَ الصَّبَاحِيَّ.", answer: "بَاكِرًا" },
+        { text: "4. كَانَ هَوَاءُ الْقَرْيَةِ [ ] وَلَطِيفًا جِدًّا خِلَالَ الرِّحْلَةِ.", answer: "نَقِيًّا" },
+        { text: "5. شَعَرَتِ الْأُمُّ بِسَعَادَةٍ [ ] عِنْدَمَا نَجَحَ ابْنُهَا فِي الِاخْتِبَارِ.", answer: "غَامِرَةٍ" },
+        { text: "6. تَوَقَّفَتِ السَّيَّارَةُ [ ] فِي وَسَطِ الطَّرِيقِ بِسَبَبِ عُطْلٍ.", answer: "فَجْأَةً" },
+        { text: "7. [ ] الْعُمَّالُ خَيْمَةً كَبِيرَةً لِلِاحْتِفَالِ بِالْيَوْمِ الْوَطَنِيِّ.", answer: "نَصَبَ" },
+        { text: "8. تَنَفَّسَ الْمَرِيضُ [ ] بَعْدَ أَنْ أَخَذَ الدَّوَاءَ وَشَعَرَ بِالتَّحَسُّنِ.", answer: "بِارْتِيَاحٍ" },
+        { text: "9. حَمَلَ الرَّجُلُ حِجَارَةً [ ] لِيَبْنِيَ بِهَا الْجِدَارَ الْقَوِيَّ.", answer: "ثَقِيلَةٍ" }
+    ];
+    const wordsList = ["بَاكِرًا", "حَمَاسٍ", "نَقِيًّا", "نَصَبَ", "غَامِرَةٍ", "كَثِيفَةٌ", "فَجْأَةً", "ثَقِيلَةٍ", "بِارْتِيَاحٍ"];
+
+    const vocabWords = ["الْمُغَامَرَةِ", "غَامِرَةٍ", "كَثِيفَةٌ", "بِارْتِيَاحٍ", "تَجْهِيزِ", "ضَخْمَةً", "نَصَبَ", "مُشْرِقَةً", "هِوَايَتُهَا", "زَوَالِ"];
+
+    // توليد أسئلة الاختيار من متعدد
+    const mcqContainer = document.getElementById('mcq-container');
+    mcqQuestions.forEach((qObj, index) => {
+        let div = document.createElement('div');
+        div.className = 'question';
+        div.innerHTML = `<strong>${qObj.q}</strong><div class="options" id="mcq-opts-${index}"></div>`;
+        mcqContainer.appendChild(div);
+        
+        let optsDiv = document.getElementById(`mcq-opts-${index}`);
+        qObj.options.forEach((opt, optIndex) => {
+            let btn = document.createElement('button');
+            btn.className = 'option-btn';
+            btn.innerText = opt;
+            btn.onclick = () => checkMCQ(btn, optsDiv, optIndex, qObj.answer);
+            optsDiv.appendChild(btn);
+        });
+    });
+
+    function checkMCQ(btn, container, selected, correct) {
+        let buttons = container.getElementsByTagName('button');
+        for (let b of buttons) b.disabled = true;
+        
+        if (selected === correct) {
+            btn.classList.add('correct');
+        } else {
+            btn.classList.add('wrong-red');
+            buttons[correct].classList.add('correct');
+        }
+    }
+
+    // توليد أسئلة الصح والخطأ
+    const tfContainer = document.getElementById('tf-container');
+    tfQuestions.forEach((qObj, index) => {
+        let div = document.createElement('div');
+        div.className = 'question';
+        div.innerHTML = `<strong>${qObj.q}</strong>
+            <div class="options" id="tf-opts-${index}" style="flex-direction:row;">
+                <button class="option-btn" onclick="checkTF(this, ${index}, true)">صَحّ (True)</button>
+                <button class="option-btn" onclick="checkTF(this, ${index}, false)">خَطَأ (False)</button>
+            </div>`;
+        tfContainer.appendChild(div);
+    });
+
+    function checkTF(btn, index, selected) {
+        let container = document.getElementById(`tf-opts-${index}`);
+        let buttons = container.getElementsByTagName('button');
+        for (let b of buttons) b.disabled = true;
+        
+        let correct = tfQuestions[index].answer;
+        if (selected === correct) {
+            btn.classList.add('correct');
+        } else {
+            btn.classList.add('wrong-red');
+            // تظليل الصحيح
+            if(correct === true) buttons.classList.add('correct');
+            else buttons[1].classList.add('correct');
+        }
+    }
+
+    // توليد أسئلة املأ الفراغ
+    const blanksContainer = document.getElementById('blanks-container');
+    blankSentences.forEach((qObj, index) => {
+        let parts = qObj.text.split('[ ]');
+        let div = document.createElement('div');
+        div.className = 'question';
+        
+        let selectHtml = `<select id="blank-${index}">
+            <option value="">-- اِخْتَرْ --</option>
+            ${wordsList.map(w => `<option value="${w}">${w}</option>`).join('')}
+        </select>`;
+        
+        div.innerHTML = `<strong>${parts} ${selectHtml} ${parts[1]}</strong>`;
+        blanksContainer.appendChild(div);
+    });
+
+    function checkBlanks() {
+        blankSentences.forEach((qObj, index) => {
+            let selectElement = document.getElementById(`blank-${index}`);
+            selectElement.classList.remove('correct', 'wrong-yellow');
+            
+            if (selectElement.value === qObj.answer) {
+                selectElement.classList.add('correct');
+            } else {
+                selectElement.classList.add('wrong-yellow');
+            }
+        });
+    }
+
+    // توليد أسئلة المفردات
+    const vocabContainer = document.getElementById('vocab-container');
+    vocabWords.forEach((word, index) => {
+        let div = document.createElement('div');
+        div.className = 'question';
+        div.innerHTML = `<strong>${index + 1}. ${word}</strong><br>
+        <textarea placeholder="اُكْتُبْ جُمْلَةً هُنَا..."></textarea>`;
+        vocabContainer.appendChild(div);
+    });
+
+    // التنقل بين الصفحات
+    let currentPage = 1;
+    const totalPages = 5;
+
+    function changePage(step) {
+        document.getElementById(`page${currentPage}`).classList.remove('active');
+        currentPage += step;
+        document.getElementById(`page${currentPage}`).classList.add('active');
+        
+        document.getElementById('prevBtn').style.display = currentPage === 1 ? 'none' : 'inline-block';
+        document.getElementById('nextBtn').style.display = currentPage === totalPages ? 'none' : 'inline-block';
+        window.scrollTo(0, 0);
+    }
+</script>
+
+</body>
+</html>
