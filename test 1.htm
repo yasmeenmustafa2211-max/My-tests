@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار اللغة العربية - المستوى المتوسط الأول</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            line-height: 1.6;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .section {
+            margin-bottom: 40px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+        }
+        .question {
+            margin-bottom: 15px;
+            padding: 15px;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+            background-color: #f9f9f9;
+        }
+        .question p {
+            font-weight: bold;
+            margin-top: 0;
+        }
+        label {
+            display: inline-block;
+            margin-left: 15px;
+            cursor: pointer;
+        }
+        .word-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            background: #eef2f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            justify-content: center;
+        }
+        .word-box span {
+            background: #2c3e50;
+            color: #fff;
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+        }
+        select, textarea {
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #ccc;
+            font-size: 16px;
+            font-family: inherit;
+        }
+        textarea {
+            width: 100%;
+            height: 60px;
+            resize: vertical;
+        }
+        .correct {
+            background-color: #d4edda !important;
+            border-color: #c3e6cb !important;
+        }
+        .incorrect {
+            background-color: #fff3cd !important;
+            border-color: #ffeeba !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>اختبار شامل: المهن والأعمال</h1>
+    <p style="text-align:center;">المستوى: المتوسط الأول | لغير الناطقين باللغة العربية</p>
+
+    <!-- القسم الأول: الاختيار من متعدد -->
+    <div class="section" id="section1">
+        <h2>القسم الأول: اختيار من متعدد</h2>
+        <p>اختر الإجابة الصحيحة (يقيس الفهم السطحي والضمني):</p>
+        <div id="mcq-container"></div>
+    </div>
+
+    <!-- القسم الثاني: صح أو خطأ -->
+    <div class="section" id="section2">
+        <h2>القسم الثاني: صح أو خطأ</h2>
+        <p>حدد ما إذا كانت العبارة صحيحة أم خاطئة (يقيس الفهم الضمني والاستنتاجي):</p>
+        <div id="tf-container"></div>
+    </div>
+
+    <!-- القسم الرابع: املأ الفراغ -->
+    <div class="section" id="section4">
+        <h2>القسم الرابع: املأ الفراغ بالكلمات المناسبة من الصندوق</h2>
+        <div class="word-box">
+            <span>الصَّيْدَلانِيُّ</span><span>مُتَقاعِدٌ</span><span>عِيادَةِ</span><span>يَقُودُ</span><span>بِالْعَدْلِ</span>
+            <span>الاسْتِقْبالِ</span><span>يُعالِجُهُمْ</span><span>تَعْتَنِي</span><span>المُجْرِمِينَ</span><span>وَرْشَةِ</span>
+            <span>المُعَجَّناتِ</span><span>حُكُومِيَّةٍ</span><span>الدُّكّانِ</span><span>إِنْشاءاتٍ</span><span>الفُنْدُقِ</span>
+            <span>المُحاسِبُ</span><span>البَقّالِيَّةِ</span><span>البُقُولَ</span><span>الرَّعْيِ</span><span>التِّجارَةِ</span>
+        </div>
+        <div id="fill-container"></div>
+    </div>
+
+    <!-- القسم الأخير: إنشاء الجمل -->
+    <div class="section" id="section-final">
+        <h2>السؤال الأخير: المفردات (إنشاء جمل)</h2>
+        <p>استخدم الكلمات التالية في جمل مفيدة ومناسبة لمستواك:</p>
+        <div id="vocab-container"></div>
+    </div>
+
+</div>
+
+<script>
+    // --- بيانات القسم الأول (الاختيار من متعدد) ---
+    const mcqData = [
+        { q: "1. من الذي طلب المساعدة في موضوع العمل؟", options: ["الأب", "ليلى", "حسن"], answer: "ليلى" },
+        { q: "2. ماذا كان يعمل والد حسن في الماضي؟", options: ["معلماً", "نجاراً", "موظفاً حكومياً"], answer: "موظفاً حكومياً" },
+        { q: "3. ما هي مهنة والدة حسن؟", options: ["ربة بيت", "طبيبة", "ممرضة"], answer: "ربة بيت" },
+        { q: "4. ماذا يفعل الأخ الأكبر لحسن؟", options: ["يصلي بالناس", "يعمل معلماً", "يدرس في الجامعة"], answer: "يعمل معلماً" },
+        { q: "5. أين يعمل الأخ الأوسط لحسن؟", options: ["في المسجد", "في المستشفى", "في المدرسة"], answer: "في المسجد" },
+        { q: "6. لماذا لا يعمل الأخ الأصغر لحسن؟", options: ["لأنه مريض", "لأنه مسافر", "لأنه طالب"], answer: "لأنه طالب" },
+        { q: "7. أين يعمل موظف الاستقبال؟", options: ["في المستشفى", "في المصنع", "في المحكمة"], answer: "في المستشفى" },
+        { q: "8. من الذي يبيع الدواء للمرضى؟", options: ["الطبيب", "الصيدلاني", "الممرض"], answer: "الصيدلاني" },
+        { q: "9. من الذي يمسك بالمجرمين؟", options: ["الشرطي", "القاضي", "المحامي"], answer: "الشرطي" },
+        { q: "10. ماذا يصنع النجار من الأخشاب؟", options: ["السيارات", "الملابس", "الأبواب والنوافذ"], answer: "الأبواب والنوافذ" },
+        { q: "11. أين يعمل الخباز؟", options: ["في الفرن", "في ورشة الحدادة", "في البقالية"], answer: "في الفرن" },
+        { q: "12. من الذي يقود السيارة ويأخذ الناس إلى الأماكن؟", options: ["البناء", "العامل", "السائق"], answer: "السائق" },
+        { q: "13. ماذا يفعل المحاسب في الشركة؟", options: ["يحسب النقود", "يبيع الدواء", "يطبخ الطعام"], answer: "يحسب النقود" },
+        { q: "14. أين يعمل القاضي؟", options: ["في المصنع", "في المستشفى", "في المحكمة"], answer: "في المحكمة" },
+        { q: "15. من الذي يبني الأبنية والبيوت؟", options: ["النجار", "الحداد", "البناء"], answer: "البناء" },
+        { q: "16. أين يعمل الخياط؟", options: ["في ورشة الخياطة", "في المطعم", "في الدكان"], answer: "في ورشة الخياطة" },
+        { q: "17. من الذي يطبخ الطعام ويصنع الحلوى؟", options: ["البقال", "الطباخ", "الخباز"], answer: "الطباخ" },
+        { q: "18. ماذا يبيع البقال للناس؟", options: ["الأدوية", "الملابس", "البقول والحبوب"], answer: "البقول والحبوب" },
+        { q: "19. ماذا كان يعمل سيدنا محمد صلى الله عليه وسلم؟", options: ["الرعي والتجارة", "الزراعة", "الحدادة"], answer: "الرعي والتجارة" },
+        { q: "20. ما هي مهنة سيدنا آدم عليه السلام؟", options: ["حداد", "خياط", "مزارع"], answer: "مزارع" }
+    ];
+
+    // --- بيانات القسم الثاني (صح وخطأ) ---
+    const tfData = [
+        { q: "1. حسن سعيد بمساعدة ليلى في التعرف على المهن والأعمال.", answer: "صح" },
+        { q: "2. والد حسن ما زال يذهب إلى عمله الحكومي كل يوم.", answer: "خطأ" },
+        { q: "3. والدة حسن تعمل خارج البيت للحصول على المال.", answer: "خطأ" },
+        { q: "4. عائلة حسن تتكون من ثلاثة إخوة بالإضافة إلى الوالدين.", answer: "صح" },
+        { q: "5. الأخ الأوسط لحسن يقوم بدور ديني مهم في المجتمع.", answer: "صح" },
+        { q: "6. الطبيب والممرض يعملان في مكان واحد ويتعاونان معاً.", answer: "صح" },
+        { q: "7. الشرطي يستمع إلى شكاوى الناس ويهتم بأمنهم.", answer: "صح" },
+        { q: "8. الحداد والنجار كلاهما يستخدم الأخشاب في عمله.", answer: "خطأ" },
+        { q: "9. يتم بيع الخضروات والفاكهة في الصيدلية.", answer: "خطأ" },
+        { q: "10. عمل المحاسب يتطلب دقة في التعامل مع الأرقام والأموال.", answer: "صح" },
+        { q: "11. المحامي والقاضي يعملان في بيئة عمل واحدة وهي المحكمة.", answer: "صح" },
+        { q: "12. القاضي هو الذي يدافع عن الناس ليأخذوا حقوقهم بدلاً من المحامي.", answer: "خطأ" },
+        { q: "13. البناء يساهم في توفير أماكن للسكن والعمل للناس.", answer: "صح" },
+        { q: "14. الخياط هو الشخص المسؤول عن إعداد الأطعمة اللذيذة.", answer: "خطأ" },
+        { q: "15. الطباخ يمكن أن يعمل في الفنادق أو المطاعم الكبيرة.", answer: "صح" },
+        { q: "16. يوفر البقال للناس احتياجاتهم اليومية من الطعام والحبوب.", answer: "صح" },
+        { q: "17. كان سيدنا محمد يعمل في الزراعة في أغلب أوقاته.", answer: "خطأ" },
+        { q: "18. كان سيدنا داوود عليه السلام يعمل في الحدادة.", answer: "صح" },
+        { q: "19. كان سيدنا إدريس عليه السلام يصنع الملابس ويخيطها.", answer: "صح" },
+        { q: "20. المهن متنوعة، وكل شخص في المجتمع يقدم خدمة للآخرين.", answer: "صح" }
+    ];
+
+    // --- بيانات القسم الرابع (املأ الفراغ) ---
+    // الكلمات بترتيب مختلف عن الجمل
+    const fillOptions = [
+        "اختر الكلمة", "مُتَقاعِدٌ", "حُكُومِيَّةٍ", "تَعْتَنِي", "الاسْتِقْبالِ", "عِيادَةِ", 
+        "يُعالِجُهُمْ", "الصَّيْدَلانِيُّ", "المُجْرِمِينَ", "وَرْشَةِ", "المُعَجَّناتِ", "الدُّكّانِ", 
+        "يَقُودُ", "المُحاسِبُ", "بِالْعَدْلِ", "إِنْشاءاتٍ", "الفُنْدُقِ", "البَقّالِيَّةِ", 
+        "البُقُولَ", "الرَّعْيِ", "التِّجارَةِ"
+    ];
+
+    const fillData = [
+        { q: "1. أَبِي رَجُلٌ [......] لا يَعْمَلُ الْآنَ بَعْدَ سَنَواتٍ مِنَ الجُهْدِ الطَّوِيلِ.", answer: "مُتَقاعِدٌ" },
+        { q: "2. يَعْمَلُ أَخِي فِي دائِرَةٍ [......] تابِعَةٍ لِلدَّوْلَةِ مُنْذُ عَشْرِ سَنَواتٍ.", answer: "حُكُومِيَّةٍ" },
+        { q: "3. الْأُمُّ [......] بِأَطْفالِها وَتُوَفِّرُ لَهُمُ الرَّاحَةَ وَالطَّعامَ.", answer: "تَعْتَنِي" },
+        { q: "4. يَقِفُ مُوَظَّفُ [......] فِي مَدْخَلِ المُسْتَشْفَى لِيُرَحِّبَ بِالزُّوّارِ.", answer: "الاسْتِقْبالِ" },
+        { q: "5. ذَهَبْتُ إِلَى [......] الطَّبِيبِ لِأَنَّنِي أَشْعُرُ بِأَلَمٍ شَدِيدٍ فِي مَعِدَتِي.", answer: "عِيادَةِ" },
+        { q: "6. الطَّبِيبُ يَفْحَصُ المَرْضَى بِدِقَّةٍ ثُمَّ [......] بِالدَّواءِ المَناسِبِ.", answer: "يُعالِجُهُمْ" },
+        { q: "7. يُحَضِّرُ [......] الدَّواءَ المَطْلُوبَ فِي الصَّيْدَلِيَّةِ لِلنّاسِ.", answer: "الصَّيْدَلانِيُّ" },
+        { q: "8. تَقْبِضُ الشُّرْطَةُ عَلَى [......] لِحِمايَةِ المُجْتَمَعِ مِنَ الخَطَرِ وَالسَّرِقَةِ.", answer: "المُجْرِمِينَ" },
+        { q: "9. يَقْطَعُ النَّجّارُ الْأَخْشابَ فِي [......] النِّجارَةِ لِيَصْنَعَ الطّاوِلاتِ.", answer: "وَرْشَةِ" },
+        { q: "10. أَشْتَرِي الخُبْزَ الطّازَجَ وَ[......] اللَّذِيذَةَ مِنَ الفُرْنِ كُلَّ صَباحٍ.", answer: "المُعَجَّناتِ" },
+        { q: "11. يَعْرِضُ التّاجِرُ بِضاعَتَهُ الجَدِيدَةَ فِي [......] لِيَبِيعَها لِلزَّبائِنِ.", answer: "الدُّكّانِ" },
+        { q: "12. السَّائِقُ الماهِرُ [......] السَّيّارَةَ بِحَذَرٍ كَبِيرٍ فِي الطَّرِيقِ المُزْدَحِمِ.", answer: "يَقُودُ" },
+        { q: "13. يَقُومُ [......] بِحِسابِ النُّقُودِ الدّاخِلَةِ وَالخارِجَةِ فِي الشَّرِكَةِ.", answer: "المُحاسِبُ" },
+        { q: "14. يَحْكُمُ القاضِي بَيْنَ النّاسِ [......] وَلا يَظْلِمُ أَحَداً فِي المَحْكَمَةِ.", answer: "بِالْعَدْلِ" },
+        { q: "15. تَعْمَلُ الشَّرِكَةُ فِي مَجالِ بِناءِ [......] عِمْلاقَةٍ وَعِماراتٍ جَدِيدَةٍ.", answer: "إِنْشاءاتٍ" },
+        { q: "16. نَزَلْنا فِي رِحْلَتِنا لِلِاسْتِراحَةِ فِي [......] كَبِيرٍ وَنَظِيفٍ.", answer: "الفُنْدُقِ" },
+        { q: "17. أَذْهَبُ إِلَى [......] القَرِيبَةِ لِشِراءِ الْأَشْياءِ اليَوْمِيَّةِ البَسِيطَةِ.", answer: "البَقّالِيَّةِ" },
+        { q: "18. تَبِيعُ هَذِهِ المَحَلّاتُ الصَّغِيرَةُ [......] المُلَوَّنَةَ كَالعَدَسِ وَالفاصُولِياءِ.", answer: "البُقُولَ" },
+        { q: "19. كانَ سَيِّدُنا مُحَمَّدٌ -صَلَّى اللهُ عَلَيْهِ وَسَلَّمَ- يَعْمَلُ فِي [......] الغَنَمِ.", answer: "الرَّعْيِ" },
+        { q: "20. سافَرَ التّاجِرُ إِلَى بَلَدٍ بَعِيدٍ لِأَجْلِ [......] وَرِبْحِ الْأَمْوالِ.", answer: "التِّجارَةِ" }
+    ];
+
+    // --- بيانات القسم الأخير (المفردات) ---
+    const vocabData = [
+        "رَبَّةُ بَيْتٍ", "الإِمامُ", "الشَّكْوَى", "المَرْضَى", "الحَدَّادُ", 
+        "الأَخْشابُ", "الْمُحامِي", "الْمَحْكَمَةُ", "يُحاسِبُ", "الأَبْنِيَةُ", 
+        "الخَيّاطُ", "الحَلْوَى", "الحُبُوبُ", "مُزارِعٌ", "العائِلَةُ"
+    ];
+
+    // --- دوال بناء المحتوى ---
+    function checkRadioAnswer(element, isCorrect) {
+        const questionDiv = element.closest('.question');
+        if (isCorrect) {
+            questionDiv.classList.add('correct');
+            questionDiv.classList.remove('incorrect');
+        } else {
+            questionDiv.classList.add('incorrect');
+            questionDiv.classList.remove('correct');
+        }
+    }
+
+    function checkSelectAnswer(element, correctAnswer) {
+        const questionDiv = element.closest('.question');
+        if (element.value === correctAnswer) {
+            questionDiv.classList.add('correct');
+            questionDiv.classList.remove('incorrect');
+        } else if (element.value !== "اختر الكلمة") {
+            questionDiv.classList.add('incorrect');
+            questionDiv.classList.remove('correct');
+        } else {
+            questionDiv.classList.remove('correct', 'incorrect');
+        }
+    }
+
+    // بناء القسم الأول
+    const mcqContainer = document.getElementById('mcq-container');
+    mcqData.forEach((item, index) => {
+        let optionsHtml = '';
+        item.options.forEach(opt => {
+            const isCorrect = (opt === item.answer);
+            optionsHtml += `<label><input type="radio" name="mcq${index}" onclick="checkRadioAnswer(this, ${isCorrect})"> ${opt}</label>`;
+        });
+        mcqContainer.innerHTML += `<div class="question"><p>${item.q}</p>${optionsHtml}</div>`;
+    });
+
+    // بناء القسم الثاني
+    const tfContainer = document.getElementById('tf-container');
+    tfData.forEach((item, index) => {
+        tfContainer.innerHTML += `
+            <div class="question">
+                <p>${item.q}</p>
+                <label><input type="radio" name="tf${index}" onclick="checkRadioAnswer(this, ${item.answer === 'صح'})"> صح</label>
+                <label><input type="radio" name="tf${index}" onclick="checkRadioAnswer(this, ${item.answer === 'خطأ'})"> خطأ</label>
+            </div>
+        `;
+    });
+
+    // بناء القسم الرابع
+    const fillContainer = document.getElementById('fill-container');
+    let optionsHtml = '';
+    fillOptions.forEach(opt => {
+        optionsHtml += `<option value="${opt}">${opt}</option>`;
+    });
+    
+    fillData.forEach((item, index) => {
+        const selectHtml = `<select onchange="checkSelectAnswer(this, '${item.answer}')">${optionsHtml}</select>`;
+        const formattedQuestion = item.q.replace("[......]", selectHtml);
+        fillContainer.innerHTML += `<div class="question"><p>${formattedQuestion}</p></div>`;
+    });
+
+    // بناء القسم الأخير
+    const vocabContainer = document.getElementById('vocab-container');
+    vocabData.forEach((word, index) => {
+        vocabContainer.innerHTML += `
+            <div class="question">
+                <p>${index + 1}. ${word}</p>
+                <textarea placeholder="اكتب جملتك هنا..."></textarea>
+            </div>
+        `;
+    });
+
+</script>
+</body>
+</html>
