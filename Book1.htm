@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لعبة اختبار تحديد المستوى - المبتدئ الأول</title>
+    <style>
+        :root {
+            --primary: #2196F3;
+            --correct: #4CAF50;
+            --wrong: #FFC107;
+            --bg: #f4f7f6;
+            --text: #333;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 20px;
+            line-height: 1.8;
+        }
+        header {
+            text-align: center;
+            background: var(--primary);
+            color: white;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        h1, h2, h3 {
+            margin: 0 0 10px 0;
+        }
+        
+        /* إعدادات الصفحات والتنقل */
+        .section-container {
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+            display: none; /* إخفاء جميع الأقسام افتراضيا */
+        }
+        .section-container.active {
+            display: block; /* إظهار القسم النشط فقط */
+        }
+
+        /* تكبير الخطوط والخيارات كما طلبت */
+        .question-block {
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px dashed #ccc;
+        }
+        .question-text {
+            font-size: 1.6em; /* خط كبير جدا وواضح للأسئلة */
+            font-weight: bold;
+            margin-bottom: 15px;
+            color: #222;
+        }
+        .options-btn {
+            background: #e0e0e0;
+            border: 2px solid #ccc;
+            padding: 12px 30px;
+            margin: 10px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1.5em; /* خط كبير جدا وواضح للخيارات */
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .options-btn:hover {
+            background: #d0d0d0;
+            border-color: #999;
+        }
+        .options-btn:disabled {
+            cursor: not-allowed;
+            opacity: 0.9;
+        }
+        .correct {
+            background-color: var(--correct) !important;
+            color: white !important;
+            border-color: var(--correct) !important;
+        }
+        .incorrect {
+            background-color: var(--wrong) !important;
+            color: black !important;
+            border-color: var(--wrong) !important;
+        }
+        
+        /* القسم الثالث: املأ الفراغ */
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-bottom: 30px;
+            padding: 20px;
+            background: #e9f5ff;
+            border-radius: 8px;
+            border: 3px solid var(--primary);
+        }
+        .word-item {
+            background: white;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 25px;
+            border-radius: 20px;
+            cursor: pointer;
+            font-size: 1.5em; /* تكبير خط الكلمات في الصندوق */
+            font-weight: bold;
+            transition: all 0.3s;
+        }
+        .word-item.selected {
+            background: var(--primary);
+            color: white;
+            transform: scale(1.1);
+        }
+        .word-item.used {
+            opacity: 0.4;
+            cursor: not-allowed;
+            pointer-events: none;
+            background: #f0f0f0;
+            border-color: #ccc;
+            color: #888;
+        }
+        .blank-span {
+            display: inline-block;
+            min-width: 120px;
+            height: 40px;
+            border-bottom: 3px solid #333;
+            margin: 0 10px;
+            text-align: center;
+            cursor: pointer;
+            font-weight: bold;
+            font-size: 1.5em; /* تكبير خط الفراغ */
+            color: var(--primary);
+            transition: all 0.3s;
+            vertical-align: bottom;
+        }
+        .blank-span:hover {
+            background: #f0f0f0;
+        }
+        
+        /* القسم الرابع: المفردات */
+        .vocab-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 20px;
+        }
+        .vocab-row {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+        .vocab-word {
+            font-size: 1.5em; /* تكبير خط الكلمات في السؤال الإنشائي */
+            font-weight: bold;
+            min-width: 150px;
+            background: var(--primary);
+            color: white;
+            text-align: center;
+            padding: 15px;
+            border-radius: 5px;
+        }
+        .vocab-input {
+            flex-grow: 1;
+            padding: 15px;
+            font-size: 1.3em;
+            border: 2px solid #ccc;
+            border-radius: 5px;
+        }
+
+        /* أزرار التنقل (السابق - التالي) */
+        .navigation-controls {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            padding: 20px 0;
+        }
+        .nav-btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 1.5em;
+            font-weight: bold;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        .nav-btn:hover {
+            background-color: #0d47a1;
+        }
+        .nav-btn:disabled {
+            background-color: #b0bec5;
+            cursor: not-allowed;
+        }
+        .finish-btn {
+            background-color: #4CAF50;
+        }
+        .finish-btn:hover {
+            background-color: #2E7D32;
+        }
+
+        /* شاشة النتيجة */
+        #result-screen {
+            display: none;
+            text-align: center;
+            background: white;
+            padding: 50px 20px;
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+        .score-text {
+            font-size: 3em;
+            font-weight: bold;
+            color: var(--primary);
+            margin-bottom: 20px;
+        }
+        .note-text {
+            font-size: 1.3em;
+            color: #666;
+        }
+        
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>اختبار تحديد المستوى - المبتدئ الأول</h1>
+        <p style="font-size: 1.2em;">اختبار لغوي يقيس المهارات الأربع والمفردات والتراكيب اللغوية للطالبة غير الناطقة بالعربية</p>
+    </header>
+
+    <div id="test-content">
+        <!-- القسم الأول -->
+        <div class="section-container active" id="sec0">
+            <h2>القسم الأول: اختيار من متعدد (يقيس الفهم السطحي والضمني)</h2>
+            <div id="mcq-container"></div>
+        </div>
+
+        <!-- القسم الثاني -->
+        <div class="section-container" id="sec1">
+            <h2>القسم الثاني: صح أو خطأ (يقيس الفهم الضمني والاستنتاجي)</h2>
+            <div id="tf-container"></div>
+        </div>
+
+        <!-- القسم الثالث -->
+        <div class="section-container" id="sec2">
+            <h2>القسم الثالث: املأ الفراغ بالكلمات المناسبة من الصندوق</h2>
+            <p style="font-size: 1.2em; color:#555;"><strong>التعليمات:</strong> اضغطي على الكلمة من الصندوق، ثم اضغطي على الفراغ المناسب في الجملة.</p>
+            <div class="word-bank" id="word-bank"></div>
+            <div id="fill-blanks-container"></div>
+        </div>
+
+        <!-- القسم الرابع -->
+        <div class="section-container" id="sec3">
+            <h2>القسم الرابع: المفردات وإنشاء الجمل</h2>
+            <p style="font-size: 1.2em; color:#555;">استخدمي الكلمات التالية في جمل مفيدة من إنشائك:</p>
+            <div class="vocab-grid" id="vocab-container"></div>
+        </div>
+    </div>
+
+    <!-- شاشة النتيجة -->
+    <div id="result-screen">
+        <h2>اكتمل الاختبار!</h2>
+        <div class="score-text" id="final-score"></div>
+        <p class="note-text">ملاحظة: هذه النتيجة تعكس أدائك في الأقسام الثلاثة الأولى (60 نقطة). القسم الرابع (إنشاء الجمل) سيقوم المعلم بتقييمه لاحقاً.</p>
+    </div>
+
+    <!-- أزرار التنقل -->
+    <div class="navigation-controls" id="nav-controls">
+        <button class="nav-btn" id="prevBtn" onclick="changeSection(-1)">السابق</button>
+        <button class="nav-btn" id="nextBtn" onclick="changeSection(1)">التالي</button>
+        <button class="nav-btn finish-btn" id="finishBtn" onclick="showResults()" style="display: none;">إنهاء الاختبار وعرض النتيجة</button>
+    </div>
+
+    <script>
+        // إعداد متغير النتيجة
+        let totalScore = 0;
+
+        // Data for Section 1 (MCQ) - 20 Questions
+        const mcqData = [
+            { q: "يَدْرُسُ خَالِدٌ فِي ... الهَنْدَسَةِ.", options: ["كُلِّيَّةِ", "جَامِعَةِ", "مَكْتَبَةِ"], answer: 0 },
+            { q: "يَبْحَثُ أَحْمَد عَنْ ... لِلْإِيجَارِ فِي هَذَا الحَيِّ.", options: ["سَيَّارَةٍ", "عُطْلَةٍ", "شَقَّةٍ"], answer: 2 },
+            { q: "نَتَنَاوَلُ طَعَامَ الغَدَاءِ فِي ...", options: ["المَكْتَبَةِ", "المَطْعَمِ", "المَصْرِفِ"], answer: 1 },
+            { q: "... أَحْمَدُ جَوَازَ السَّفَرِ فِي المَطَارِ وَهُوَ حَزِينٌ.", options: ["فَقَدَ", "وَجَدَ", "يَقْرَأُ"], answer: 0 },
+            { q: "الطَّقْسُ ... كَثِيرًا فِي فَصْلِ الصَّيْفِ.", options: ["مُمْطِرٌ", "بَارِدٌ", "حَارٌّ"], answer: 2 },
+            { q: "... صَدِيقِي مُبَكِّرًا فِي الصَّبَاحِ.", options: ["يَسْتَيْقِظُ", "يَنَامُ", "يَذْهَبُ"], answer: 0 },
+            { q: "الفَوَاكِهُ فِي السُّوقِ اليَوْمَ ... جِدًّا.", options: ["مُتْعَبَةٌ", "طَازَجَةٌ", "مَرِيضَةٌ"], answer: 1 },
+            { q: "يَعْمَلُ أَبِي ... فِي شَرِكَةٍ كَبِيرَةٍ.", options: ["مُهَنْدِسًا", "مَطْعَمًا", "سُوقًا"], answer: 0 },
+            { q: "نَقْضِي العُطْلَةَ الصَّيْفِيَّةَ فِي أُورُوبَّا وَنُسَافِرُ بِـ ...", options: ["الشَّقَّةِ", "الطَّائِرَةِ", "المَكْتَبَةِ"], answer: 1 },
+            { q: "هَذَا جَدِّي، وَهَذِهِ ...", options: ["أَخِي", "أَبِي", "جَدَّتِي"], answer: 2 },
+            { q: "أَنَا مِنْ رُوسِيَا، إِذَنْ أَنَا ...", options: ["رُوسِيَّةٌ", "رُوسِيٌّ", "تُرْكِيَّةٌ"], answer: 0 },
+            { q: "هِوَايَتِي المُفَضَّلَةُ هِيَ ... الكُتُبِ الإِسْلَامِيَّةِ.", options: ["سِبَاحَةُ", "قِرَاءَةُ", "رُكُوبُ"], answer: 1 },
+            { q: "هَذَا الثَّوْبُ ... لَيْسَ رَخِيصًا أَبَدًا.", options: ["غَالٍ", "بَارِدٌ", "صَغِيرٌ"], answer: 0 },
+            { q: "تَطْلُبُ مَرْيَمُ ... دَجَاجٍ مَعَ السُّلْطَةِ.", options: ["كُوبَ", "مَائِدَةَ", "شَطِيرَةَ"], answer: 2 },
+            { q: "يَرْجِعُ وَالِدِي مِنَ العَمَلِ وَقْتَ ...", options: ["الفَجْرِ", "المَسَاءِ", "الصَّبَاحِ"], answer: 1 },
+            { q: "الغُرْفَةُ ... جِدًّا وَلَيْسَتْ مُتَّسِخَةً.", options: ["نَظِيفَةٌ", "كَبِيرَةٌ", "قَدِيمَةٌ"], answer: 0 },
+            { q: "يَبْدَأُ العَامُ ... فِي شَهْرِ سَبْتَمْبَر.", options: ["الجَدِيدُ", "الدِّرَاسِيُّ", "القَدِيمُ"], answer: 1 },
+            { q: "أَفْضَلُ شُرْبَ العَصِيرِ ... بِدُونِ سُكَّرٍ.", options: ["السَّاخِنِ", "الغَالِي", "الطَّازَجِ"], answer: 2 },
+            { q: "تَعِيشُ ... فِي بَيْتٍ جَمِيلٍ بِجَانِبِ المَسْجِدِ.", options: ["أُسْرَتِي", "دِرَاسَتِي", "عُطْلَتِي"], answer: 0 },
+            { q: "السَّمَاءُ تُمْطِرُ بِغَزَارَةٍ فِي فَصْلِ ...", options: ["الصَّيْفِ", "الشِّتَاءِ", "الرَّبِيعِ"], answer: 1 }
+        ];
+
+        // Data for Section 2 (True/False) - 20 Questions
+        const tfData = [
+            { q: "الشَّخْصُ الَّذِي يَعْمَلُ فِي المَطْعَمِ وَيُقَدِّمُ الطَّعَامَ هُوَ المُهَنْدِسُ.", answer: false },
+            { q: "الجَوُّ يَكُونُ بَارِدًا جِدًّا عِنْدَمَا تَتَسَاقَطُ الثُّلُوجُ فِي الشِّتَاءِ.", answer: true },
+            { q: "نَذْهَبُ إِلَى السُّوقِ أَوْ المَرْكَزِ التِّجَارِيِّ لِشِرَاءِ المَلَابِسِ وَالطَّعَامِ.", answer: true },
+            { q: "تَقَعُ الشَّقَّةُ فِي الدَّوْرِ الثَّالِثِ، يَعْنِي أَنَّهَا قَرِيبَةٌ جِدًّا مِنَ الأَرْضِ كَالدَّوْرِ الأَوَّلِ.", answer: false },
+            { q: "الطَّالِبَةُ تَذْهَبُ إِلَى المَكْتَبَةِ لِأَنَّهَا تُرِيدُ أَنْ تَشْرَبَ القَهْوَةَ.", answer: false },
+            { q: "الشَّخْصُ السَّمِينُ هُوَ الَّذِي يَأْكُلُ قَلِيلًا وَيَلْعَبُ الرِّيَاضَةَ كَثِيرًا.", answer: false },
+            { q: "نَقْضِي العُطْلَةَ الأُسْبُوعِيَّةَ عَادَةً مَعَ الأُسْرَةِ فِي مَكَانٍ هَادِئٍ.", answer: true },
+            { q: "يَبْدَأُ يَوْمُ المُسْلِمِ دَائِمًا بِصَلَاةِ العِشَاءِ قَبْلَ النَّوْمِ.", answer: false },
+            { q: "مِهْنَةُ التَّدْرِيسِ تَعْنِي أَنَّ الشَّخْصَ يَعْمَلُ مُعَلِّمًا فِي مَدْرَسَةٍ أَوْ جَامِعَةٍ.", answer: true },
+            { q: "الوَجْبَةُ الخَفِيفَةُ هِيَ طَعَامٌ دَسِمٌ نَأْكُلُهُ فِي المَسَاءِ.", answer: false },
+            { q: "إِذَا أَرَدْتُ السَّفَرَ إِلَى بَلَدٍ بَعِيدٍ، فَإِنَّ السَّفَرَ بِالطَّائِرَةِ هُوَ الأَسْرَعُ.", answer: true },
+            { q: "يَسْتَأْجِرُ عَمِّي شَقَّةً لِأَنَّهُ لَا يَمْلِكُ بَيْتًا فِي هَذِهِ المَدِينَةِ.", answer: true },
+            { q: "الَّذِي لَا يَأْكُلُ مُنْذُ الصَّبَاحِ يَشْعُرُ بِالعَطَشِ الشَّدِيدِ.", answer: false },
+            { q: "هِوَايَةُ الرَّسْمِ تَحْتَاجُ إِلَى أَلْوَانٍ وَوَرَقٍ لِكَيْ نَرْسُمَ صُورَةً جَمِيلَةً.", answer: true },
+            { q: "الرَّجُلُ المُسِنُّ يَبْدُو دَائِمًا صَغِيرًا فِي السِّنِّ وَنَشِيطًا جِدًّا.", answer: false },
+            { q: "البَحْرُ مَكَانٌ مُمَانِسٌ لِمُمَارَسَةِ هِوَايَةِ السِّبَاحَةِ.", answer: true },
+            { q: "أَذْهَبُ إِلَى قِسْمِ الخُضْرَاوَاتِ فِي المُجَمَّعِ التِّجَارِيِّ لِأَشْتَرِيَ الحَلْوَى.", answer: false },
+            { q: "الْإِيجَارُ هُوَ مَبْلَغٌ مِنَ المَالِ يَدْفَعُهُ الشَّخْصُ لِيَسْكُنَ فِي بَيْتٍ لَا يَمْلِكُهُ.", answer: true },
+            { q: "نَسْتَخْدِمُ سَيَّارَةَ الأُجْرَةِ لِلذَّهَابِ إِلَى المَطَارِ عِنْدَمَا لَا نَمْلِكُ سَيَّارَةً خَاصَّةً.", answer: true },
+            { q: "الطَّعَامُ الغَالِي يَعْنِي أَنَّ سِعْرَهُ مُرْتَفِعٌ جِدًّا وَلَيْسَ رَخِيصًا.", answer: true }
+        ];
+
+        // Data for Section 3 (Fill in the blanks) - 20 Sentences fully vowelized
+        const fillData = [
+            { part1: "الطَّالِبُ الجَدِيدُ", part2: "بِكُلِّيَّةِ الطِّبِّ فِي جَامِعَةِ القَاهِرَةِ.", word: "يَلْتَحِقُ" },
+            { part1: "نَذْهَبُ كُلَّ أُسْبُوعٍ إِلَى السُّوقِ مِنْ أَجْلِ", part2: "وَشِرَاءِ المَلَابِسِ الجَدِيدَةِ.", word: "التَّسَوُّقِ" },
+            { part1: "يَدْفَعُ مُحَمَّدٌ مَبْلَغَ", part2: "لِصَاحِبِ الشَّقَّةِ كُلَّ شَهْرٍ.", word: "الإِيجَارِ" },
+            { part1: "المَادَّةُ", part2: "عِنْدِي فِي المَدْرَسَةِ هِيَ مَادَّةُ اللُّغَةِ العَرَبِيَّةِ.", word: "المُفَضَّلَةُ" },
+            { part1: "اشْتَرَى أَبِي", part2: "الجَدِيدَ لِغُرْفَةِ النَّوْمِ وَغُرْفَةِ الجُلُوسِ.", word: "الأَثَاثَ" },
+            { part1: "الطَّعَامُ فِي هَذَا المَطْعَمِ لَذِيذٌ، وَالخُضْرَاوَاتُ فِيهِ دَائِمًا", part2: ".", word: "طَازَجَةٌ" },
+            { part1: "الشَّوَارِعُ فِي المَدِينَةِ الكَبِيرَةِ دَائِمًا", part2: "بِالسَّيَّارَاتِ.", word: "مُزْدَحِمَةٌ" },
+            { part1: "أَنَا عَادَةً", part2: "وَجْبَةَ الفُطُورِ مَعَ أُسْرَتِي قَبْلَ الذَّهَابِ إِلَى المَدْرَسَةِ.", word: "أَتَنَاوَلُ" },
+            { part1: "يُقَدِّمُ", part2: "الطَّعَامَ لِلضُّيُوفِ فِي المَطْعَمِ كُلَّ مَسَاءٍ.", word: "النَّادِلُ" },
+            { part1: "أُحِبُّ السِّبَاحَةَ، فَهِيَ", part2: "مُنْذُ كُنْتُ صَغِيرًا.", word: "هِوَايَتِي" },
+            { part1: "تَنَاوُلُ الطَّعَامِ", part2: "مُفِيدٌ جِدًّا لِجِسْمِ الإِنْسَانِ.", word: "الصَّحِّيِّ" },
+            { part1: "مَا هِيَ", part2: "الَّتِي تَحْمِلُهَا يَا صَدِيقِي العَزِيزَ؟", word: "الجِنْسِيَّةُ" },
+            { part1: "يَجِبُ عَلَيْكَ أَنْ تَشْتَرِيَ", part2: "قَبْلَ صُعُودِ الطَّائِرَةِ.", word: "التَّذْكَرَةَ" },
+            { part1: "يَعْمَلُ الطَّبِيبُ النَّشِيطُ فِي", part2: "لِمُعَالَجَةِ المَرْضَى.", word: "المُسْتَشْفَى" },
+            { part1: "رَجَعْنَا مِنَ", part2: "الطَّوِيلَةِ وَنَحْنُ نَشْعُرُ بِبَعْضِ التَّعَبِ.", word: "الرِّحْلَةِ" },
+            { part1: "يَسْتَيْقِظُ جَدِّي", part2: "كُلَّ يَوْمٍ لِيُصَلِّيَ الفَجْرَ فِي المَسْجِدِ.", word: "مُبَكِّرًا" },
+            { part1: "فِي فَصْلِ الشِّتَاءِ تَتَسَاقَطُ", part2: "عَلَى قِمَمِ الجِبَالِ.", word: "الثُّلُوجُ" },
+            { part1: "مِهْنَةُ", part2: "مِنْ أَهَمِّ المِهَنِ فِي حَيَاتِنَا اليَوْمِيَّةِ.", word: "التَّدْرِيسِ" },
+            { part1: "يَجْلِسُ أَحْمَدُ مَعَ أَصْدِقَائِهِ فِي", part2: "لِيَشْرَبَ الشَّايَ.", word: "المَقْهَى" },
+            { part1: "يَنْزِلُ المَطَرُ", part2: "عِنْدَمَا يَكُونُ الجَوُّ غَائِمًا فِي الشِّتَاءِ.", word: "بِغَزَارَةٍ" }
+        ];
+
+        // 15 Words for final section
+        const finalVocabWords = [
+            "مَصْرِف", "نَقِيّ", "مُتَوَفِّر", "أَمْتِعَة", "يَحْتَسِي", 
+            "نَحِيف", "السَّاخِن", "يَلْغِي", "التَّدْبِير المَنْزِلِيّ", "دَسِمَة", 
+            "مُنْزَعِج", "أُورُوبَّا", "السَّائِق", "المُسْتَأْجِر", "الرُّمَايَة"
+        ];
+
+        // Render MCQ
+        const mcqContainer = document.getElementById('mcq-container');
+        mcqData.forEach((item, index) => {
+            let div = document.createElement('div');
+            div.className = 'question-block';
+            div.innerHTML = `<div class="question-text">${index + 1}. ${item.q}</div>`;
+            item.options.forEach((opt, optIndex) => {
+                let btn = document.createElement('button');
+                btn.className = 'options-btn';
+                btn.innerText = opt;
+                btn.onclick = function() {
+                    let buttons = div.querySelectorAll('button');
+                    buttons.forEach(b => b.disabled = true); 
+                    if (optIndex === item.answer) {
+                        btn.classList.add('correct');
+                        totalScore++; // إضافة نقطة للنتيجة
+                    } else {
+                        btn.classList.add('incorrect');
+                        buttons[item.answer].classList.add('correct');
+                    }
+                };
+                div.appendChild(btn);
+            });
+            mcqContainer.appendChild(div);
+        });
+
+        // Render T/F
+        const tfContainer = document.getElementById('tf-container');
+        tfData.forEach((item, index) => {
+            let div = document.createElement('div');
+            div.className = 'question-block';
+            div.innerHTML = `<div class="question-text">${index + 1}. ${item.q}</div>`;
+            let trueBtn = document.createElement('button');
+            trueBtn.className = 'options-btn';
+            trueBtn.innerText = 'صح';
+            let falseBtn = document.createElement('button');
+            falseBtn.className = 'options-btn';
+            falseBtn.innerText = 'خطأ';
+
+            const handleAns = (isTrueClicked) => {
+                trueBtn.disabled = true;
+                falseBtn.disabled = true;
+                if ((isTrueClicked && item.answer) || (!isTrueClicked && !item.answer)) {
+                    (isTrueClicked ? trueBtn : falseBtn).classList.add('correct');
+                    totalScore++; // إضافة نقطة للنتيجة
+                } else {
+                    (isTrueClicked ? trueBtn : falseBtn).classList.add('incorrect');
+                    (item.answer ? trueBtn : falseBtn).classList.add('correct');
+                }
+            };
+
+            trueBtn.onclick = () => handleAns(true);
+            falseBtn.onclick = () => handleAns(false);
+
+            div.appendChild(trueBtn);
+            div.appendChild(falseBtn);
+            tfContainer.appendChild(div);
+        });
+
+        // Render Fill in the blanks
+        const wordBankContainer = document.getElementById('word-bank');
+        const fillContainer = document.getElementById('fill-blanks-container');
+        let selectedWordElem = null;
+
+        let wordsList = fillData.map(item => item.word).sort(() => Math.random() - 0.5);
+        wordsList.forEach(word => {
+            let span = document.createElement('span');
+            span.className = 'word-item';
+            span.innerText = word;
+            span.onclick = function() {
+                if(span.classList.contains('used')) return;
+                if(selectedWordElem) selectedWordElem.classList.remove('selected');
+                selectedWordElem = span;
+                span.classList.add('selected');
+            };
+            wordBankContainer.appendChild(span);
+        });
+
+        fillData.forEach((item, index) => {
+            let div = document.createElement('div');
+            div.className = 'question-block';
+            div.innerHTML = `<span class="question-text">${index + 1}. ${item.part1} </span>`;
+            
+            let blank = document.createElement('span');
+            blank.className = 'blank-span';
+            blank.dataset.answer = item.word;
+            
+            blank.onclick = function() {
+                if (blank.classList.contains('correct')) return; 
+                if (!selectedWordElem) {
+                    alert("الرجاء اختيار كلمة من الصندوق أولاً.");
+                    return;
+                }
+                
+                let chosenWord = selectedWordElem.innerText;
+                if (chosenWord === item.word) {
+                    blank.innerText = chosenWord;
+                    blank.classList.add('correct');
+                    blank.classList.remove('incorrect');
+                    selectedWordElem.classList.add('used');
+                    selectedWordElem.classList.remove('selected');
+                    selectedWordElem = null;
+                    totalScore++; // إضافة نقطة للنتيجة
+                } else {
+                    let tempWord = chosenWord;
+                    blank.innerText = tempWord;
+                    blank.classList.add('incorrect');
+                    setTimeout(() => {
+                        blank.innerText = '';
+                        blank.classList.remove('incorrect');
+                    }, 1000); 
+                }
+            };
+
+            div.appendChild(blank);
+            div.innerHTML += `<span class="question-text"> ${item.part2}</span>`;
+            
+            // Reattach event listener for the actual created element
+            let actualBlank = div.querySelector('.blank-span');
+            actualBlank.onclick = function() {
+                if (actualBlank.classList.contains('correct')) return;
+                if (!selectedWordElem) {
+                    alert("الرجاء اختيار كلمة من الصندوق أولاً.");
+                    return;
+                }
+                
+                let chosenWord = selectedWordElem.innerText;
+                if (chosenWord === item.word) {
+                    actualBlank.innerText = chosenWord;
+                    actualBlank.classList.add('correct');
+                    actualBlank.classList.remove('incorrect');
+                    selectedWordElem.classList.add('used');
+                    selectedWordElem.classList.remove('selected');
+                    selectedWordElem = null;
+                    totalScore++; // إضافة نقطة للنتيجة
+                } else {
+                    actualBlank.innerText = chosenWord;
+                    actualBlank.classList.add('incorrect');
+                    setTimeout(() => {
+                        actualBlank.innerText = '';
+                        actualBlank.classList.remove('incorrect');
+                    }, 1000);
+                }
+            };
+
+            fillContainer.appendChild(div);
+        });
+
+        // Render Vocab Section
+        const vocabContainer = document.getElementById('vocab-container');
+        finalVocabWords.forEach((word, index) => {
+            let row = document.createElement('div');
+            row.className = 'vocab-row';
+            row.innerHTML = `
+                <div class="vocab-word">${index + 1}. ${word}</div>
+                <input type="text" class="vocab-input" placeholder="اكتبي جملتك هنا...">
+            `;
+            vocabContainer.appendChild(row);
+        });
+
+        // Navigation Logic (التنقل بين الصفحات)
+        let currentSectionIndex = 0;
+        const sections = document.querySelectorAll('.section-container');
+        const prevBtn = document.getElementById('prevBtn');
+        const nextBtn = document.getElementById('nextBtn');
+        const finishBtn = document.getElementById('finishBtn');
+
+        function updateNavigation() {
+            sections.forEach((sec, index) => {
+                if (index === currentSectionIndex) {
+                    sec.classList.add('active');
+                } else {
+                    sec.classList.remove('active');
+                }
+            });
+
+            // تعطيل زر السابق إذا كنا في الصفحة الأولى
+            prevBtn.disabled = currentSectionIndex === 0;
+
+            // إظهار زر الإنهاء في الصفحة الأخيرة، أو زر التالي في الصفحات الأخرى
+            if (currentSectionIndex === sections.length - 1) {
+                nextBtn.style.display = 'none';
+                finishBtn.style.display = 'inline-block';
+            } else {
+                nextBtn.style.display = 'inline-block';
+                finishBtn.style.display = 'none';
+            }
+        }
+
+        function changeSection(step) {
+            currentSectionIndex += step;
+            if (currentSectionIndex < 0) currentSectionIndex = 0;
+            if (currentSectionIndex >= sections.length) currentSectionIndex = sections.length - 1;
+            updateNavigation();
+            // رفع الشاشة لأعلى الصفحة عند التبديل
+            window.scrollTo(0, 0);
+        }
+
+        function showResults() {
+            document.getElementById('test-content').style.display = 'none';
+            document.getElementById('nav-controls').style.display = 'none';
+            document.getElementById('result-screen').style.display = 'block';
+            document.getElementById('final-score').innerText = `نتيجتك: ${totalScore} من 60`;
+            window.scrollTo(0, 0);
+        }
+
+        // Initialize Navigation
+        updateNavigation();
+
+    </script>
+</body>
+</html>
