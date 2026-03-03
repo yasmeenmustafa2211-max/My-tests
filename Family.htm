@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لُعْبَةُ الأُسْرَةِ التَّفَاعُلِيَّةِ</title>
+    <style>
+        body { font-family: 'Segoe UI', Tahoma, 'Traditional Arabic'; background-color: #f0f8ff; color: #333; margin: 0; padding: 20px; font-size: 24px; }
+        .container { max-width: 900px; margin: 0 auto; background-color: #fff; padding: 35px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); }
+        h1, h2 { text-align: center; color: #2c3e50; }
+        .section { display: none; }
+        .section.active { display: block; }
+        .question-box { margin-bottom: 30px; padding: 20px; border: 2px solid #ecf0f1; border-radius: 12px; }
+        .options button { margin: 8px; padding: 12px 25px; font-size: 22px; cursor: pointer; border: 2px solid #3498db; background-color: #fff; color: #3498db; border-radius: 10px; transition: 0.3s; }
+        .correct-ans { background-color: #4CAF50 !important; color: #fff !important; border-color: #4CAF50 !important; }
+        .wrong-ans { background-color: #FFEB3B !important; color: #000 !important; border-color: #FFEB3B !important; }
+        .word-bank { display: flex; flex-wrap: wrap; justify-content: center; gap: 15px; margin-bottom: 25px; padding: 20px; background-color: #fdf2e9; border-radius: 12px; font-weight: bold; color: #d35400; font-size: 24px; border: 2px dashed #d35400; }
+        select { font-size: 22px; padding: 8px; border-radius: 8px; border: 2px solid #3498db; }
+        .vocab-input { width: 90%; padding: 12px; font-size: 22px; margin-top: 10px; border-radius: 8px; border: 1px solid #bdc3c7; }
+        .navigation { display: flex; justify-content: space-between; margin-top: 40px; }
+        .nav-btn { padding: 12px 40px; font-size: 22px; cursor: pointer; background-color: #2c3e50; color: #fff; border: none; border-radius: 10px; }
+        .nav-btn:disabled { background-color: #95a5a6; }
+        #score-display { font-size: 40px; font-weight: bold; text-align: center; color: #27ae60; margin-top: 25px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>لُعْبَةُ الأُسْرَةِ التَّفَاعُلِيَّةِ 🏠</h1>
+
+    <!-- القسم الأول -->
+    <div id="sec-1" class="section active">
+        <h2>القِسْمُ الأَوَّلُ: اِخْتِيَارٌ مِنْ مُتَعَدِّدٍ</h2>
+        <div id="mcq-container"></div>
+    </div>
+
+    <!-- القسم الثاني -->
+    <div id="sec-2" class="section">
+        <h2>القِسْمُ الثَّانِي: صَحِيحٌ أَمْ خَطَأٌ</h2>
+        <div id="tf-container"></div>
+    </div>
+
+    <!-- القسم الثالث -->
+    <div id="sec-3" class="section">
+        <h2>القِسْمُ الثَّالِثُ: اِمْلَأِ الفَرَاغَ مِنَ الصُّنْدُوقِ</h2>
+        <div class="word-bank">مُهَنْدِسًا | عُنْوَانَهُ | طَالِبٌ | زَوْجَتِي | اشْتَقْتُ | قَيْدِ | سُرُورٍ | أُسْرَةٍ | ثَانَوِيَّةٍ</div>
+        <div id="blanks-container"></div>
+    </div>
+
+    <!-- القسم الرابع -->
+    <div id="sec-4" class="section">
+        <h2>القِسْمُ الرَّابِعُ: المُفْرَدَاتُ وَإِنْشَاءُ الجُمَلِ</h2>
+        <div id="vocab-container"></div>
+        <div style="text-align: center; margin-top: 30px;"><button class="nav-btn" style="background-color: #27ae60;" onclick="showScore()">عَرْضُ النَّتِيجَةِ</button></div>
+    </div>
+
+    <!-- النتيجة -->
+    <div id="sec-5" class="section">
+        <h2>النَّتِيجَةُ النِّهَائِيَّةُ</h2>
+        <div id="score-display"></div>
+        <p style="text-align: center; font-size: 20px; color: #7f8c8d;">(تَمَّ حِسَابُ ٣٠ نُقْطَةً لِلأَقْسَامِ الثَّلَاثَةِ الأُولَى)</p>
+    </div>
+
+    <div class="navigation" id="nav-buttons">
+        <button id="btn-prev" class="nav-btn" onclick="goPrev()" disabled>السَّابِقُ</button>
+        <button id="btn-next" class="nav-btn" onclick="goNext()">التَّالِي</button>
+    </div>
+</div>
+
+<script>
+    let currentScore = 0;
+    const answered = {};
+    const mcqData = [
+        { q: "١. مَنْ هُوَ الاِبْنُ الأَكْبَرُ؟", options: ["حَامِدٌ", "خَالِدٌ", "غَادَةُ"], correct: "خَالِدٌ" },
+        { q: "٢. أَيْنَ يَدْرُسُ خَالِدٌ؟", options: ["المَدْرَسَةُ", "الجَامِعَةُ", "البَيْتُ"], correct: "الجَامِعَةُ" },
+        { q: "٣. كَمْ عَدَدُ أَفْرَادِ الأُسْرَةِ؟", options: ["أَرْبَعَةٌ", "خَمْسَةٌ", "سِتَّةٌ"], correct: "خَمْسَةٌ" },
+        { q: "٤. مَاذَا سَيَعْمَلُ خَالِدٌ فِي المُسْتَقْبَلِ؟", options: ["طَبِيبًا", "مُهَنْدِسًا", "مُعَلِّمًا"], correct: "مُهَنْدِسًا" },
+        { q: "٥. كَمْ عُمْرُ حَامِدٍ؟", options: ["عَشْرُ سَنَوَاتٍ", "خَمْسُ سَنَوَاتٍ", "عِشْرُونَ سَنَةً"], correct: "عَشْرُ سَنَوَاتٍ" },
+        { q: "٦. مَنْ يَدْرُسُ فِي المَدْرَسَةِ الثَّانَوِيَّةِ؟", options: ["خَالِدٌ", "غَادَةُ", "حَامِدٌ"], correct: "غَادَةُ" },
+        { q: "٧. مَتَى تَزَوَّجَ الرَّجُلُ؟", options: ["قَرِيبًا", "مُنْذُ وَقْتٍ طَوِيلٍ", "لَمْ يَتَزَوَّجْ"], correct: "مُنْذُ وَقْتٍ طَوِيلٍ" },
+        { q: "٨. هَلْ الوَالِدَانِ عَلَى قَيْدِ الحَيَاةِ؟", options: ["نَعَمْ", "لَا", "لَا أَعْرِفُ"], correct: "نَعَمْ" },
+        { q: "٩. مَتَى سَتَكُونُ الزِّيَارَةُ؟", options: ["غَدًا مَسَاءً", "اليَوْمَ", "أَمْسِ"], correct: "غَدًا مَسَاءً" },
+        { q: "١٠. فِي أَيِّ سَنَةٍ تَدْرُسُ غَادَةُ؟", options: ["السَّنَةُ الثَّالِثَةُ", "السَّنَةُ الرَّابِعَةُ", "السَّنَةُ الأُولَى"], correct: "السَّنَةُ الرَّابِعَةُ" }
+    ];
+
+    const tfData = [
+        { q: "١. خَالِدٌ أَكْبَرُ مِنْ غَادَةَ.", correct: "صَحِيحٌ" },
+        { q: "٢. حَامِدٌ هُوَ الاِبْنُ الأَصْغَرُ.", correct: "صَحِيحٌ" },
+        { q: "٣. الرَّجُلُ عِنْدَهُ بِنْتَانِ.", correct: "خَطَأٌ" },
+        { q: "٤. خَالِدٌ يَدْرُسُ الطِّبَّ.", correct: "خَطَأٌ" },
+        { q: "٥. الصَّدِيقَانِ اشْتَاقَا لِبَعْضِهِمَا.", correct: "صَحِيحٌ" },
+        { q: "٦. غَادَةُ تَدْرُسُ فِي المُتَوَسِّطَةِ.", correct: "خَطَأٌ" },
+        { q: "٧. الصَّدِيقُ دَعَا صَدِيقَهُ لِلزِّيَارَةِ.", correct: "صَحِيحٌ" },
+        { q: "٨. سَيَزُورُهُ مَعَ أُسْرَتِهِ.", correct: "صَحِيحٌ" },
+        { q: "٩. أَعْطَى الصَّدِيقُ عُنْوَانَهُ.", correct: "صَحِيحٌ" },
+        { q: "١٠. الأُسْرَةُ فِيهَا سَبْعَةُ أَفْرَادٍ.", correct: "خَطَأٌ" }
+    ];
+
+    const blanksData = [
+        { t1: "١. لَقَدْ ", b: "اشْتَقْتُ", t2: " إِلَيْكَ." },
+        { t1: "٢. الوَالِدَانِ عَلَى ", b: "قَيْدِ", t2: " الحَيَاةِ." },
+        { t1: "٣. أَعِيشُ مَعَ ", b: "زَوْجَتِي", t2: " ." },
+        { t1: "٤. أَخِي ", b: "طَالِبٌ", t2: " فِي الجَامِعَةِ." },
+        { t1: "٥. سَيُصْبِحُ أَخِي ", b: "مُهَنْدِسًا", t2: " نَاجِحًا." },
+        { t1: "٦. أُخْتِي فِي مَدْرَسَةٍ ", b: "ثَانَوِيَّةٍ", t2: " ." },
+        { t1: "٧. يَا لَهَا مِنْ ", b: "أُسْرَةٍ", t2: " جَمِيلَةٍ!" },
+        { t1: "٨. سَآتِي بِكُلِّ ", b: "سُرُورٍ", t2: " ." },
+        { t1: "٩. هَذَا هُوَ ", b: "عُنْوَانَهُ", t2: " البَيْتِ." }
+    ];
+
+    const vocabData = ["أُسْرَةٌ", "طَالِبٌ", "جَامِعَةٌ", "مُهَنْدِسٌ", "صَدِيقٌ", "مَدْرَسَةٌ", "زَوْجَةٌ", "عُنْوَانٌ", "غَدًا", "مَسَاءً"];
+
+    function init() {
+        mcqData.forEach((item, i) => {
+            let div = document.createElement('div'); div.className = 'question-box';
+            div.innerHTML = `<div style="font-weight:bold;margin-bottom:15px">${item.q}</div><div class="options">` + 
+                item.options.map(opt => `<button onclick="checkBtn(this,'m${i}','${item.correct}')">${opt}</button>`).join('') + `</div>`;
+            document.getElementById('mcq-container').appendChild(div);
+        });
+        tfData.forEach((item, i) => {
+            let div = document.createElement('div'); div.className = 'question-box';
+            div.innerHTML = `<div style="font-weight:bold;margin-bottom:15px">${item.q}</div><div class="options">` +
+                ["صَحِيحٌ", "خَطَأٌ"].map(opt => `<button onclick="checkBtn(this,'t${i}','${item.correct}')">${opt}</button>`).join('') + `</div>`;
+            document.getElementById('tf-container').appendChild(div);
+        });
+        const words = ["مُهَنْدِسًا", "عُنْوَانَهُ", "طَالِبٌ", "زَوْجَتِي", "اشْتَقْتُ", "قَيْدِ", "سُرُورٍ", "أُسْرَةٍ", "ثَانَوِيَّةٍ"];
+        blanksData.forEach((item, i) => {
+            let div = document.createElement('div'); div.className = 'question-box';
+            div.innerHTML = `${item.t1} <select onchange="checkSelect(this,'b${i}','${item.b}')"><option value="">--اِخْتَرْ--</option>` +
+                words.map(w => `<option value="${w}">${w}</option>`).join('') + `</select> ${item.t2}`;
+            document.getElementById('blanks-container').appendChild(div);
+        });
+        vocabData.forEach((word, i) => {
+            let div = document.createElement('div'); div.className = 'question-box';
+            div.innerHTML = `<b>${i+1}. ${word}</b><br><input type="text" class="vocab-input" placeholder="اُكْتُبْ جُمْلَةً هُنَا...">`;
+            document.getElementById('vocab-container').appendChild(div);
+        });
+    }
+
+    function checkBtn(btn, id, correct) {
+        if (answered[id]) return; answered[id] = true;
+        if (btn.innerText === correct) { btn.classList.add('correct-ans'); currentScore++; }
+        else { btn.classList.add('wrong-ans'); Array.from(btn.parentElement.children).forEach(b => { if(b.innerText === correct) b.classList.add('correct-ans'); }); }
+    }
+
+    function checkSelect(sel, id, correct) {
+        if (answered[id]) return; answered[id] = true; sel.disabled = true;
+        if (sel.value === correct) { sel.classList.add('correct-ans'); currentScore++; }
+        else { sel.classList.add('wrong-ans'); let s = document.createElement('span'); s.innerHTML = ` (✅ ${correct})`; s.style.color="green"; sel.after(s); }
+    }
+
+    let currentSec = 1;
+    function goNext() { document.getElementById(`sec-${currentSec}`).classList.remove('active'); currentSec++; document.getElementById(`sec-${currentSec}`).classList.add('active'); updateNav(); }
+    function goPrev() { document.getElementById(`sec-${currentSec}`).classList.remove('active'); currentSec--; document.getElementById(`sec-${currentSec}`).classList.add('active'); updateNav(); }
+    function updateNav() { document.getElementById('btn-prev').disabled = (currentSec === 1); document.getElementById('btn-next').style.display = (currentSec >= 4) ? 'none' : 'block'; }
+    function showScore() { document.getElementById('sec-4').classList.remove('active'); document.getElementById('sec-5').classList.add('active'); document.getElementById('score-display').innerText = `${currentScore} / 29`; document.getElementById('nav-buttons').style.display='none'; }
+
+    init();
+</script>
+</body>
+</html>
