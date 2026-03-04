@@ -1,0 +1,414 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار تحديد المستوى - المبتدئ الأول</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .question-box {
+            background: #fafafa;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            font-size: 1.2rem;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .btn {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            background-color: #e0e0e0;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: 0.3s;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .btn:hover { background-color: #d5d5d5; }
+        .btn.correct {
+            background-color: #28a745 !important;
+            color: white;
+            pointer-events: none;
+        }
+        .btn.wrong {
+            background-color: #ffc107 !important;
+            color: black;
+            pointer-events: none;
+        }
+        .disabled {
+            pointer-events: none;
+            opacity: 0.7;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .nav-btn {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            font-size: 1.2rem;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .nav-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            background: #eef2f5;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            border: 2px dashed #007bff;
+        }
+        .word-tag {
+            background: white;
+            padding: 8px 15px;
+            border-radius: 20px;
+            font-weight: bold;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        select {
+            padding: 5px 10px;
+            font-size: 1.1rem;
+            font-family: 'Tajawal', sans-serif;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+        select.correct { background-color: #28a745; color: white; border-color: #28a745; }
+        select.wrong { background-color: #ffc107; color: black; border-color: #ffc107; }
+        .textarea-box {
+            width: 100%;
+            height: 60px;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 1.1rem;
+            font-family: 'Tajawal', sans-serif;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+        }
+        #result-page {
+            text-align: center;
+        }
+        .score {
+            font-size: 3rem;
+            color: #28a745;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>اختبار تحديد المستوى (المبتدئ الأول)</h1>
+
+    <!-- Section 1: MCQ -->
+    <div id="sec-1" class="section active">
+        <h2>القسم الأول: اختر الإجابة الصحيحة</h2>
+        <div id="mcq-container"></div>
+    </div>
+
+    <!-- Section 2: T/F -->
+    <div id="sec-2" class="section">
+        <h2>القسم الثاني: صح أم خطأ</h2>
+        <div id="tf-container"></div>
+    </div>
+
+    <!-- Section 3 (Prompt's 4th Section): Fill in the blanks -->
+    <div id="sec-3" class="section">
+        <h2>القسم الثالث: املأ الفراغ بالكلمات المناسبة من الصندوق</h2>
+        <div class="word-bank" id="word-bank"></div>
+        <div id="fib-container"></div>
+    </div>
+
+    <!-- Final Section: Vocab Sentences -->
+    <div id="sec-4" class="section">
+        <h2>القسم الأخير: وظف المفردات التالية في جمل مفيدة</h2>
+        <p style="text-align:center; color:#555;">(هذا القسم يتم تقييمه من قبل المعلمة لاحقاً)</p>
+        <div id="vocab-container"></div>
+    </div>
+
+    <!-- Result Page -->
+    <div id="sec-5" class="section" id="result-page">
+        <h2>اكتمل الاختبار!</h2>
+        <div class="score">الدرجة: <span id="final-score">0</span> / 60</div>
+        <p>أحسنتِ إتمام الاختبار التجريبي.</p>
+    </div>
+
+    <!-- Navigation -->
+    <div class="nav-buttons" id="nav-wrapper">
+        <button class="nav-btn" id="prev-btn" onclick="navigate(-1)" disabled>السابق</button>
+        <button class="nav-btn" id="next-btn" onclick="navigate(1)">التالي</button>
+    </div>
+</div>
+
+<script>
+    let currentSection = 1;
+    let score = 0;
+    const totalSections = 5;
+
+    const mcqData = [
+        { q: "السَّلَامُ عَلَيْكُمْ...", options: ["وَعَلَيْكُمُ السَّلَامُ", "صَبَاحُ الْخَيْرِ", "بِخَيْرٍ"], ans: 0 },
+        { q: "مَنْ أَيْنَ أَنْتِ؟", options: ["أَنَا مِنْ سُورِيَا", "هُوَ مِنْ مِصْرَ", "أَنْتَ تُرْكِيٌّ"], ans: 0 },
+        { q: "مَا جِنْسِيَّتُكِ؟", options: ["أَنَا تُرْكِيَّةٌ", "هَذَا تُرْكِيٌّ", "هِيَ بَاكِسْتَانِيَّةٌ"], ans: 0 },
+        { q: "هَلْ أَنْتِ بَاكِسْتَانِيَّةٌ؟", options: ["نَعَمْ، أَنَا بَاكِسْتَانِيَّةٌ", "لَا، هُوَ سُورِيٌّ", "مِصْرُ بَلَدِي"], ans: 0 },
+        { q: "كَيْفَ حَالُكِ؟", options: ["بِخَيْرٍ وَالْحَمْدُ لِلَّهِ", "اِسْمِي فَاطِمَةُ", "أَنَا طَالِبَةٌ"], ans: 0 },
+        { q: "هَذَا أَخِي خَالِدٌ، هُوَ...", options: ["مُدَرِّسٌ", "طَبِيبَةٌ", "مُهَنْدِسَةٌ"], ans: 0 },
+        { q: "هَذِهِ أُخْتِي خَدِيجَةُ، هِيَ...", options: ["طَبِيبَةٌ", "طَالِبٌ", "مُدَرِّسٌ"], ans: 0 },
+        { q: "أَيْنَ تُصَلِّينَ الْفَجْرَ؟", options: ["فِي الْمَسْجِدِ", "فِي الْحَمَّامِ", "فِي السَّيَّارَةِ"], ans: 0 },
+        { q: "مَتَى تَسْتَيْقِظِينَ مِنْ النَّوْمِ؟", options: ["مُبَكِّراً", "مُتَأَخِّراً", "الْمَسَاءَ"], ans: 0 },
+        { q: "هَلْ تَسْتَيْقِظِينَ مُتَأَخِّرَةً؟", options: ["لَا، أَسْتَيْقِظُ مُبَكِّراً", "نَعَمْ، مُبَكِّراً", "لَا، أَنَا مُتَأَخِّرٌ"], ans: 0 },
+        { q: "مَاذَا تَفْعَلِينَ لِلصَّلَاةِ؟", options: ["أَتَوَضَّأُ", "أَنَامُ", "أَقْرَأُ"], ans: 0 },
+        { q: "هَلْ تَسْمَعِينَ الْأَذَانَ؟", options: ["نَعَمْ، أَسْمَعُ الْأَذَانَ", "لَا، هُوَ مَسْجِدٌ", "نَعَمْ، فِي الْمَدْرَسَةِ"], ans: 0 },
+        { q: "مَتَى يَبْدَأُ الْيَوْمُ الدِّرَاسِيُّ؟", options: ["فِي الصَّبَاحِ", "فِي اللَّيْلِ", "فِي الْعُطْلَةِ"], ans: 0 },
+        { q: "كَمْ يَوْماً تَدْرُسِينَ فِي الْأُسْبُوعِ؟", options: ["خَمْسَةَ أَيَّامٍ", "يَوْمَانِ", "شَهْرٌ وَاحِدٌ"], ans: 0 },
+        { q: "فِي أَيِّ جَامِعَةٍ تَدْرُسِينَ؟", options: ["جَامِعَةِ أُمِّ الْقُرَى", "كُلِّيَّةِ الطِّبِّ", "الْمَدْرَسَةِ"], ans: 0 },
+        { q: "مَاذَا تَفْعَلِينَ فِي الِاسْتِرَاحَةِ؟", options: ["أَذْهَبُ إِلَى الْمَكْتَبَةِ", "أُصَلِّي الْفَجْرَ", "أَنَامُ"], ans: 0 },
+        { q: "هَلْ تَذْهَبِينَ بِالْحَافِلَةِ؟", options: ["لَا، أَذْهَبُ بِالسَّيَّارَةِ", "نَعَمْ، مَعَ أَخِي", "فِي الْمَدْرَسَةِ"], ans: 0 },
+        { q: "مَتَى تَنْتَهِي الِاخْتِبَارَاتُ؟", options: ["فِي شَهْرِ رَمَضَانَ", "السَّاعَةُ السَّابِعَةُ", "ثَلَاثَةُ أَشْهُرٍ"], ans: 0 },
+        { q: "هَلْ أَنْتِ مُسَافِرَةٌ إِلَى مَكَّةَ؟", options: ["نَعَمْ، أَنَا مُسَافِرَةٌ", "لَا، هُوَ مُسَافِرٌ", "الْمَسْجِدُ هُنَاكَ"], ans: 0 },
+        { q: "كَمْ حِصَّةً تَدْرُسِينَ فِي الْيَوْمِ؟", options: ["سِتَّ حِصَصٍ", "خَمْسَةُ أَيَّامٍ", "عُطْلَةٌ وَاحِدَةٌ"], ans: 0 }
+    ];
+
+    const tfData = [
+        { q: "أَنَا مِنْ تُرْكِيَا، أَنَا سُورِيَّةٌ.", ans: false },
+        { q: "هَذَا وَالِدِي، هُوَ مُهَنْدِسٌ.", ans: true },
+        { q: "طَارِقٌ يُصَلِّي الظُّهْرَ فِي الْبَيْتِ.", ans: false },
+        { q: "طَارِقٌ يَضَعُ الْمُنَبِّهَ بِجَانِبِهِ.", ans: true },
+        { q: "العُطْلَةُ الدِّرَاسِيَّةُ ثَلَاثَةُ أَشْهُرٍ.", ans: true },
+        { q: "أَنَامُ بَعْدَ صَلَاةِ الْفَجْرِ.", ans: false },
+        { q: "أَدْرُسُ فِي كُلِّيَّةِ الطِّبِّ لِأُصْبِحَ طَبِيبَةً.", ans: true },
+        { q: "تَنْتَهِي الدِّرَاسَةُ فِي شَهْرِ شَعْبَان.", ans: false },
+        { q: "الْمَسْجِدُ الْحَرَامُ فِي مَكَّةَ.", ans: true },
+        { q: "أَذْهَبُ إِلَى الْمَكْتَبَةِ لِأَقْرَأَ صَحِيفَةً.", ans: true },
+        { q: "سَلْمَانُ مُسَافِرٌ إِلَى تُرْكِيَا لِلصَّلَاةِ.", ans: false },
+        { q: "الْأُسْرَةُ تَسْكُنُ فِي شَقَّةٍ كَبِيرَةٍ.", ans: true },
+        { q: "عَمَّارٌ يَقْرَأُ الْقُرْآنَ فِي الْمُصَلَّى.", ans: true },
+        { q: "فَاطِمَةُ طَالِبَةٌ فِي كُلِّيَّةِ التَّرْبِيَةِ.", ans: true },
+        { q: "يَبْدَأُ الْيَوْمُ الدِّرَاسِيُّ السَّاعَةَ السَّابِعَةَ صَبَاحاً.", ans: true },
+        { q: "أُصَلِّي صَلَاةَ الْعِشَاءِ بَعْدَ الْمَغْرِبِ.", ans: true },
+        { q: "جَدِّي يَغْسِلُ السَّيَّارَةَ فِي الْحَمَّامِ.", ans: false },
+        { q: "نَحْنُ نَدْرُسُ فِي جَامِعَةِ أُمِّ الْقُرَى.", ans: true },
+        { q: "هَذِهِ نَظَّارَةٌ جَمِيلَةٌ.", ans: true },
+        { q: "أَحْمَدُ يُصَلِّي الْجُمُعَةَ فِي الْمَسْجِدِ النَّبَوِيِّ.", ans: true }
+    ];
+
+    const fibWords = ["جِنْسِيَّتُكِ", "مُهَنْدِسٌ", "نَظَّارَةٌ", "مُبَكِّراً", "الْمُنَبِّهَ", "الْمَسْجِدِ", "يَتَوَضَّأُ", "سَيَّارَةٍ", "شَقَّةٍ", "حِصَصٍ", "تَنْتَهِي", "الِاسْتِرَاحَةِ", "مَكَّةَ", "مُسَافِرَةٌ", "صَحِيفَةً", "كُلِّيَّةِ", "طَبِيبَةٌ", "اخْتِبَارَاتٌ", "الْحَافِلَةِ", "أُسْرَةُ"];
+    
+    const fibData = [
+        { pre: "مِنْ أَيْنَ أَنْتِ وَمَا ", post: " يَا أُخْتِي؟", ans: "جِنْسِيَّتُكِ" },
+        { pre: "هَذَا وَالِدِي خَالِدٌ، هُوَ ", post: " فِي الشَّرِكَةِ.", ans: "مُهَنْدِسٌ" },
+        { pre: "هَذِهِ ", post: " جَدِيدَةٌ نَلْبَسُهَا لِلْقِرَاءَةِ.", ans: "نَظَّارَةٌ" },
+        { pre: "أَنَا أَسْتَيْقِظُ ", post: " قَبْلَ صَلَاةِ الْفَجْرِ.", ans: "مُبَكِّراً" },
+        { pre: "أَضَعُ ", post: " بِجَانِبِ السَّرِيرِ لِأَسْتَيْقِظَ.", ans: "الْمُنَبِّهَ" },
+        { pre: "نَحْنُ نُصَلِّي صَلَاةَ الْجُمُعَةِ فِي ", post: " الْكَبِيرِ.", ans: "الْمَسْجِدِ" },
+        { pre: "أَحْمَدُ ", post: " فِي الْحَمَّامِ قَبْلَ الصَّلَاةِ.", ans: "يَتَوَضَّأُ" },
+        { pre: "أَبِي يَذْهَبُ إِلَى الْعَمَلِ فِي ", post: " حَمْرَاءَ.", ans: "سَيَّارَةٍ" },
+        { pre: "نَحْنُ نَسْكُنُ فِي ", post: " كَبِيرَةٍ وَجَمِيلَةٍ جِدّاً.", ans: "شَقَّةٍ" },
+        { pre: "أَدْرُسُ سِتَّ ", post: " فِي الْيَوْمِ الدِّرَاسِيِّ.", ans: "حِصَصٍ" },
+        { pre: "", post: " حِصَّةُ اللُّغَةِ الْعَرَبِيَّةِ فِي السَّاعَةِ الْعَاشِرَةِ.", ans: "تَنْتَهِي" },
+        { pre: "مَاذَا تَفْعَلِينَ يَا صَدِيقَتِي فِي وَقْتِ ", post: "؟", ans: "الِاسْتِرَاحَةِ" },
+        { pre: "سَلْمَانُ يُصَلِّي فِي الْمَسْجِدِ الْحَرَامِ فِي ", post: " الْمُكَرَّمَةِ.", ans: "مَكَّةَ" },
+        { pre: "هَلْ أَنْتِ ", post: " إِلَى الْمَدِينَةِ النَّبَوِيَّةِ غَداً؟", ans: "مُسَافِرَةٌ" },
+        { pre: "جَدِّي يَجْلِسُ فِي الْغُرْفَةِ وَيَقْرَأُ ", post: " الصَّبَاحِ.", ans: "صَحِيفَةً" },
+        { pre: "أَنَا طَالِبَةٌ أَدْرُسُ فِي ", post: " الطِّبِّ بِالْجَامِعَةِ.", ans: "كُلِّيَّةِ" },
+        { pre: "أُخْتِي فَاطِمَةُ ", post: " تَعْمَلُ فِي الْمُسْتَشْفَى.", ans: "طَبِيبَةٌ" },
+        { pre: "لَدَيْنَا ", post: " شَهْرِيَّةٌ فِي الْأُسْبُوعِ الْقَادِمِ.", ans: "اخْتِبَارَاتٌ" },
+        { pre: "الطَّالِبَاتُ يَذْهَبْنَ إِلَى الْمَدْرَسَةِ رُكُوباً فِي ", post: ".", ans: "الْحَافِلَةِ" },
+        { pre: "هَذِهِ ", post: " الرَّسُولِ صَلَّى اللَّهُ عَلَيْهِ وَسَلَّمَ.", ans: "أُسْرَةُ" }
+    ];
+
+    const vocabData = ["يَقْرَأُ", "يُصَلِّي", "طَالِبَةٌ", "تُرْكِيَا", "غُرْفَة", "الْمُصَلَّى", "الْمَكْتَبَة", "عُطْلَة", "جَامِعَة", "مُتَأَخِّراً", "يَغْسِلُ", "صَدِيقَة", "شَهْر", "أَيَّام", "تَذْهَبُ"];
+
+    function shuffle(array) {
+        for (let i = array.length - 1; i > 0; i--) {
+            const j = Math.floor(Math.random() * (i + 1));
+            [array[i], array[j]] = [array[j], array[i]];
+        }
+        return array;
+    }
+
+    function renderMCQ() {
+        const container = document.getElementById("mcq-container");
+        mcqData.forEach((item, index) => {
+            let html = `<div class="question-box"><div>${index + 1}. ${item.q}</div><div class="options" id="mcq-opts-${index}">`;
+            let opts = item.options.map((opt, i) => ({ text: opt, isCorrect: i === item.ans }));
+            shuffle(opts);
+            opts.forEach(opt => {
+                html += `<button class="btn" onclick="handleMCQ(this, ${index}, ${opt.isCorrect})">${opt.text}</button>`;
+            });
+            html += `</div></div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    function handleMCQ(btn, index, isCorrect) {
+        const parent = document.getElementById(`mcq-opts-${index}`);
+        if(parent.dataset.answered) return;
+        parent.dataset.answered = "true";
+        if(isCorrect) {
+            btn.classList.add("correct");
+            score++;
+        } else {
+            btn.classList.add("wrong");
+            // Find and highlight correct
+            Array.from(parent.children).forEach(child => {
+                if(child.getAttribute('onclick').includes('true')) child.classList.add("correct");
+            });
+        }
+        Array.from(parent.children).forEach(child => child.classList.add("disabled"));
+    }
+
+    function renderTF() {
+        const container = document.getElementById("tf-container");
+        tfData.forEach((item, index) => {
+            let html = `<div class="question-box"><div>${index + 1}. ${item.q}</div>
+                <div class="options" id="tf-opts-${index}">
+                    <button class="btn" onclick="handleTF(this, ${index}, true, ${item.ans})">صَح</button>
+                    <button class="btn" onclick="handleTF(this, ${index}, false, ${item.ans})">خَطَأ</button>
+                </div>
+            </div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    function handleTF(btn, index, chosen, actual) {
+        const parent = document.getElementById(`tf-opts-${index}`);
+        if(parent.dataset.answered) return;
+        parent.dataset.answered = "true";
+        if(chosen === actual) {
+            btn.classList.add("correct");
+            score++;
+        } else {
+            btn.classList.add("wrong");
+            Array.from(parent.children).forEach(child => {
+                if(!child.classList.contains("wrong")) child.classList.add("correct");
+            });
+        }
+        Array.from(parent.children).forEach(child => child.classList.add("disabled"));
+    }
+
+    function renderFIB() {
+        const wordBank = document.getElementById("word-bank");
+        const shuffledWords = shuffle([...fibWords]);
+        shuffledWords.forEach(w => {
+            wordBank.innerHTML += `<span class="word-tag">${w}</span>`;
+        });
+
+        const container = document.getElementById("fib-container");
+        fibData.forEach((item, index) => {
+            let optionsHtml = `<option value="" disabled selected>-- اختر --</option>`;
+            shuffledWords.forEach(w => {
+                optionsHtml += `<option value="${w}">${w}</option>`;
+            });
+
+            let html = `<div class="question-box">
+                ${index + 1}. ${item.pre}
+                <select id="fib-sel-${index}" onchange="handleFIB(this, '${item.ans}')">
+                    ${optionsHtml}
+                </select>
+                ${item.post}
+            </div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    function handleFIB(selectElem, correctWord) {
+        if(selectElem.dataset.answered) return;
+        selectElem.dataset.answered = "true";
+        selectElem.disabled = true;
+        if(selectElem.value === correctWord) {
+            selectElem.classList.add("correct");
+            score++;
+        } else {
+            selectElem.classList.add("wrong");
+            // Append correct answer text next to it for learning
+            const span = document.createElement("span");
+            span.innerHTML = ` (الصحيح: <span style="color:#28a745; font-weight:bold;">${correctWord}</span>) `;
+            selectElem.parentNode.insertBefore(span, selectElem.nextSibling);
+        }
+    }
+
+    function renderVocab() {
+        const container = document.getElementById("vocab-container");
+        vocabData.forEach((word, index) => {
+            let html = `<div class="question-box">
+                <div>${index + 1}. الكلمة: <strong>${word}</strong></div>
+                <textarea class="textarea-box" placeholder="اكتبي الجملة هنا..."></textarea>
+            </div>`;
+            container.innerHTML += html;
+        });
+    }
+
+    function navigate(step) {
+        document.getElementById(`sec-${currentSection}`).classList.remove("active");
+        currentSection += step;
+        document.getElementById(`sec-${currentSection}`).classList.add("active");
+
+        document.getElementById("prev-btn").disabled = (currentSection === 1);
+        
+        if (currentSection === totalSections) {
+            document.getElementById("nav-wrapper").style.display = "none";
+            document.getElementById("final-score").innerText = score;
+        } else if (currentSection === totalSections - 1) {
+            document.getElementById("next-btn").innerText = "إنهاء الاختبار";
+        } else {
+            document.getElementById("next-btn").innerText = "التالي";
+        }
+        window.scrollTo(0,0);
+    }
+
+    // Initialize
+    renderMCQ();
+    renderTF();
+    renderFIB();
+    renderVocab();
+
+</script>
+
+</body>
+</html>
