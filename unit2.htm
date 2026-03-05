@@ -1,0 +1,485 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>الاختبار الشامل - الأسرة (المستوى المبتدئ الثاني)</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f4f7f6;
+            margin: 0;
+            padding: 20px;
+            font-size: 18px;
+            line-height: 1.8;
+            color: #2c3e50;
+        }
+        .container {
+            max-width: 950px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 { text-align: center; color: #1a252f; }
+        .welcome {
+            text-align: center;
+            background: #e3f2fd;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            border: 2px solid #b6d4fe;
+        }
+        .reading-box {
+            background-color: #fffdf7;
+            border-right: 6px solid #f1c40f;
+            padding: 20px;
+            border-radius: 5px;
+            margin-bottom: 25px;
+            text-align: justify;
+            font-size: 20px;
+            line-height: 2;
+        }
+        .page { display: none; animation: fadeIn 0.4s; }
+        .page.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        
+        .question-block {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid #e0e6ed;
+            border-radius: 8px;
+            background-color: #fafbfc;
+            transition: 0.3s;
+        }
+        .question-block p { font-weight: bold; margin-top: 0; }
+        .options label { display: block; margin: 8px 0; cursor: pointer; }
+        
+        select {
+            padding: 8px; font-size: 16px; font-family: inherit;
+            border: 1px solid #bdc3c7; border-radius: 5px; margin-right: 5px;
+        }
+        .word-bank {
+            background-color: #f8f9fa; border: 1px dashed #7f8c8d;
+            padding: 15px; border-radius: 8px; margin-bottom: 20px;
+            text-align: center; line-height: 2.2;
+        }
+        .word-bank span {
+            display: inline-block; background: #ecf0f1; padding: 5px 12px;
+            margin: 5px; border-radius: 5px; font-weight: bold; color: #2980b9;
+        }
+        
+        .scrambled-words { margin-bottom: 10px; }
+        .word-btn {
+            background-color: #fff; border: 2px solid #3498db; color: #3498db;
+            padding: 8px 15px; margin: 5px; border-radius: 5px; cursor: pointer;
+            font-size: 18px; transition: 0.2s; font-family: inherit;
+        }
+        .word-btn:hover { background-color: #ebf5fb; }
+        .answer-box {
+            min-height: 55px; border: 2px dashed #95a5a6; border-radius: 8px;
+            padding: 10px; margin-top: 10px; background-color: #fff; display: flex; flex-wrap: wrap;
+        }
+        .check-btn {
+            background-color: #27ae60; color: white; border: none; padding: 8px 15px;
+            border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px;
+        }
+        
+        textarea {
+            width: 100%; padding: 10px; font-size: 16px; font-family: inherit;
+            border: 1px solid #ccc; border-radius: 5px; margin-top: 10px; resize: vertical; box-sizing: border-box;
+        }
+        
+        .nav-buttons { display: flex; justify-content: space-between; margin-top: 30px; }
+        button.nav-btn {
+            padding: 12px 25px; font-size: 18px; color: white; background-color: #2c3e50;
+            border: none; border-radius: 5px; cursor: pointer; font-weight: bold;
+        }
+        button.nav-btn:disabled { background-color: #bdc3c7; cursor: not-allowed; }
+        
+        .correct { background-color: #d4edda !important; border-color: #c3e6cb !important; }
+        .wrong { background-color: #fff3cd !important; border-color: #ffeeba !important; }
+        .score-display { text-align: center; font-size: 32px; font-weight: bold; color: #27ae60; margin: 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="welcome">
+        <p>مَرْحَباً بِكِ فِي الاِخْتِبَارِ الشَّامِلِ لِمَوْضُوعِ (الْأُسْرَةِ)</p>
+        <p style="font-size:16px; color:#555;">(الاختبار مكون من 110 أسئلة تناسب المستوى المبتدئ الثاني)</p>
+    </div>
+
+    <!-- Page 1: Reading -->
+    <div id="page1" class="page active">
+        <h2>السُّؤَالُ الْأَوَّل: الْقِرَاءَةُ وَالِاسْتِيعَابُ (20 نُقْطَةً)</h2>
+        <div class="reading-box">
+            أَنَا طَارِق. أَعِيشُ مَعَ أُسْرَتِي الْكَبِيرَةِ فِي شِقَّةٍ وَاسِعَةٍ فِي الْمَدِينَةِ. جَدِّي "عُثْمَان" رَجُلٌ كَبِيرٌ فِي السِّنِّ وَلَا يَعْمَلُ الْآنَ، هُوَ يَجْلِسُ فِي غُرْفَةِ الْجُلُوسِ دَائِماً، وَيَلْبَسُ نَظَّارَتَهُ لِيَقْرَأَ الْكُتُبَ. وَجَدَّتِي "زَيْنَب" امْرَأَةٌ طَيِّبَةٌ جِدّاً، تُحِبُّ زِرَاعَةَ الْأَزْهَارِ فِي حَدِيقَةِ الْبَيْتِ. 
+            وَالِدِي "خَالِد" يَعْمَلُ مُدِيراً فِي شَرِكَةٍ مَعْرُوفَةٍ، هُوَ مَشْغُولٌ دَائِماً، لَكِنَّهُ يَجْلِسُ مَعَنَا فِي الْمَسَاءِ لِنَتَحَدَّثَ. وَالِدَتِي "سُعَاد" طَبِيبَةٌ فِي الْمُسْتَشْفَى، وَهِيَ تُسَاعِدُ الْمَرْضَى كَثِيراً. 
+            أَخِي الْأَكْبَرُ "عُمَر" يَدْرُسُ فِي الْجَامِعَةِ، هُوَ طَالِبٌ مُجْتَهِدٌ فِي كُلِّيَّةِ الْهَنْدَسَةِ، وَيُحِبُّ كُرَةَ الْقَدَمِ. وَأُخْتِي الصَّغِيرَةُ "لَيْلَى" تِلْمِيذَةٌ فِي الْمَدْرَسَةِ، وَهِوَايَتُهَا الرَّسْمُ. 
+            عَمِّي "مَحْمُود" يَسْكُنُ قَرِيباً مِنَّا فِي شِقَّةِ إِيجَارٍ، وَعِنْدَهُ وَلَدَانِ تَوْأَمٌ فِي الْمَدْرَسَةِ الِابْتِدَائِيَّةِ. نَحْنُ نَزُورُ بَيْتَ جَدِّي كُلَّ يَوْمِ جُمُعَةٍ، وَنَجْلِسُ مَعاً، وَنَأْكُلُ طَعَامَ الْغَدَاءِ، وَنَتَحَدَّثُ عَنْ دِرَاسَتِنَا وَعَمَلِنَا. أَنَا أُحِبُّ أُسْرَتِي جِدّاً، نَحْنُ أُسْرَةٌ سَعِيدَةٌ وَمُتَرَابِطَةٌ.
+        </div>
+        <h3>أ- اخْتَارِي الْإِجَابَةَ الصَّحِيحَةَ (10 نِقَاطٍ):</h3>
+        <div id="sec1-mcq"></div>
+        <h3>ب- ضَعِي (صَحّ) أَوْ (خَطَأ) (10 نِقَاطٍ):</h3>
+        <div id="sec1-tf"></div>
+    </div>
+
+    <!-- Page 2: Vocab MCQ -->
+    <div id="page2" class="page">
+        <h2>السُّؤَالُ الثَّانِي: اخْتِيَارٌ مِنْ مُتَعَدِّدٍ (الْمُفْرَدَاتُ وَالتَّرَاكِيبُ) (15 نُقْطَةً)</h2>
+        <div id="sec2-mcq"></div>
+    </div>
+
+    <!-- Page 3: Vocab TF -->
+    <div id="page3" class="page">
+        <h2>السُّؤَالُ الثَّالِث: صَحّ أَوْ خَطَأ (الْمَفَاهِيمُ) (15 نُقْطَةً)</h2>
+        <div id="sec3-tf"></div>
+    </div>
+
+    <!-- Page 4: S/P/O -->
+    <div id="page4" class="page">
+        <h2>السُّؤَالُ الرَّابِع: الْمُفْرَدُ وَالْجَمْعُ وَالْمُضَادُّ (15 نُقْطَةً)</h2>
+        <div id="sec4-spo"></div>
+    </div>
+
+    <!-- Page 5: Fill Blanks -->
+    <div id="page5" class="page">
+        <h2>السُّؤَالُ الْخَامِس: اِمْلَئِي الْفَرَاغَ بِالْكَلِمَةِ الْمُنَاسِبَةِ (15 نُقْطَةً)</h2>
+        <div class="word-bank">
+            <span>مُجْتَهِدٌ</span> <span>يَتَوَضَّأُ</span> <span>النَّظَّارَةَ</span> <span>الْمِعْطَفَ</span> <span>هِوَايَةٌ</span> 
+            <span>مَشْغُولٌ</span> <span>الْعَاصِمَةُ</span> <span>إِيجَارٍ</span> <span>تَوْأَمٌ</span> <span>نَزُورُ</span> 
+            <span>سَعِيدَةٌ</span> <span>الْفَجْرِ</span> <span>مُسَاعَدَةَ</span> <span>غُرْفَةِ</span> <span>الْقُرْآنَ</span>
+        </div>
+        <div id="sec5-fill"></div>
+    </div>
+
+    <!-- Page 6: Ordering -->
+    <div id="page6" class="page">
+        <h2>السُّؤَالُ السَّادِس: رَتِّبِي الْكَلِمَاتِ لِتُصْبِحَ جُمْلَةً مُفِيدَةً (15 نُقْطَةً)</h2>
+        <p style="text-align:center; font-size:16px;">(اُنْقُرِي عَلَى الْكَلِمَاتِ لِتَرْتِيبِهَا فِي الْمُرَبَّعِ الْفَارِغِ)</p>
+        <div id="sec6-order"></div>
+    </div>
+
+    <!-- Page 7: Creating -->
+    <div id="page7" class="page">
+        <h2>السُّؤَالُ السَّابِع: إِنْشَاءُ الْجُمَلِ (15 نُقْطَةً)</h2>
+        <p style="text-align:center; font-size:16px;">ضَعِي هَذِهِ الْكَلِمَاتِ فِي جُمَلٍ مُفِيدَةٍ مِنْ تَعْبِيرِكِ:</p>
+        <div id="sec7-create"></div>
+    </div>
+
+    <!-- Results -->
+    <div id="result-page" class="page">
+        <h2>اِنْتَهَى الِاخْتِبَارُ!</h2>
+        <div class="score-display">حَصَلْتِ عَلَى <span id="final-score">0</span> مِنْ 95 آلياً</div>
+        <p style="text-align: center; color: #7f8c8d;">(مُلَاحَظَة: السُّؤَالُ السَّابِعُ "إِنْشَاءُ الْجُمَلِ" عَلَيْهِ 15 نُقْطَةً يَتِمُّ تَصْحِيحُهَا يَدَوِيًّا. الْإِجْمَالِيُّ 110 نِقَاطٍ).</p>
+    </div>
+
+    <div class="nav-buttons">
+        <button id="prev-btn" class="nav-btn" onclick="changePage(-1)" disabled>السَّابِق</button>
+        <button id="next-btn" class="nav-btn" onclick="changePage(1)">التَّالِي</button>
+    </div>
+</div>
+
+<script>
+    // --- Data Definitions for 110 Questions --- //
+    
+    // Q1: Reading MCQ (10)
+    const d_sec1_mcq = [
+        {q:"أَيْنَ تَعِيشُ هَذِهِ الْأُسْرَةُ؟", o:["فِي شِقَّةٍ وَاسِعَةٍ", "فِي فُنْدُقٍ صَغِيرٍ", "فِي مَدْرَسَةٍ"], a:0},
+        {q:"مَاذَا يَفْعَلُ الْجَدُّ عُثْمَان؟", o:["يَعْمَلُ فِي شَرِكَةٍ", "يَقْرَأُ الْكُتُبَ", "يَلْعَبُ كُرَةَ الْقَدَمِ"], a:1},
+        {q:"مَاذَا تُحِبُّ الْجَدَّةُ أَنْ تَفْعَلَ؟", o:["تَقْرَأَ الْكُتُبَ", "تَزْرَعَ الْأَزْهَارَ", "تَنَامَ كَثِيراً"], a:1},
+        {q:"أَيْنَ يَعْمَلُ الْأَبُ خَالِد؟", o:["فِي شَرِكَةٍ مَعْرُوفَةٍ", "فِي مُسْتَشْفَى", "فِي مَسْجِدٍ"], a:0},
+        {q:"مَا هِيَ مِهْنَةُ الْأُمِّ سُعَاد؟", o:["مُهَنْدِسَةٌ", "مُعَلِّمَةٌ", "طَبِيبَةٌ"], a:2},
+        {q:"مَاذَا يَدْرُسُ الْأَخُ عُمَر؟", o:["يَدْرُسُ الطِّبَّ", "يَدْرُسُ الْهَنْدَسَةَ", "لَا يَدْرُسُ"], a:1},
+        {q:"مَا هِيَ هِوَايَةُ الْأُخْتِ لَيْلَى؟", o:["الرَّسْمُ", "السِّبَاحَةُ", "الْقِرَاءَةُ"], a:0},
+        {q:"أَيْنَ يَسْكُنُ الْعَمُّ مَحْمُود؟", o:["فِي شِقَّةِ إِيجَارٍ", "فِي بَيْتِ الْجَدِّ", "فِي الْجَامِعَةِ"], a:0},
+        {q:"كَمْ وَلَداً عِنْدَ الْعَمِّ مَحْمُود؟", o:["وَلَدٌ وَاحِدٌ", "وَلَدَانِ تَوْأَمٌ", "ثَلَاثَةُ أَوْلَادٍ"], a:1},
+        {q:"مَتَى تَزُورُ الْأُسْرَةُ بَيْتَ الْجَدِّ؟", o:["يَوْمَ الْأَحَدِ", "كُلَّ يَوْمِ جُمُعَةٍ", "فِي الْعِيدِ فَقَطْ"], a:1}
+    ];
+
+    // Q1: Reading TF (10)
+    const d_sec1_tf = [
+        {q:"الْجَدُّ عُثْمَان يَلْبَسُ نَظَّارَةً لِيَقْرَأَ الْكُتُبَ.", a:1},
+        {q:"الْأُمُّ سُعَاد تُسَاعِدُ الْمَرْضَى فِي الْمُسْتَشْفَى.", a:1},
+        {q:"الْأَبُ خَالِد لَا يَجْلِسُ مَعَ أُسْرَتِهِ أَبَداً لِأَنَّهُ مَشْغُولٌ.", a:0},
+        {q:"الْأَخُ عُمَر طَالِبٌ مُجْتَهِدٌ وَيُحِبُّ كُرَةَ الْقَدَمِ.", a:1},
+        {q:"الْأُخْتُ لَيْلَى تَدْرُسُ فِي الْجَامِعَةِ مَعَ أَخِيهَا.", a:0},
+        {q:"أَوْلَادُ الْعَمِّ مَحْمُود يَدْرُسُونَ فِي الْمَدْرَسَةِ الِابْتِدَائِيَّةِ.", a:1},
+        {q:"الْعَمُّ مَحْمُود يَسْكُنُ بَعِيداً جِدّاً عَنِ الْعَائِلَةِ.", a:0},
+        {q:"الْعَائِلَةُ تَأْكُلُ طَعَامَ الْغَدَاءِ مَعاً يَوْمَ الْجُمُعَةِ.", a:1},
+        {q:"عَائِلَةُ طَارِق عَائِلَةٌ صَغِيرَةٌ جِدّاً.", a:0},
+        {q:"الْعَائِلَةُ تَتَحَدَّثُ عَنِ الدِّرَاسَةِ وَالْعَمَلِ عِنْدَمَا يَجْلِسُونَ مَعاً.", a:1}
+    ];
+
+    // Q2: Vocab MCQ (15)
+    const d_sec2_mcq = [
+        {q:"أَبُو الْأَبِ أَوْ أَبُو الْأُمِّ يُسَمَّى فِي اللُّغَةِ الْعَرَبِيَّةِ:", o:["جَدّاً", "عَمّاً", "خَالاً"], a:0},
+        {q:"مَاذَا نَلْبَسُ عِنْدَمَا يَكُونُ الْجَوُّ بَارِداً جِدّاً؟", o:["نَظَّارَةً", "مِعْطَفاً", "صُورَةً"], a:1},
+        {q:"الْمَكَانُ الَّذِي نُصَلِّي فِيهِ دَاخِلَ الْبَيْتِ يُسَمَّى:", o:["حَمَّاماً", "مَطْبَخاً", "مُصَلَّى"], a:2},
+        {q:"أَيْنَ تَعْمَلُ الطَّبِيبَةُ لِتُسَاعِدَ الْمَرْضَى؟", o:["فِي الْمُسْتَشْفَى", "فِي الْمَدْرَسَةِ", "فِي الشَّرِكَةِ"], a:0},
+        {q:"نَلْبَسُهَا عَلَى الْعَيْنِ لِكَيْ نَقْرَأَ جَيِّداً:", o:["النَّظَّارَةُ", "الشَّجَرَةُ", "الْمِعْطَفُ"], a:0},
+        {q:"أَخُو الْأَبِ نُسَمِّيهِ فِي الْعَرَبِيَّةِ:", o:["عَمّاً", "جَدّاً", "حَفِيداً"], a:0},
+        {q:"أَخَوَانِ صَغِيرَانِ وُلِدَا فِي نَفْسِ الْيَوْمِ وَالْوَقْتِ:", o:["جَدَّانِ", "تَوْأَمٌ", "طُلَّابٌ"], a:1},
+        {q:"الْبَيْتُ الَّذِي نَدْفَعُ لَهُ مَالاً كُلَّ شَهْرٍ لِنَسْكُنَ فِيهِ هُوَ:", o:["شِقَّةُ تَمْلِيكٍ", "فُنْدُقٌ", "شِقَّةُ إِيجَارٍ"], a:2},
+        {q:"أُخْتُ الْأَبِ تُسَمَّى فِي الْعَرَبِيَّةِ:", o:["عَمَّةً", "خَالَةً", "جَدَّةً"], a:0},
+        {q:"ابْنُ الِابْنِ أَوْ ابْنُ الْبِنْتِ يُسَمَّى:", o:["حَفِيداً", "عَمّاً", "وَالِداً"], a:0},
+        {q:"مَاذَا يَفْعَلُ الْمُسْلِمُ فِي الْحَمَّامِ قَبْلَ أَنْ يُصَلِّيَ؟", o:["يَنَامُ", "يَتَوَضَّأُ", "يَقْرَأُ"], a:1},
+        {q:"الْكِتَابُ الْمُهِمُّ عِنْدَ الْمُسْلِمِينَ هُوَ:", o:["الدَّفْتَرُ", "الْقُرْآنُ", "الصُّورَةُ"], a:1},
+        {q:"الْوَلَدُ الَّذِي يَدْرُسُ فِي الْمَدْرَسَةِ أَوْ الْجَامِعَةِ هُوَ:", o:["مُعَلِّمٌ", "طَبِيبٌ", "طَالِبٌ"], a:2},
+        {q:"صَوْتُ الْمَسْجِدِ الَّذِي يَدْعُونَا لِلصَّلَاةِ يُسَمَّى:", o:["أَذَاناً", "قُرْآناً", "عَمَلاً"], a:0},
+        {q:"عِنْدَمَا نُرِيدُ أَنْ نَذْهَبَ مَعاً إِلَى الْمَسْجِدِ نَقُولُ:", o:["مِنْ أَيْنَ أَنْتَ؟", "هَيَّا بِنَا!", "هَلْ هَذَا بَيْتٌ؟"], a:1}
+    ];
+
+    // Q3: Vocab TF (15)
+    const d_sec3_tf = [
+        {q:"(رَبَّةُ الْمَنْزِلِ) هِيَ الْمَرْأَةُ الَّتِي تَعْمَلُ دَاخِلَ بَيْتِهَا وَتُحِبُّ أُسْرَتَهَا.", a:1},
+        {q:"(الْمَسْجِدُ) هُوَ الْمَكَانُ الَّذِي نَذْهَبُ إِلَيْهِ لِنَلْعَبَ كُرَةَ الْقَدَمِ.", a:0},
+        {q:"(الْعَائِلَةُ الْمُمْتَدَّةُ) تَعْنِي الْعَائِلَةَ الْكَبِيرَةَ مِثْلَ الْجَدِّ وَالْعَمِّ وَالْخَالِ.", a:1},
+        {q:"(الْعَاصِمَةُ) هِيَ مَدِينَةٌ كَبِيرَةٌ وَمُهِمَّةٌ فِي الْبَلَدِ.", a:1},
+        {q:"(الْخَالَةُ) هِيَ أُخْتُ الْأَبِ فِي اللُّغَةِ الْعَرَبِيَّةِ.", a:0},
+        {q:"(غُرْفَةُ الْجُلُوسِ) هِيَ الْغُرْفَةُ الَّتِي نَنَامُ فِيهَا فِي اللَّيْلِ.", a:0},
+        {q:"(الْمُتَقَاعِدُ) هُوَ الرَّجُلُ الْكَبِيرُ الَّذِي تَوَقَّفَ عَنِ الْعَمَلِ لِيَرْتَاحَ.", a:1},
+        {q:"(الْهِوَايَةُ) هِيَ شَيْءٌ نُحِبُّ أَنْ نَفْعَلَهُ فِي وَقْتِ الْفَرَاغِ مِثْلَ الرَّسْمِ.", a:1},
+        {q:"(الْحَمَّامُ) هُوَ مَكَانٌ فِي الْبَيْتِ لِنَغْسِلَ أَيْدِيَنَا وَنَتَوَضَّأَ.", a:1},
+        {q:"الشَّخْصُ (الْمَشْغُولُ) هُوَ الَّذِي عِنْدَهُ وَقْتٌ طَوِيلٌ لِلَّعِبِ وَالنَّوْمِ.", a:0},
+        {q:"كَلِمَةُ (ابْنٌ) نَسْتَخْدِمُهَا لِلْمُؤَنَّثِ مِثْلَ: هَذِهِ ابْنٌ جَمِيلَةٌ.", a:0},
+        {q:"(شَجَرَةُ الْأُسْرَةِ) هِيَ صُورَةٌ فِيهَا أَسْمَاءُ الْجَدِّ وَالْأَبِ وَالْأَوْلَادِ.", a:1},
+        {q:"(الْجَدَّةُ) هِيَ امْرَأَةٌ أَصْغَرُ مِنَ الْأُمِّ فِي الْعُمْرِ.", a:0},
+        {q:"الطَّالِبُ (الْمُجْتَهِدُ) هُوَ طَالِبٌ كَسُولٌ وَلَا يَقْرَأُ دُرُوسَهُ.", a:0},
+        {q:"عِنْدَمَا نَسْأَلُ صَدِيقاً عَنْ بَلَدِهِ نَقُولُ: (مِنْ أَيْنَ أَنْتَ؟).", a:1}
+    ];
+
+    // Q4: SPO (15)
+    const d_sec4_spo = [
+        {q:"مَا هُوَ جَمْعُ كَلِمَةِ (مَسْجِد)؟", o:["مَسْجِدَاتٌ", "مَسَاجِدُ", "سُجُودٌ"], a:1},
+        {q:"مَا هُوَ مُضَادُّ (عَكْسُ) كَلِمَةِ (كَبِير)؟", o:["طَوِيلٌ", "صَغِيرٌ", "جَمِيلٌ"], a:1},
+        {q:"مَا هُوَ مُفْرَدُ كَلِمَةِ (أَوْلَاد)؟", o:["وَلَدٌ", "وَالِدٌ", "وَالِدَةٌ"], a:0},
+        {q:"مَا هُوَ مُؤَنَّثُ كَلِمَةِ (طَبِيب)؟", o:["أَطِبَّاءُ", "مُمَرِّضَةٌ", "طَبِيبَةٌ"], a:2},
+        {q:"مَا هُوَ جَمْعُ كَلِمَةِ (غُرْفَة)؟", o:["غُرَفٌ", "غَرِيبٌ", "غَارِفٌ"], a:0},
+        {q:"مَا هُوَ مُضَادُّ الْفِعْلِ (يَنَامُ)؟", o:["يَأْكُلُ", "يَسْتَيْقِظُ", "يَقْرَأُ"], a:1},
+        {q:"مَا هُوَ جَمْعُ كَلِمَةِ (أُسْرَة)؟", o:["أُسَرٌ", "أَسَائِرُ", "أُسْرَاتٌ"], a:0},
+        {q:"مَا هُوَ مُفْرَدُ كَلِمَةِ (دَفَاتِر)؟", o:["دَفْتَرٌ", "مُدِيرٌ", "دَائِرَةٌ"], a:0},
+        {q:"مَا هُوَ مُؤَنَّثُ كَلِمَةِ (مُهَنْدِس)؟", o:["هَنْدَسَةٌ", "مُهَنْدِسَاتٌ", "مُهَنْدِسَةٌ"], a:2},
+        {q:"مَا هُوَ مُضَادُّ كَلِمَةِ (مَشْغُول)؟", o:["مُتَفَرِّغٌ (فَارِغٌ)", "حَزِينٌ", "سَرِيعٌ"], a:0},
+        {q:"مَا هُوَ جَمْعُ كَلِمَةِ (طَالِب)؟", o:["طَالِبَاتٌ", "طُلَّابٌ", "طِلْبٌ"], a:1},
+        {q:"مَا هُوَ مُضَادُّ كَلِمَةِ (بَارِد)؟", o:["حَارٌّ", "جَمِيلٌ", "قَصِيرٌ"], a:0},
+        {q:"مَا هُوَ مُؤَنَّثُ كَلِمَةِ (جَدّ)؟", o:["أُمٌّ", "عَمَّةٌ", "جَدَّةٌ"], a:2},
+        {q:"مَا هُوَ مُضَادُّ الْفِعْلِ (يَجْلِسُ)؟", o:["يَذْهَبُ", "يَقِفُ", "يَدْرُسُ"], a:1},
+        {q:"مَا هُوَ مُفْرَدُ كَلِمَةِ (أَيَّام)؟", o:["يَوْمٌ", "عَامٌ", "شَهْرٌ"], a:0}
+    ];
+
+    // Q5: Fill (15)
+    const fill_words = ["مُجْتَهِدٌ", "يَتَوَضَّأُ", "النَّظَّارَةَ", "الْمِعْطَفَ", "هِوَايَةٌ", "مَشْغُولٌ", "الْعَاصِمَةُ", "إِيجَارٍ", "تَوْأَمٌ", "نَزُورُ", "سَعِيدَةٌ", "الْفَجْرِ", "مُسَاعَدَةَ", "غُرْفَةِ", "الْقُرْآنَ"];
+    const d_sec5_fill = [
+        {pre:"الرَّجُلُ الْمُسْلِمُ", post:"فِي الْحَمَّامِ قَبْلَ أَنْ يُصَلِّيَ.", a:"يَتَوَضَّأُ"},
+        {pre:"نَلْبَسُ", post:"عِنْدَمَا نَخْرُجُ فِي فَصْلِ الشِّتَاءِ الْبَارِدِ.", a:"الْمِعْطَفَ"},
+        {pre:"جَدِّي يَلْبَسُ", post:"لِأَنَّهُ لَا يَرَى الْحُرُوفَ جَيِّداً.", a:"النَّظَّارَةَ"},
+        {pre:"الْقِرَاءَةُ هِيَ", post:"مُفِيدَةٌ جِدّاً فِي وَقْتِ الْفَرَاغِ.", a:"هِوَايَةٌ"},
+        {pre:"أَخِي طَالِبٌ", post:"يَدْرُسُ دُرُوسَهُ كُلَّ يَوْمٍ لِيَنْجَحَ.", a:"مُجْتَهِدٌ"},
+        {pre:"أَبِي", post:"جِدّاً فِي عَمَلِهِ وَلَيْسَ عِنْدَهُ وَقْتٌ طَوِيلٌ.", a:"مَشْغُولٌ"},
+        {pre:"نَحْنُ لَا نَمْلِكُ بَيْتاً، لِذَلِكَ نَسْكُنُ فِي شِقَّةِ", post:".", a:"إِيجَارٍ"},
+        {pre:"أُخْتِي الْكَبِيرَةُ عِنْدَهَا طِفْلَانِ", post:"يُشْبِهَانِ بَعْضَهُمَا تَمَاماً.", a:"تَوْأَمٌ"},
+        {pre:"نَحْنُ", post:"بَيْتَ جَدِّي كُلَّ يَوْمِ جُمُعَةٍ لِنَسْأَلَ عَنْهُ.", a:"نَزُورُ"},
+        {pre:"أَنَا أُحِبُّ أَبِي وَأُمِّي، وَنَحْنُ عَائِلَةٌ", post:"جِدّاً.", a:"سَعِيدَةٌ"},
+        {pre:"نَسْتَيْقِظُ مُبَكِّراً لِنُصَلِّيَ صَلَاةَ", post:"فِي الْمَسْجِدِ.", a:"الْفَجْرِ"},
+        {pre:"أُمِّي طَبِيبَةٌ وَهِيَ تُحِبُّ", post:"الْمَرْضَى وَالضُّعَفَاءِ.", a:"مُسَاعَدَةَ"},
+        {pre:"نَجْتَمِعُ مَعَ الْأُسْرَةِ لِمُشَاهَدَةِ التِّلْفَازِ فِي", post:"الْجُلُوسِ.", a:"غُرْفَةِ"},
+        {pre:"الْجَدُّ يَجْلِسُ بَعْدَ الصَّلَاةِ لِيَقْرَأَ", post:"الْكَرِيمَ.", a:"الْقُرْآنَ"},
+        {pre:"مَدِينَةُ الرِّيَاضِ هِيَ", post:"الْكَبِيرَةُ لِدَوْلَةِ السُّعُودِيَّةِ.", a:"الْعَاصِمَةُ"}
+    ];
+
+    // Q6: Order (15)
+    const d_sec6_order = [
+        ["هَذَا", "أَذَانُ", "الْفَجْرِ", "مِنَ", "الْمَسْجِدِ."],
+        ["مِنْ", "أَيْنَ", "أَنْتَ", "يَا", "صَدِيقِي؟"],
+        ["هَيَّا", "بِنَا", "نَذْهَبُ", "إِلَى", "الْمَدْرَسَةِ."],
+        ["يَقْرَأُ", "جَدِّي", "الْقُرْآنَ", "الْكَرِيمَ", "دَائِماً."],
+        ["أَبِي", "مَشْغُولٌ", "جِدّاً", "فِي", "عَمَلِهِ."],
+        ["نَحْنُ", "أُسْرَةٌ", "سَعِيدَةٌ", "وَنُحِبُّ", "بَعْضَنَا."],
+        ["هَلْ", "هَذِهِ", "شَجَرَةُ", "الْأُسْرَةِ", "يَا", "عُمَر؟"],
+        ["أُخْتِي", "طَبِيبَةٌ", "تَعْمَلُ", "فِي", "الْمُسْتَشْفَى."],
+        ["أَيْنَ", "الْمِعْطَفُ", "الْأَسْوَدُ", "يَا", "أُمِّي؟"],
+        ["يَتَوَضَّأُ", "أَخِي", "الصَّغِيرُ", "فِي", "الْحَمَّامِ."],
+        ["أَنَا", "طَالِبَةٌ", "جَدِيدَةٌ", "مِنْ", "تُرْكِيَا."],
+        ["يَسْكُنُ", "عَمِّي", "فِي", "شِقَّةِ", "إِيجَارٍ."],
+        ["عِنْدِي", "أَخَوَانِ", "تَوْأَمٌ", "فِي", "الْبَيْتِ."],
+        ["الْقِرَاءَةُ", "هِوَايَةٌ", "مُفِيدَةٌ", "جِدّاً", "لِلْأَطْفَالِ."],
+        ["نَجْلِسُ", "مَعاً", "فِي", "غُرْفَةِ", "الْجُلُوسِ."]
+    ];
+
+    // Q7: Create (15)
+    const create_words = ["يَتَوَضَّأُ", "الْقُرْآنَ", "مُصَلَّى", "مِعْطَفٌ", "نَظَّارَةٌ", "شَجَرَةُ الْأُسْرَةِ", "طَبِيبَةٌ", "مُجْتَهِدٌ", "تَوْأَمٌ", "يَسْكُنُ", "هِوَايَةٌ", "مَشْغُولٌ", "إِيجَارٌ", "يَزُورُ", "الْعَاصِمَةُ"];
+
+    // --- Core Logic --- //
+    let currentScore = 0;
+    let answered = new Set();
+    let orderData = [];
+
+    function renderMCQ(data, containerId, prefix) {
+        let html = '';
+        data.forEach((item, i) => {
+            html += `<div class="question-block" id="${prefix}${i}">
+                <p>${i+1}. ${item.q}</p>
+                ${item.o.map((opt, j) => `<label><input type="radio" name="${prefix}${i}" onclick="chk('${prefix}${i}', ${j}, ${item.a})"> ${opt}</label>`).join('')}
+            </div>`;
+        });
+        document.getElementById(containerId).innerHTML = html;
+    }
+
+    function renderTF(data, containerId, prefix) {
+        let html = '';
+        data.forEach((item, i) => {
+            html += `<div class="question-block" id="${prefix}${i}">
+                <p>${i+1}. ${item.q}</p>
+                <label><input type="radio" name="${prefix}${i}" onclick="chk('${prefix}${i}', 1, ${item.a})"> صَحّ</label>
+                <label><input type="radio" name="${prefix}${i}" onclick="chk('${prefix}${i}', 0, ${item.a})"> خَطَأ</label>
+            </div>`;
+        });
+        document.getElementById(containerId).innerHTML = html;
+    }
+
+    function renderFill(data, containerId, prefix) {
+        let html = '';
+        let opts = `<option value="" disabled selected>-- اِخْتَارِي --</option>` + fill_words.map(w => `<option value="${w}">${w}</option>`).join('');
+        data.forEach((item, i) => {
+            html += `<div class="question-block" id="${prefix}${i}">
+                <p>${i+1}. ${item.pre} <select onchange="chkFill(this, '${item.a}', '${prefix}${i}')">${opts}</select> ${item.post}</p>
+            </div>`;
+        });
+        document.getElementById(containerId).innerHTML = html;
+    }
+
+    function renderOrderUI() {
+        let html = '';
+        orderData.forEach((st, i) => {
+            let solvedClass = st.solved ? 'correct' : '';
+            html += `<div class="question-block ${solvedClass}" id="ord-${i}">
+                <p>${i+1}. رَتِّبِي الْكَلِمَات:</p>
+                <div class="scrambled-words" id="scrambled-${i}">
+                    ${st.scrambled.map((w, j) => `<button type="button" class="word-btn" ${st.solved?'disabled':''} onclick="mvWord(${i}, 'scrambled', ${j})">${w}</button>`).join('')}
+                </div>
+                <div class="answer-box" id="ans-${i}">
+                    ${st.selected.map((w, j) => `<button type="button" class="word-btn" ${st.solved?'disabled':''} onclick="mvWord(${i}, 'selected', ${j})">${w}</button>`).join('')}
+                </div>
+                ${!st.solved ? `<button class="check-btn" onclick="chkOrder(${i})">تَحَقُّق</button>` : ''}
+            </div>`;
+        });
+        document.getElementById('sec6-order').innerHTML = html;
+    }
+
+    function renderCreate() {
+        let html = '';
+        create_words.forEach((w, i) => {
+            html += `<div class="question-block"><p>${i+1}. <strong>${w}</strong></p><textarea rows="2" placeholder="اُكْتُبِي الْجُمْلَةَ هُنَا..."></textarea></div>`;
+        });
+        document.getElementById('sec7-create').innerHTML = html;
+    }
+
+    // Checking Functions
+    function chk(id, sel, ans) {
+        if(answered.has(id)) return;
+        answered.add(id);
+        let el = document.getElementById(id);
+        if(sel === ans) { el.classList.add('correct'); currentScore++; }
+        else { el.classList.add('wrong'); }
+        updateScore();
+        el.querySelectorAll('input').forEach(i => i.disabled = true);
+    }
+
+    function chkFill(selEl, ans, id) {
+        if(answered.has(id)) return;
+        let el = document.getElementById(id);
+        if(selEl.value === ans) {
+            answered.add(id);
+            el.classList.add('correct');
+            selEl.disabled = true;
+            currentScore++;
+            updateScore();
+        } else if(selEl.value !== "") {
+            el.classList.add('wrong');
+            setTimeout(() => { if(!answered.has(id)){ el.classList.remove('wrong'); selEl.value=""; } }, 1000);
+        }
+    }
+
+    function mvWord(qIdx, from, wIdx) {
+        let st = orderData[qIdx];
+        if(st.solved) return;
+        if(from === 'scrambled') {
+            st.selected.push(st.scrambled.splice(wIdx, 1));
+        } else {
+            st.scrambled.push(st.selected.splice(wIdx, 1));
+        }
+        renderOrderUI();
+    }
+
+    function chkOrder(qIdx) {
+        let st = orderData[qIdx];
+        if(st.solved) return;
+        let isMatch = st.selected.join(' ') === st.correct.join(' ');
+        let el = document.getElementById(`ord-${qIdx}`);
+        if(isMatch) {
+            st.solved = true;
+            currentScore++;
+            updateScore();
+            renderOrderUI();
+        } else {
+            el.classList.add('wrong');
+            setTimeout(() => {
+                if(!st.solved) {
+                    el.classList.remove('wrong');
+                    st.scrambled = st.scrambled.concat(st.selected);
+                    st.selected = [];
+                    renderOrderUI();
+                }
+            }, 1000);
+        }
+    }
+
+    function updateScore() { document.getElementById('final-score').innerText = currentScore; }
+
+    // Initialization
+    function init() {
+        renderMCQ(d_sec1_mcq, 'sec1-mcq', 'q1m_');
+        renderTF(d_sec1_tf, 'sec1-tf', 'q1t_');
+        renderMCQ(d_sec2_mcq, 'sec2-mcq', 'q2m_');
+        renderTF(d_sec3_tf, 'sec3-tf', 'q3t_');
+        renderMCQ(d_sec4_spo, 'sec4-spo', 'q4s_');
+        renderFill(d_sec5_fill, 'sec5-fill', 'q5f_');
+        
+        orderData = d_sec6_order.map(arr => ({
+            correct: arr,
+            scrambled: [...arr].sort(() => Math.random() - 0.5),
+            selected: [],
+            solved: false
+        }));
+        renderOrderUI();
+        renderCreate();
+    }
+
+    // Navigation
+    let currentPage = 1;
+    const totalPages = 8;
+    function changePage(dir) {
+        document.getElementById(`page${currentPage}`).classList.remove('active');
+        currentPage += dir;
+        document.getElementById(`page${currentPage}`).classList.add('active');
+        document.getElementById('prev-btn').disabled = currentPage === 1;
+        let nextBtn = document.getElementById('next-btn');
+        if (currentPage === totalPages) { nextBtn.style.display = 'none'; } 
+        else { nextBtn.style.display = 'inline-block'; nextBtn.innerText = (currentPage === totalPages - 1) ? 'إِنْهَاء' : 'التَّالِي'; }
+        window.scrollTo(0, 0);
+    }
+
+    window.onload = init;
+</script>
+
+<noscript>
+    <div style="background:red; color:white; padding:20px; text-align:center; font-size:20px;">
+        عذراً! يجب تفعيل (JavaScript) في متصفحك لكي تعمل الأسئلة بشكل صحيح.
+    </div>
+</noscript>
+
+</body>
+</html>
