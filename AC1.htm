@@ -1,0 +1,453 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لُعْبَةُ وَصْفِ السَّكَنِ</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            font-size: 1.2rem;
+            line-height: 1.8;
+        }
+        h1, h2, h3 {
+            color: #2c3e50;
+            text-align: center;
+        }
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .video-container {
+            text-align: center;
+            margin-bottom: 20px;
+            padding: 20px;
+            background-color: #e8f4f8;
+            border-radius: 10px;
+            border: 2px dashed #3498db;
+        }
+        .video-container a {
+            font-size: 1.3rem;
+            color: #e74c3c;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .video-container a:hover {
+            text-decoration: underline;
+        }
+        .question-box {
+            background-color: #fafafa;
+            border: 1px solid #ddd;
+            padding: 15px 20px;
+            margin-bottom: 15px;
+            border-radius: 10px;
+        }
+        .options {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        .option-btn {
+            padding: 12px;
+            font-size: 1.1rem;
+            border: 2px solid #bdc3c7;
+            border-radius: 8px;
+            background-color: #fff;
+            cursor: pointer;
+            transition: 0.3s;
+            text-align: right;
+            font-family: inherit;
+        }
+        .option-btn:hover:not(:disabled) {
+            background-color: #ecf0f1;
+        }
+        .option-btn:disabled {
+            cursor: not-allowed;
+            color: #555;
+        }
+        .correct {
+            background-color: #2ecc71 !important; /* لون أخضر للجواب الصحيح */
+            color: #fff !important;
+            border-color: #27ae60 !important;
+        }
+        .wrong {
+            background-color: #f1c40f !important; /* لون أصفر للجواب الخطأ */
+            color: #000 !important;
+            border-color: #f39c12 !important;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+        .nav-btn {
+            background-color: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 25px;
+            font-size: 1.2rem;
+            border-radius: 8px;
+            cursor: pointer;
+        }
+        .nav-btn:hover {
+            background-color: #2980b9;
+        }
+        .nav-btn:disabled {
+            background-color: #95a5a6;
+            cursor: not-allowed;
+        }
+        select {
+            padding: 5px;
+            font-size: 1.1rem;
+            border-radius: 5px;
+            font-family: inherit;
+            margin: 0 5px;
+            border: 2px solid #bdc3c7;
+        }
+        select.correct { background-color: #2ecc71 !important; color: white; }
+        select.wrong { background-color: #f1c40f !important; color: black; }
+        .word-bank {
+            background: #e1f5fe;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            text-align: center;
+            font-weight: bold;
+            line-height: 2;
+        }
+        textarea {
+            width: 100%;
+            height: 60px;
+            margin-top: 10px;
+            font-size: 1.1rem;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #ccc;
+            font-family: inherit;
+            resize: none;
+        }
+        .score-display {
+            font-size: 2rem;
+            text-align: center;
+            color: #27ae60;
+            font-weight: bold;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>لُعْبَةُ وَصْفِ السَّكَنِ 🏠</h1>
+    
+    <div class="video-container">
+        <p>مَرْحَبًا بِكِ يَا طَالِبَتِي العَزِيزَةَ! قَبْلَ البَدْءِ فِي اللُّعْبَةِ، يَرْجَى الاسْتِمَاعُ إِلَى مَقْطَعِ "وَصْفِ السَّكَنِ".</p>
+        <a href="https://www.youtube.com/results?search_query=وصف+السكن+العربية+لغير+الناطقين+بها" target="_blank">📺 اضْغَطِي هُنَا لِلِاسْتِمَاعِ إِلَى المَقْطَعِ الصَّوْتِيِّ / المَرْئِيِّ</a>
+    </div>
+
+    <!-- Section 1 -->
+    <div id="section-1" class="section active">
+        <h2>القِسْمُ الأَوَّلُ: أَسْئِلَةُ الِاخْتِيَارِ مِنْ مُتَعَدِّدٍ (الفَهْمُ العَامُّ)</h2>
+        <p>اِخْتَارِي الجَوَابَ الصَّحِيحَ مِمَّا يَلِي (15 نُقْطَةً):</p>
+        <div id="mcq-container"></div>
+    </div>
+
+    <!-- Section 2 -->
+    <div id="section-2" class="section">
+        <h2>القِسْمُ الثَّانِي: صَحِيحٌ أَمْ خَطَأ (الفَهْمُ الِاسْتِنْتَاجِيُّ)</h2>
+        <p>هَلِ الجُمَلُ التَّالِيَةُ صَحِيحَةٌ أَمْ خَاطِئَةٌ؟ (15 نُقْطَةً):</p>
+        <div id="tf-container"></div>
+    </div>
+
+    <!-- Section 4 -->
+    <div id="section-4" class="section">
+        <h2>القِسْمُ الرَّابِعُ: اِمْلَأ الفَرَاغَ بِالكَلِمَاتِ المُنَاسِبَةِ</h2>
+        <p>اِخْتَارِي الكَلِمَةَ المُنَاسِبَةَ مِنَ الصُّنْدُوقِ لِإِكْمَالِ الجُمَلِ (15 نُقْطَةً):</p>
+        <div class="word-bank">
+            الكَلِمَاتُ: ( بَيْت - حَدِيقَة - شَقَّة - سَرِير - أَرِيكَة - حَمَّام - مَطْبَخ - ثَلَّاجَة - مُكَيِّف )
+        </div>
+        <div id="fill-container"></div>
+    </div>
+
+    <!-- Section 5 -->
+    <div id="section-5" class="section">
+        <h2>القِسْمُ الخَامِسُ: أَسْئِلَةٌ حَوْلَ وَصْفِ السَّكَنِ</h2>
+        <p>اِخْتَارِي المَعْنَى أَوِ المَكَانَ الصَّحِيحَ لِلْمُفْرَدَاتِ التَّالِيَةِ (10 نِقَاطٍ):</p>
+        <div id="housing-mcq-container"></div>
+    </div>
+
+    <!-- Section Final (Vocab) -->
+    <div id="section-6" class="section">
+        <h2>القِسْمُ الأَخِيرُ: المُفْرَدَاتُ وَإِنْشَاءُ الجُمَلِ</h2>
+        <p>اُكْتُبِي جُمْلَةً مُفِيدَةً بِاسْتِخْدَامِ كُلِّ كَلِمَةٍ مِنَ الكَلِمَاتِ الجَدِيدَةِ التَّالِيَةِ:</p>
+        <div id="vocab-container"></div>
+        <div class="score-display" id="final-score" style="display: none;"></div>
+    </div>
+
+    <div class="nav-buttons">
+        <button class="nav-btn" id="prev-btn" onclick="changeSection(-1)" disabled>السَّابِقُ</button>
+        <button class="nav-btn" id="next-btn" onclick="changeSection(1)">التَّالِي</button>
+    </div>
+</div>
+
+<script>
+    let currentSection = 1;
+    const totalSections = 6;
+    let totalScore = 0;
+
+    // بيانات القسم الأول
+    const mcqData = [
+        { q: "1. أَيْنَ يَقَعُ البَيْتُ؟", opts: ["وَسْطَ المَدِينَةِ", "خَارِجَ المَدِينَةِ", "فِي القَرْيَةِ"], ans: 0 },
+        { q: "2. عَلَى مَاذَا يُطِلُّ البَيْتُ؟", opts: ["عَلَى الشَّارِعِ", "عَلَى حَدِيقَةٍ جَمِيلَةٍ", "عَلَى البَحْرِ"], ans: 1 },
+        { q: "3. كَمْ عَدَدُ أَدْوَارِ البَيْتِ؟", opts: ["دَوْرَانِ", "دَوْرٌ وَاحِدٌ", "ثَلَاثَةُ أَدْوَارٍ"], ans: 2 },
+        { q: "4. كَمْ شَقَّةً فِي كُلِّ دَوْرٍ؟", opts: ["شَقَّتَانِ", "شَقَّةٌ وَاحِدَةٌ", "ثَلَاثُ شُقَقٍ"], ans: 1 },
+        { q: "5. كَمْ غُرْفَةَ نَوْمٍ فِي الشَّقَّةِ؟", opts: ["ثَلَاثُ غُرَفٍ", "غُرْفَتَانِ", "غُرْفَةٌ وَاحِدَةٌ"], ans: 0 },
+        { q: "6. كَمْ حَمَّامًا فِي الشَّقَّةِ؟", opts: ["حَمَّامٌ وَاحِدٌ", "حَمَّامَانِ", "ثَلَاثَةُ حَمَّامَاتٍ"], ans: 1 },
+        { q: "7. مَاذَا يُوجَدُ فِي غُرْفَةِ النَّوْمِ بِالإِضَافَةِ إِلَى السَّرِيرِ؟", opts: ["ثَلَّاجَةٌ", "خِزَانَةُ مَلَابِسَ", "مَوْقِدٌ"], ans: 1 },
+        { q: "8. أَيْنَ تُوجَدُ الأَرِيكَةُ وَالكَرَاسِيُّ؟", opts: ["فِي المَطْبَخِ", "فِي الحَمَّامِ", "فِي غُرْفَةِ الجُلُوسِ"], ans: 2 },
+        { q: "9. أَيْنَ يُوجَدُ المُكَيِّفُ؟", opts: ["فِي غُرْفَةِ الجُلُوسِ", "فِي الحَمَّامِ", "فِي حَدِيقَةِ المَنْزِلِ"], ans: 0 },
+        { q: "10. أَيْنَ تُوجَدُ المِرْآةُ وَالسَّخَّانُ وَالغَسَّالَةُ؟", opts: ["فِي الحَمَّامِ", "فِي المَطْبَخِ", "فِي غُرْفَةِ النَّوْمِ"], ans: 0 },
+        { q: "11. أَيْنَ تُوجَدُ الثَّلَّاجَةُ؟", opts: ["فِي الصَّالَةِ", "فِي المَطْبَخِ", "فِي الحَمَّامِ"], ans: 1 },
+        { q: "12. مَاذَا يُوجَدُ فِي المَطْبَخِ أَيْضًا؟", opts: ["سَرِيرٌ وَسِتَارَةٌ", "أَرِيكَةٌ وَطَاوِلَةٌ", "فُرْنٌ وَمَوْقِدٌ"], ans: 2 },
+        { q: "13. هَلْ يُوجَدُ حَمَّامُ سِبَاحَةٍ فِي البَيْتِ؟", opts: ["نَعَمْ، صَغِيرٌ جِدًّا", "نَعَمْ، كَبِيرٌ جِدًّا", "لَا، لَا يُوجَدُ"], ans: 0 },
+        { q: "14. أَيْنَ يُوجَدُ حَمَّامُ السِّبَاحَةِ؟", opts: ["فِي غُرْفَةِ الجُلُوسِ", "فِي المَطْبَخِ", "فِي حَدِيقَةِ المَنْزِلِ"], ans: 2 },
+        { q: "15. مَاذَا طَلَبَ المُتَحَدِّثُ فِي نِهَايَةِ المَقْطَعِ؟", opts: ["أَنْ تَصِفَ بَيْتَكَ", "أَنْ تَشْتَرِيَ بَيْتَهُ", "أَنْ تَزُورَهُ فِي بَيْتِهِ"], ans: 0 }
+    ];
+
+    // بيانات القسم الثاني (الفهم الاستنتاجي)
+    const tfData = [
+        { q: "1. هَذَا البَيْتُ مُنَاسِبٌ لِسَكَنِ أُسْرَةٍ كَبِيرَةٍ أَوْ عِدَّةِ أُسَرٍ.", ans: 0 }, // صحيح (3 شقق)
+        { q: "2. البَيْتُ يُوجَدُ فِي مَكَانٍ بَعِيدٍ وَمَعْزُولٍ عَنِ النَّاسِ.", ans: 1 }, // خطأ (وسط المدينة)
+        { q: "3. يُمْكِنُكَ رُؤْيَةُ الأَشْجَارِ أَوِ النَّبَاتَاتِ مِنْ نَوَافِذِ البَيْتِ.", ans: 0 }, // صحيح (يطل على حديقة)
+        { q: "4. الشَّخْصُ الَّذِي يَتَحَدَّثُ يَشْعُرُ بِالضِّيقِ وَعَدَمِ الرَّاحَةِ فِي بَيْتِهِ.", ans: 1 }, // خطأ (بيت جميل)
+        { q: "5. هُنَاكَ مَكَانٌ مُخَصَّصٌ لِاسْتِقْبَالِ الضُّيُوفِ وَالزُّوَارِ فِي الشَّقَّةِ.", ans: 0 }, // صحيح (غرفة جلوس)
+        { q: "6. الشَّقَّةُ فِيهَا مَكَانٌ مُجَهَّزٌ لِطَبْخِ الطَّعَامِ.", ans: 0 }, // صحيح (مطبخ)
+        { q: "7. لَا يُوجَدُ مَكَانٌ لِحِفْظِ المَلَابِسِ وَتَرْتِيبِهَا دَاخِلَ غُرْفَةِ النَّوْمِ.", ans: 1 }, // خطأ (يوجد خزانة ملابس)
+        { q: "8. غُرْفَةُ الجُلُوسِ تَكُونُ بَارِدَةً وَمُعْتَدِلَةً فِي فَصْلِ الصَّيْفِ الحَارِّ.", ans: 0 }, // صحيح (يوجد مكيف)
+        { q: "9. يُمْكِنُ تَنْظِيفُ وَغَسْلُ المَلَابِسِ دَاخِلَ الحَمَّامِ بِسُهُولَةٍ.", ans: 0 }, // صحيح (يوجد غسالة)
+        { q: "10. حَمَّامُ السِّبَاحَةِ مُنَاسِبٌ لِمُمَارَسَةِ رِيَاضَةِ السِّبَاحَةِ الأُولِيمْبِيَّةِ الطَّوِيلَةِ.", ans: 1 }, // خطأ (صغير جدا)
+        { q: "11. يُمْكِنُ لِثَلَاثِ عَائِلَاتٍ أَنْ تَسْكُنَ فِي هَذَا البَيْتِ الكَبِيرِ.", ans: 0 }, // صحيح (3 أدوار و3 شقق)
+        { q: "12. يَسْتَطِيعُ الشَّخْصُ أَنْ يَسْتَحِمَّ بِمَاءٍ دَافِئٍ فِي فَصْلِ الشِّتَاءِ دَاخِلَ الحَمَّامِ.", ans: 0 }, // صحيح (يوجد سخان)
+        { q: "13. المُتَحَدِّثُ يَعِيشُ فِي شَقَّةٍ فَارِغَةٍ تَمَامًا مِنَ الأَثَاثِ وَالأَجْهِزَةِ.", ans: 1 }, // خطأ
+        { q: "14. يُمْكِنُكَ الجُلُوسُ مَعَ عَائِلَتِكَ فِي مَكَانَيْنِ مُخْتَلِفَيْنِ دَاخِلَ الشَّقَّةِ.", ans: 0 }, // صحيح (غرفة جلوس وصالة)
+        { q: "15. المُتَحَدِّثُ يُرِيدُ أَنْ يَعْرِفَ مَعْلُومَاتٍ عَنْ مَسْكَنِكَ أَنْتَ بَعْدَ أَنْ وَصَفَ بَيْتَهُ.", ans: 0 } // صحيح
+    ];
+
+    // بيانات القسم الرابع (إملاء الفراغ)
+    const words = ['بَيْت', 'حَدِيقَة', 'شَقَّة', 'سَرِير', 'أَرِيكَة', 'حَمَّام', 'مَطْبَخ', 'ثَلَّاجَة', 'مُكَيِّف'];
+    const fillData = [
+        { text: "1. أَنَا أَسْكُنُ فِي ______ جَمِيلٍ وَوَاسِعٍ.", ans: "بَيْت" },
+        { text: "2. مَنْزِلِي يُطِلُّ عَلَى ______ فِيهَا أَشْجَارٌ كَثِيرَةٌ.", ans: "حَدِيقَة" },
+        { text: "3. أَنَامُ كُلَّ لَيْلَةٍ عَلَى ______ مُرِيحٍ وَنَظِيفٍ.", ans: "سَرِير" },
+        { text: "4. أُمِّي تُحَضِّرُ لَنَا الفُطُورَ اللَّذِيذَ فِي الـ ______.", ans: "مَطْبَخ" },
+        { text: "5. نَحْفَظُ الحَلِيبَ وَالعَصِيرَ بَارِدًا دَاخِلَ الـ ______.", ans: "ثَلَّاجَة" },
+        { text: "6. أَجْلِسُ مَعَ أُسْرَتِي مَسَاءً عَلَى الـ ______.", ans: "أَرِيكَة" },
+        { text: "7. الجَوُّ حَارٌّ جِدًّا اليَوْمَ، يَرْجَى تَشْغِيلُ الـ ______.", ans: "مُكَيِّف" },
+        { text: "8. أَغْسِلُ يَدِي وَوَجْهِي صَبَاحًا فِي الـ ______.", ans: "حَمَّام" },
+        { text: "9. عَائِلَتِي الصَّغِيرَةُ تَعِيشُ فِي ______ مُكَوَّنَةٍ مِنْ ثَلَاثِ غُرَفٍ.", ans: "شَقَّة" },
+        { text: "10. نَضَعُ الفَوَاكِهَ الطَّازَجَةَ فِي الـ ______ لِكَيْ لَا تَفْسُدَ.", ans: "ثَلَّاجَة" },
+        { text: "11. أُشَاهِدُ التِّلْفَازَ وَأَنَا جَالِسٌ عَلَى الـ ______ المُرِيحَةِ.", ans: "أَرِيكَة" },
+        { text: "12. زُهُورُ الـ ______ مُلَوَّنَةٌ وَرَائِحَتُهَا عَطِرَةٌ جِدًّا.", ans: "حَدِيقَة" },
+        { text: "13. هَذَا الـ ______ جَدِيدٌ وَمُنَاسِبٌ لِغُرْفَةِ نَوْمِي.", ans: "سَرِير" },
+        { text: "14. نُنَظِّفُ الأَطْبَاقَ فِي حَوْضِ الـ ______ بَعْدَ الغَدَاءِ.", ans: "مَطْبَخ" },
+        { text: "15. يَتَكَوَّنُ كُلُّ دَوْرٍ مِنْ ______ وَاحِدَةٍ فَقَطْ.", ans: "شَقَّة" }
+    ];
+
+    // بيانات القسم الخامس
+    const housingMcqData = [
+        { q: "1. المَكَانُ الَّذِي نَنَامُ فِيهِ وَنَسْتَرِيحُ يُسَمَّى:", opts: ["غُرْفَةُ النَّوْمِ", "المَطْبَخُ", "الصَّالَةُ"], ans: 0 },
+        { q: "2. المَكَانُ الَّذِي نُعِدُّ وَنَطْبُخُ فِيهِ الطَّعَامَ يُسَمَّى:", opts: ["الحَمَّامُ", "المَطْبَخُ", "حَدِيقَةُ المَنْزِلِ"], ans: 1 },
+        { q: "3. الجِهَازُ الَّذِي يُبَرِّدُ هَوَاءَ الغُرْفَةِ فِي الصَّيْفِ يُسَمَّى:", opts: ["المَوْقِدُ", "السَّخَّانُ", "المُكَيِّفُ"], ans: 2 },
+        { q: "4. الجِهَازُ الَّذِي نَحْفَظُ فِيهِ الطَّعَامَ لِيَبْقَى صَالِحًا يُسَمَّى:", opts: ["الثَّلَّاجَةُ", "الغَسَّالَةُ", "الخِزَانَةُ"], ans: 0 },
+        { q: "5. جِهَازٌ نَسْتَخْدِمُهُ لِتَنْظِيفِ وَغَسْلِ المَلَابِسِ المُتَّسِخَةِ:", opts: ["الفُرْنُ", "الغَسَّالَةُ", "المُكَيِّفُ"], ans: 1 },
+        { q: "6. قِطْعَةٌ مِنَ القُمَاشِ المَنْسُوجِ نَضَعُهَا عَلَى الأَرْضِ لِلزِّينَةِ:", opts: ["السَّجَّادَةُ", "السِّتَارَةُ", "المِرْآةُ"], ans: 0 },
+        { q: "7. قِطْعَةٌ زُجَاجِيَّةٌ نَرَى فِيهَا وُجُوهَنَا كُلَّ صَبَاحٍ:", opts: ["النَّافِذَةُ", "المِرْآةُ", "الطَّاوِلَةُ"], ans: 1 },
+        { q: "8. قِطْعَةُ أَثَاثٍ نُعَلِّقُ وَنَحْفَظُ فِيهَا مَلَابِسَنَا وَأَغْرَاضَنَا:", opts: ["الأَرِيكَةُ", "السَّرِيرُ", "خِزَانَةُ المَلَابِسِ"], ans: 2 },
+        { q: "9. المَكَانُ الَّذِي نَجْلِسُ فِيهِ مَعَ الضُّيُوفِ وَالعَائِلَةِ:", opts: ["غُرْفَةُ النَّوْمِ", "غُرْفَةُ الجُلُوسِ", "الحَمَّامُ"], ans: 1 },
+        { q: "10. مِسَاحَةٌ مَبْنِيَّةٌ فِيهَا مَاءٌ نَسْتَخْدِمُهَا لِلسِّبَاحَةِ:", opts: ["المَطْبَخُ", "حَمَّامُ السِّبَاحَةِ", "الصَّالَةُ"], ans: 1 }
+    ];
+
+    // كلمات القسم الأخير
+    const vocabWords = ['بَيْت', 'حَدِيقَة', 'شَقَّة', 'سَرِير', 'خِزَانَة', 'أَرِيكَة', 'مُكَيِّف', 'غَسَّالَة', 'ثَلَّاجَة', 'سَخَّان'];
+
+    function createMCQ(data, containerId) {
+        const container = document.getElementById(containerId);
+        data.forEach((item, index) => {
+            const box = document.createElement('div');
+            box.className = 'question-box';
+            box.innerHTML = `<div class="question-text"><strong>${item.q}</strong></div>`;
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            item.opts.forEach((opt, oIndex) => {
+                const btn = document.createElement('button');
+                btn.className = 'option-btn';
+                btn.textContent = opt;
+                btn.onclick = () => checkAnswer(btn, optionsDiv, oIndex === item.ans);
+                optionsDiv.appendChild(btn);
+            });
+            box.appendChild(optionsDiv);
+            container.appendChild(box);
+        });
+    }
+
+    function createTF(data, containerId) {
+        const container = document.getElementById(containerId);
+        data.forEach((item, index) => {
+            const box = document.createElement('div');
+            box.className = 'question-box';
+            box.innerHTML = `<div class="question-text"><strong>${item.q}</strong></div>`;
+            const optionsDiv = document.createElement('div');
+            optionsDiv.className = 'options';
+            
+            const btnTrue = document.createElement('button');
+            btnTrue.className = 'option-btn';
+            btnTrue.textContent = "صَحِيحٌ";
+            btnTrue.onclick = () => checkAnswer(btnTrue, optionsDiv, item.ans === 0);
+            
+            const btnFalse = document.createElement('button');
+            btnFalse.className = 'option-btn';
+            btnFalse.textContent = "خَطَأٌ";
+            btnFalse.onclick = () => checkAnswer(btnFalse, optionsDiv, item.ans === 1);
+
+            optionsDiv.appendChild(btnTrue);
+            optionsDiv.appendChild(btnFalse);
+            box.appendChild(optionsDiv);
+            container.appendChild(box);
+        });
+    }
+
+    function createFillIn(data, containerId) {
+        const container = document.getElementById(containerId);
+        data.forEach((item, index) => {
+            const box = document.createElement('div');
+            box.className = 'question-box';
+            
+            const parts = item.text.split("______");
+            const p = document.createElement('p');
+            p.innerHTML = `<strong>${parts}</strong>`;
+            
+            const select = document.createElement('select');
+            select.innerHTML = `<option value="">-- اِخْتَارِي --</option>`;
+            words.forEach(w => {
+                select.innerHTML += `<option value="${w}">${w}</option>`;
+            });
+            
+            select.onchange = function() {
+                if (this.disabled) return;
+                this.disabled = true;
+                if (this.value === item.ans) {
+                    this.classList.add('correct');
+                    totalScore++;
+                } else {
+                    this.classList.add('wrong');
+                    // إظهار الإجابة الصحيحة بجانبها
+                    const span = document.createElement('span');
+                    span.style.color = 'green';
+                    span.style.fontWeight = 'bold';
+                    span.innerText = ` (الصَّحِيحُ: ${item.ans})`;
+                    p.appendChild(span);
+                }
+            };
+            
+            p.appendChild(select);
+            p.innerHTML += `<strong>${parts[1]}</strong>`;
+            box.appendChild(p);
+            container.appendChild(box);
+        });
+    }
+
+    function createVocab(data, containerId) {
+        const container = document.getElementById(containerId);
+        data.forEach((word, index) => {
+            const box = document.createElement('div');
+            box.className = 'question-box';
+            box.innerHTML = `<label><strong>${index + 1}. الكَلِمَة: ( ${word} )</strong></label>
+                             <textarea placeholder="اُكْتُبِي جُمْلَةً هُنَا..."></textarea>`;
+            container.appendChild(box);
+        });
+    }
+
+    function checkAnswer(btn, parentDiv, isCorrect) {
+        if (parentDiv.getAttribute('data-answered') === 'true') return;
+        parentDiv.setAttribute('data-answered', 'true');
+        const buttons = parentDiv.querySelectorAll('.option-btn');
+        
+        buttons.forEach((b, i) => {
+            b.disabled = true;
+            // نبحث عن الزر الصحيح لنلونه بالأخضر دائمًا
+            let isThisBtnCorrect = false;
+            if (parentDiv.parentNode.parentNode.id === 'mcq-container') {
+                isThisBtnCorrect = (i === mcqData[Array.from(parentDiv.parentNode.parentNode.children).indexOf(parentDiv.parentNode)].ans);
+            } else if (parentDiv.parentNode.parentNode.id === 'tf-container') {
+                isThisBtnCorrect = (i === tfData[Array.from(parentDiv.parentNode.parentNode.children).indexOf(parentDiv.parentNode)].ans);
+            } else if (parentDiv.parentNode.parentNode.id === 'housing-mcq-container') {
+                 isThisBtnCorrect = (i === housingMcqData[Array.from(parentDiv.parentNode.parentNode.children).indexOf(parentDiv.parentNode)].ans);
+            }
+
+            if (isThisBtnCorrect) {
+                b.classList.add('correct');
+            }
+        });
+
+        if (isCorrect) {
+            totalScore++;
+        } else {
+            btn.classList.add('wrong');
+        }
+    }
+
+    function changeSection(step) {
+        document.getElementById(`section-${currentSection}`).classList.remove('active');
+        currentSection += step;
+        document.getElementById(`section-${currentSection}`).classList.add('active');
+        
+        document.getElementById('prev-btn').disabled = currentSection === 1;
+        
+        if (currentSection === totalSections) {
+            document.getElementById('next-btn').style.display = 'none';
+            showScore();
+        } else {
+            document.getElementById('next-btn').style.display = 'inline-block';
+        }
+    }
+
+    function showScore() {
+        const scoreDiv = document.getElementById('final-score');
+        scoreDiv.style.display = 'block';
+        scoreDiv.innerHTML = `أَحْسَنْتِ! النَّتِيجَةُ النِّهَائِيَّةُ لِلْأَسْئِلَةِ المَوْضُوعِيَّةِ: ${totalScore} مِنْ 55 🌟`;
+    }
+
+    // تهيئة اللعبة
+    window.onload = () => {
+        createMCQ(mcqData, 'mcq-container');
+        createTF(tfData, 'tf-container');
+        createFillIn(fillData, 'fill-container');
+        createMCQ(housingMcqData, 'housing-mcq-container');
+        createVocab(vocabWords, 'vocab-container');
+    };
+</script>
+
+</body>
+</html>
