@@ -1,0 +1,413 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>لُعْبَةُ اسْتِئْجَارِ الشَّقَّةِ - الْمُسْتَوَى الْمُبْتَدِئُ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+        
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f0f8ff;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            font-size: 18px;
+            line-height: 1.6;
+        }
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .audio-section {
+            text-align: center;
+            background: #e9ecef;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+        .audio-link {
+            display: block;
+            margin-top: 10px;
+            color: #007bff;
+            text-decoration: none;
+            font-weight: bold;
+        }
+        .section {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .section.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .question-card {
+            background: #fdfdfd;
+            border: 1px solid #ddd;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        .options button {
+            background: #eef2f3;
+            border: 2px solid #ccc;
+            padding: 10px 15px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            transition: 0.3s;
+        }
+        .options button:hover {
+            background: #dfe6e9;
+        }
+        .options button:disabled {
+            cursor: not-allowed;
+            color: #555;
+        }
+        .correct {
+            background-color: #28a745 !important;
+            color: white !important;
+            border-color: #218838 !important;
+        }
+        .incorrect {
+            background-color: #ffc107 !important; /* اللون الأصفر كما طلبت */
+            color: black !important;
+            border-color: #e0a800 !important;
+        }
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            background: #eef2f3;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #2980b9;
+        }
+        .word-bank span {
+            background: #fff;
+            padding: 5px 10px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+        }
+        select {
+            font-size: 16px;
+            padding: 5px;
+            font-family: 'Tajawal', sans-serif;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
+        textarea {
+            width: 100%;
+            height: 60px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+            margin-top: 5px;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+        }
+        .nav-buttons button {
+            background: #3498db;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+        }
+        .nav-buttons button:hover {
+            background: #2980b9;
+        }
+        .nav-buttons button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .result-container {
+            text-align: center;
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>لُعْبَةُ اسْتِئْجَارِ الشَّقَّةِ</h1>
+    
+    <!-- المقطع الصوتي -->
+    <div class="audio-section">
+        <p><b>اسْتَمِعْ إِلَى الْمَقْطَعِ الصَّوْتِيِّ قَبْلَ الْبَدْءِ:</b></p>
+        <audio controls>
+            <source src="015-استئجار الشقة-Daire Kiralama.MP3" type="audio/mpeg">
+            مُتَصَفِّحُكَ لَا يَدْعَمُ تَشْغِيلَ الصَّوْتِ.
+        </audio>
+        <a href="015-استئجار الشقة-Daire Kiralama.MP3" class="audio-link" target="_blank">إِذَا لَمْ يَعْمَلِ الصَّوْتُ، اضْغَطْ هُنَا لِلِاسْتِمَاعِ</a>
+    </div>
+
+    <!-- القسم الأول: اختيار من متعدد -->
+    <div class="section active" id="sec-1">
+        <h2>الْقِسْمُ الْأَوَّلُ: اخْتَرْ الْإِجَابَةَ الصَّحِيحَةَ (15 نُقْطَةً)</h2>
+        <div id="mcq-container"></div>
+    </div>
+
+    <!-- القسم الثاني: صح أو خطأ -->
+    <div class="section" id="sec-2">
+        <h2>الْقِسْمُ الثَّانِي: صَحِيحٌ أَمْ خَطَأٌ؟ (15 نُقْطَةً)</h2>
+        <div id="tf-container"></div>
+    </div>
+
+    <!-- القسم الثالث: املأ الفراغ -->
+    <div class="section" id="sec-3">
+        <h2>الْقِسْمُ الثَّالِثُ: امْلَأِ الْفَرَاغَ بِالْكَلِمَةِ الْمُنَاسِبَةِ (9 نِقَاطٍ)</h2>
+        
+        <div class="word-bank">
+            <span>مَفْرُوشَةً</span> <span>إِيجَارُهَا</span> <span>السِّمْسَرَةِ</span> 
+            <span>خِزَانَةٌ</span> <span>مِصْعَدٌ</span> <span>مَوْقِدٌ</span> 
+            <span>غَسَّالَةٌ</span> <span>عَقْدَ</span> <span>الْمُؤَجِّرُ</span> 
+            <span>مَائِدَةُ</span> <span>كَنَبَةً</span> <span>حَدِيقَةٍ</span> 
+            <span>صَالَةٌ</span> <span>مِرْآةٌ</span> <span>شُرْفَةٌ</span>
+        </div>
+
+        <div id="fill-blank-container"></div>
+    </div>
+
+    <!-- القسم الرابع: المفردات وبناء الجمل -->
+    <div class="section" id="sec-4">
+        <h2>الْقِسْمُ الرَّابِعُ: الْمُفْرَدَاتُ الْجَدِيدَةُ</h2>
+        <p style="text-align:center;">اكْتُبْ جُمْلَةً مُفِيدَةً بِاسْتِخْدَامِ كُلِّ كَلِمَةٍ مِنَ الْكَلِمَاتِ التَّالِيَةِ:</p>
+        <div id="vocab-container"></div>
+    </div>
+
+    <!-- شاشة النتيجة النهائية -->
+    <div class="section" id="sec-5">
+        <h2>النَّتِيجَةُ النِّهَائِيَّةُ</h2>
+        <div class="result-container" id="final-score"></div>
+        <p style="text-align:center; margin-top:20px;">* مُلَاحَظَةٌ: دَرَجَةُ قِسْمِ (تَكْوِينِ الْجُمَلِ) يَقُومُ الْمُعَلِّمُ بِتَقْيِيمِهَا بِنَفْسِهِ.</p>
+    </div>
+
+    <!-- أزرار التنقل -->
+    <div class="nav-buttons">
+        <button id="btn-prev" onclick="changeSection(-1)" disabled>السَّابِقُ</button>
+        <button id="btn-next" onclick="changeSection(1)">التَّالِي</button>
+    </div>
+</div>
+
+<script>
+    // بيانات القسم الأول (الاختيار من متعدد)
+    const mcqQuestions = [
+        { q: "مَاذَا يُرِيدُ الرَّجُلُ أَنْ يَسْتَأْجِرَ؟", opts: ["شَقَّةً مَفْرُوشَةً", "سَيَّارَةً جَدِيدَةً", "مَحَلًّا تِجَارِيًّا"], ans: 0 },
+        { q: "كَمْ غُرْفَةً طَلَبَ الرَّجُلُ فِي الشَّقَّةِ؟", opts: ["غُرْفَتَيْنِ وَصَالَةً", "ثَلَاثَ غُرَفٍ وَصَالَةً", "أَرْبَعَ غُرَفٍ"], ans: 1 },
+        { q: "أَيْنَ تَقَعُ الشَّقَّةُ الْأُولَى؟", opts: ["فِي حَيِّ الْحُسَيْنِ", "فِي حَيِّ الْعَبَّاسِيَّةِ", "فِي حَيِّ الْمَعَادِي"], ans: 1 },
+        { q: "فِي أَيِّ دَوْرٍ تَقَعُ الشَّقَّةُ الْأُولَى؟", opts: ["فِي الدَّوْرِ الْأَخِيرِ", "فِي الدَّوْرِ الْأَرْضِيِّ", "فِي الدَّوْرِ الثَّانِي"], ans: 0 },
+        { q: "لِمَاذَا رَفَضَ الرَّجُلُ الشَّقَّةَ الْأُولَى؟", opts: ["لِأَنَّهَا صَغِيرَةٌ", "لِأَنَّهَا فِي الدَّوْرِ الْأَخِيرِ", "لِأَنَّهَا غَالِيَةٌ"], ans: 1 },
+        { q: "أَيْنَ تَقَعُ الشَّقَّةُ الثَّانِيَةُ؟", opts: ["فِي حَيِّ الْعَبَّاسِيَّةِ", "عَلَى النِّيلِ", "فِي حَيِّ الْحُسَيْنِ"], ans: 2 },
+        { q: "عَلَى مَاذَا تُطِلُّ الشَّقَّةُ الثَّانِيَةُ؟", opts: ["عَلَى حَدِيقَةٍ وَشَارِعٍ", "عَلَى مَدْرَسَةٍ", "عَلَى مَسْجِدٍ"], ans: 0 },
+        { q: "هَلْ يُوجَدُ مِصْعَدٌ فِي الْعِمَارَةِ الثَّانِيَةِ؟", opts: ["نَعَمْ", "لَا", "أَحْيَانًا"], ans: 0 },
+        { q: "كَمْ إِيجَارُ الشَّقَّةِ فِي الشَّهْرِ؟", opts: ["أَلْفُ جُنَيْهٍ", "أَلْفَانِ", "ثَلَاثَةُ آلَافٍ"], ans: 0 },
+        { q: "كَمْ يَدْفَعُ الرَّجُلُ لِلتَّأْمِينِ؟", opts: ["إِيجَارَ شَهْرٍ", "إِيجَارَ شَهْرَيْنِ", "إِيجَارَ سَنَةٍ"], ans: 1 },
+        { q: "مَاذَا يُوجَدُ فِي غُرْفَةِ النَّوْمِ؟", opts: ["ثَلَّاجَةٌ وَمَوْقِدٌ", "سَرِيرٌ كَبِيرٌ وَخِزَانَةٌ", "غَسَّالَةٌ"], ans: 1 },
+        { q: "كَمْ سَرِيرًا فِي غُرْفَةِ الْأَطْفَالِ؟", opts: ["سَرِيرٌ وَاحِدٌ", "سَرِيرَانِ", "ثَلَاثَةُ أَسِرَّةٍ"], ans: 1 },
+        { q: "مَاذَا تَحْتَاجُ غُرْفَةُ الْمَكْتَبِ؟", opts: ["مَكْتَبًا جَدِيدًا", "كُرْسِيًّا", "كَنَبَةً"], ans: 2 },
+        { q: "كَيْفَ كَانَتْ كَرَاسِي مَائِدَةِ الطَّعَامِ؟", opts: ["جَدِيدَةً وَقَوِيَّةً", "قَدِيمَةً وَضَعِيفَةً", "صَغِيرَةً جِدًّا"], ans: 1 },
+        { q: "مَاذَا يُوجَدُ فِي الْمَطْبَخِ؟", opts: ["مَوْقِدٌ وَثَلَّاجَةٌ", "سَرِيرٌ", "غَسَّالَةٌ"], ans: 0 }
+    ];
+
+    // بيانات القسم الثاني (صح أو خطأ)
+    const tfQuestions = [
+        { q: "الرَّجُلُ يُرِيدُ شِرَاءَ شَقَّةٍ، وَلَيْسَ اسْتِئْجَارَهَا.", ans: false },
+        { q: "الشَّقَّةُ الَّتِي فِي الدَّوْرِ الْأَخِيرِ لَا تُنَاسِبُ الرَّجُلَ.", ans: true },
+        { q: "شَقَّةُ حَيِّ الْحُسَيْنِ مَوْقِعُهَا جَيِّدٌ لِأَنَّ بِهَا حَدِيقَةً.", ans: true },
+        { q: "سَيَدْفَعُ الرَّجُلُ أَلْفَ جُنَيْهٍ فَقَطْ قَبْلَ أَنْ يَسْكُنَ.", ans: false },
+        { q: "غُرْفَةُ الْأَطْفَالِ فِيهَا سَرِيرَانِ وَخِزَانَةٌ صَغِيرَةٌ.", ans: true },
+        { q: "يُمْكِنُ لِلرَّجُلِ الصُّعُودُ لِلشَّقَّةِ بِاسْتِخْدَامِ الْمِصْعَدِ.", ans: true },
+        { q: "أَثَاثُ غُرْفَةِ الْمَكْتَبِ كَامِلٌ وَلَا يَحْتَاجُ إِلَى شَيْءٍ.", ans: false },
+        { q: "كَرَاسِي الطَّعَامِ تَحْتَاجُ إِلَى تَغْيِيرٍ لِأَنَّهَا ضَعِيفَةٌ.", ans: true },
+        { q: "الْمَطْبَخُ مُجَهَّزٌ بِثَلَّاجَةٍ كَبِيرَةٍ وَمَوْقِدٍ.", ans: true },
+        { q: "الْغَسَّالَةُ مَوْجُودَةٌ فِي الْمَطْبَخِ.", ans: false },
+        { q: "أَعْجَبَتِ الشَّقَّةُ الثَّانِيَةُ الرَّجُلَ وَوَافَقَ عَلَيْهَا.", ans: true },
+        { q: "سَيَكْتُبُ الرَّجُلُ الْعَقْدَ مَعَ السِّمْسَارِ فَوْرًا.", ans: false },
+        { q: "الْمُؤَجِّرُ (صَاحِبُ الشَّقَّةِ) لَمْ يَكُنْ مَوْجُودًا مَعَهُمْ.", ans: true },
+        { q: "الشَّقَّةُ مُنَاسِبَةٌ لِعَائِلَةٍ لَدَيْهَا أَطْفَالٌ.", ans: true },
+        { q: "الطَّابَقُ الْأَرْضِيُّ هُوَ الْمُفَضَّلُ لَدَى الرَّجُلِ.", ans: false }
+    ];
+
+    // بيانات القسم الثالث (املأ الفراغ)
+    const fillBlankSentences = [
+        { text: "أَبْحَثُ عَنْ شَقَّةٍ [ ] لِأَنَّنِي لَا أَمْلِكُ أَثَاثًا فِي بَلَدِي.", ans: "مَفْرُوشَةً" },
+        { text: "نَجْلِسُ جَمِيعًا لِتَنَاوُلِ الْعَشَاءِ حَوْلَ [ ] الطَّعَامِ كُلَّ مَسَاءٍ.", ans: "مَائِدَةُ" },
+        { text: "نَسْتَخْدِمُ [ ] لِلصُّعُودِ إِلَى الدَّوْرِ الْعَاشِرِ بِسُهُولَةٍ.", ans: "مِصْعَدٌ" },
+        { text: "يَطْبُخُ الْأَبُ طَعَامًا لَذِيذًا عَلَى [ ] فِي الْمَطْبَخِ.", ans: "مَوْقِدٌ" },
+        { text: "غُرْفَةُ الْمَكْتَبِ جَيِّدَةٌ وَلَكِنَّهَا تَحْتَاجُ إِلَى [ ] مُرِيحَةٍ لِلْجُلُوسِ.", ans: "كَنَبَةً" },
+        { text: "يَدْفَعُ الْمُسْتَأْجِرُ إِيجَارَ شَهْرٍ وَاحِدٍ فَقَطْ كَأُجْرَةِ [ ] لِلرَّجُلِ الَّذِي سَاعَدَهُ.", ans: "السِّمْسَرَةِ" },
+        { text: "تُطِلُّ نَوَافِذُ الْغُرْفَةِ عَلَى [ ] جَمِيلَةٍ فِيهَا أَزْهَارٌ وَأَشْجَارٌ.", ans: "حَدِيقَةٍ" },
+        { text: "أُرَتِّبُ مَلَابِسِي النَّظِيفَةَ وَأَضَعُهَا دَاخِلَ [ ] كَبِيرَةٍ.", ans: "خِزَانَةٌ" },
+        { text: "يَقُومُ [ ] بِالتَّوْقِيعِ عَلَى الْوَرَقِ لِتَأْجِيرِ شَقَّتِهِ بَعْدَ سَاعَةٍ.", ans: "الْمُؤَجِّرُ" }
+    ];
+
+    const allWords = ["مَفْرُوشَةً", "إِيجَارُهَا", "السِّمْسَرَةِ", "خِزَانَةٌ", "مِصْعَدٌ", "مَوْقِدٌ", "غَسَّالَةٌ", "عَقْدَ", "الْمُؤَجِّرُ", "مَائِدَةُ", "كَنَبَةً", "حَدِيقَةٍ", "صَالَةٌ", "مِرْآةٌ", "شُرْفَةٌ"];
+
+    // بيانات القسم الرابع (المفردات)
+    const vocabWords = ["مَفْرُوشَةٌ", "اسْتِئْجَارٌ", "مُؤَجِّرٌ", "سِمْسَارٌ", "مِصْعَدٌ", "مَوْقِدٌ", "عَقْدٌ", "خِزَانَةٌ", "كَنَبَةٌ", "أُجْرَةٌ"];
+
+    let totalScore = 0;
+    const maxScore = 39; // 15 + 15 + 9
+
+    function initGame() {
+        // بناء القسم 1
+        let mcqHTML = "";
+        mcqQuestions.forEach((item, index) => {
+            mcqHTML += `<div class="question-card" id="mcq-q${index}">
+                <div class="question-text">${index + 1}. ${item.q}</div>
+                <div class="options">`;
+            item.opts.forEach((opt, oIndex) => {
+                mcqHTML += `<button onclick="checkMCQ(${index}, ${oIndex}, this, ${item.ans})">${opt}</button>`;
+            });
+            mcqHTML += `</div></div>`;
+        });
+        document.getElementById("mcq-container").innerHTML = mcqHTML;
+
+        // بناء القسم 2
+        let tfHTML = "";
+        tfQuestions.forEach((item, index) => {
+            tfHTML += `<div class="question-card" id="tf-q${index}">
+                <div class="question-text">${index + 1}. ${item.q}</div>
+                <div class="options">
+                    <button onclick="checkTF(${index}, true, this, ${item.ans})">صَحِيحٌ</button>
+                    <button onclick="checkTF(${index}, false, this, ${item.ans})">خَطَأٌ</button>
+                </div></div>`;
+        });
+        document.getElementById("tf-container").innerHTML = tfHTML;
+
+        // بناء القسم 3
+        let blankHTML = "";
+        fillBlankSentences.forEach((item, index) => {
+            let optionsHTML = `<option value="">-- اخْتَرْ --</option>`;
+            // خلط الكلمات عشوائياً حتى لا يكون الترتيب متوقعاً
+            let shuffledWords = [...allWords].sort(() => Math.random() - 0.5);
+            shuffledWords.forEach(w => {
+                optionsHTML += `<option value="${w}">${w}</option>`;
+            });
+            let sentenceParts = item.text.split("[ ]");
+            blankHTML += `<div class="question-card">
+                <div class="question-text">${index + 1}. ${sentenceParts} 
+                <select onchange="checkBlank(this, '${item.ans}')">${optionsHTML}</select> 
+                ${sentenceParts[1]}</div>
+            </div>`;
+        });
+        document.getElementById("fill-blank-container").innerHTML = blankHTML;
+
+        // بناء القسم 4
+        let vocabHTML = "";
+        vocabWords.forEach((word, index) => {
+            vocabHTML += `<div class="question-card">
+                <div class="question-text">${index + 1}. ${word}</div>
+                <textarea placeholder="اكْتُبْ جُمْلَةً مُفِيدَةً هُنَا..."></textarea>
+            </div>`;
+        });
+        document.getElementById("vocab-container").innerHTML = vocabHTML;
+    }
+
+    // دوال التحقق من الإجابات
+    function checkMCQ(qIndex, selectedOpt, btnObj, correctOpt) {
+        let parent = document.getElementById(`mcq-q${qIndex}`);
+        let buttons = parent.querySelectorAll("button");
+        buttons.forEach(b => b.disabled = true); // تعطيل الأزرار بعد الإجابة
+        
+        if (selectedOpt === correctOpt) {
+            btnObj.classList.add("correct");
+            totalScore++;
+        } else {
+            btnObj.classList.add("incorrect");
+            buttons[correctOpt].classList.add("correct"); // إظهار الإجابة الصحيحة
+        }
+    }
+
+    function checkTF(qIndex, selectedAns, btnObj, correctAns) {
+        let parent = document.getElementById(`tf-q${qIndex}`);
+        let buttons = parent.querySelectorAll("button");
+        buttons.forEach(b => b.disabled = true);
+        
+        if (selectedAns === correctAns) {
+            btnObj.classList.add("correct");
+            totalScore++;
+        } else {
+            btnObj.classList.add("incorrect");
+            // تلوين الزر الآخر بالأخضر
+            if (selectedAns === true) buttons[1].classList.add("correct");
+            else buttons.classList.add("correct");
+        }
+    }
+
+    function checkBlank(selectObj, correctAns) {
+        selectObj.disabled = true; // منع تغيير الإجابة
+        if (selectObj.value === correctAns) {
+            selectObj.classList.add("correct");
+            totalScore++;
+        } else {
+            selectObj.classList.add("incorrect");
+            // نظرا لعدم إمكانية تغيير النص مباشرة في الـ select سنضيف الإجابة الصحيحة بجانبها
+            let span = document.createElement("span");
+            span.innerHTML = ` (الصَّحِيحُ: ${correctAns})`;
+            span.style.color = "green";
+            span.style.fontWeight = "bold";
+            selectObj.parentNode.appendChild(span);
+        }
+    }
+
+    // إدارة التنقل بين الأقسام
+    let currentSection = 0;
+    const sectionsCount = 5;
+
+    function changeSection(step) {
+        document.getElementById(`sec-${currentSection + 1}`).classList.remove("active");
+        currentSection += step;
+        document.getElementById(`sec-${currentSection + 1}`).classList.add("active");
+
+        // تحديث حالة الأزرار
+        document.getElementById("btn-prev").disabled = (currentSection === 0);
+        
+        if (currentSection === sectionsCount - 1) {
+            document.getElementById("btn-next").style.display = "none";
+            // تحديث النتيجة عند الوصول لآخر شاشة
+            document.getElementById("final-score").innerHTML = `لَقَدْ حَصَلْتَ عَلَى <br> <span style='font-size:40px; color:#e74c3c;'>${totalScore}</span> <br> مِنْ ${maxScore}`;
+        } else {
+            document.getElementById("btn-next").style.display = "inline-block";
+            document.getElementById("btn-next").innerText = (currentSection === sectionsCount - 2) ? "إِنْهَاءُ الِاخْتِبَارِ" : "التَّالِي";
+        }
+    }
+
+    // تهيئة اللعبة عند التحميل
+    window.onload = initGame;
+</script>
+
+</body>
+</html>
