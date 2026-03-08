@@ -1,0 +1,388 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار الوحدة: العناية بالصحة</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --secondary: #27ae60;
+            --bg: #f8f9fa;
+            --correct: #d4edda;
+            --wrong: #fff3cd;
+        }
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg);
+            color: var(--primary);
+            margin: 0; padding: 20px;
+            font-size: 18px;
+        }
+        .container {
+            max-width: 800px; margin: 0 auto;
+            background: white; padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        h2, h3 { text-align: center; color: #2980b9; }
+        .welcome-box {
+            text-align: center; background: #e8f4f8;
+            padding: 20px; border-radius: 10px; margin-bottom: 20px;
+        }
+        .ru-text { font-size: 0.85em; color: #7f8c8d; }
+        
+        .reading-box {
+            background: #fdfefe; border: 2px solid #ecf0f1;
+            padding: 15px; border-radius: 8px; margin-bottom: 20px;
+            line-height: 1.8; font-weight: bold;
+        }
+        
+        .option {
+            display: block; padding: 15px; margin: 10px 0;
+            background: #f1f2f6; border: 2px solid #dfe4ea;
+            border-radius: 8px; cursor: pointer; transition: 0.2s;
+            font-weight: bold;
+        }
+        .option:hover { background: #eccc68; }
+        .correct { background-color: var(--correct) !important; border-color: #c3e6cb !important; pointer-events: none; }
+        .wrong { background-color: var(--wrong) !important; border-color: #ffeeba !important; pointer-events: none; }
+        
+        select, textarea {
+            width: 100%; padding: 12px; border: 2px solid #bdc3c7;
+            border-radius: 8px; font-size: 1em; font-family: inherit;
+        }
+        
+        .scrambled-words { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px; }
+        .word-btn {
+            background: #3498db; color: white; padding: 10px 20px;
+            border-radius: 8px; cursor: pointer; user-select: none;
+            font-weight: bold;
+        }
+        .answer-box {
+            min-height: 60px; border: 2px dashed #7f8c8d; border-radius: 8px;
+            padding: 10px; display: flex; flex-wrap: wrap; gap: 10px;
+            background: #f8f9fa;
+        }
+        
+        .controls {
+            display: flex; justify-content: space-between;
+            margin-top: 30px; border-top: 2px solid #ecf0f1; padding-top: 20px;
+        }
+        button {
+            padding: 12px 25px; font-size: 1.1em; font-weight: bold;
+            border: none; border-radius: 8px; cursor: pointer;
+            background: var(--secondary); color: white; transition: 0.3s;
+        }
+        button:disabled { background: #95a5a6; cursor: not-allowed; }
+        button:hover:not(:disabled) { background: #219653; }
+        
+        .progress { text-align: center; margin-bottom: 20px; font-weight: bold; color: #e74c3c; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="welcomeScreen" class="welcome-box">
+        <h2>مَرْحَباً بِكِ فِي اِخْتِبَارِ الوَحْدَةِ الأُولَى: العِنَايَةُ بِالصِّحَّةِ</h2>
+        <p class="ru-text">Добро пожаловать на тест первого раздела: «Здоровье и уход за ним»</p>
+        <button onclick="startTest()">اِبْدَئِي الاِخْتِبَارَ (Начать)</button>
+    </div>
+
+    <div id="testArea" style="display:none;">
+        <div class="progress" id="progressText"></div>
+        <div id="questionContainer"></div>
+        <div class="controls">
+            <button id="prevBtn" onclick="changePage(-1)">السَّابِقُ</button>
+            <button id="nextBtn" onclick="changePage(1)">التَّالِي</button>
+        </div>
+    </div>
+</div>
+
+<script>
+    // بناء قاعدة بيانات الأسئلة (110 أسئلة مبرمجة)
+    const questions = [];
+    const readingParagraph = "شَعَرَ عَامِرٌ بِآلامٍ شَدِيدَةٍ فِي بَطْنِهِ. سَأَلَهُ صَدِيقُهُ حَازِمٌ: هَلْ ذَهَبْتَ إِلَى الطَّبِيبِ؟ قَالَ عَامِرٌ: لا، لَمْ أَذْهَبْ وَلَمْ أَتَنَاوَلْ أَيَّ دَوَاءٍ. فَقَالَ لَهُ حَازِمٌ: إِنَّ فِي العَسَلِ شِفَاءً لِلنَّاسِ، كَمَا جَاءَ فِي القُرْآنِ الكَرِيمِ. وَهُنَاكَ سُوقٌ قَرِيبٌ لِبَيْعِ العَسَلِ. ذَهَبَ عَامِرٌ إِلَى السُّوقِ وَاشْتَرَى العَسَلَ، وَشَفَاهُ اللَّهُ سُبْحَانَهُ وَتَعَالَى.";
+
+    // 1. أسئلة القراءة (10 اختيارات + 10 صح وخطأ)
+    const readingMCQ = [
+        { q: "بِمَاذَا شَعَرَ عَامِرٌ؟", o: ["بِأَلَمٍ فِي بَطْنِهِ", "بِأَلَمٍ فِي رَأْسِهِ"], a: 0 },
+        { q: "مَنْ هُوَ صَدِيقُ عَامِرٍ؟", o: ["حَازِمٌ", "طَارِقٌ"], a: 0 },
+        { q: "هَلْ ذَهَبَ عَامِرٌ إِلَى الطَّبِيبِ؟", o: ["لا، لَمْ يَذْهَبْ", "نَعَمْ، ذَهَبَ"], a: 0 },
+        { q: "مَاذَا تَنَاوَلَ عَامِرٌ لِلشِّفَاءِ؟", o: ["العَسَلَ", "الدَّوَاءَ"], a: 0 },
+        { q: "مِنْ أَيْنَ اشْتَرَى عَامِرٌ العَسَلَ؟", o: ["مِنَ السُّوقِ", "مِنَ الصَّيْدَلِيَّةِ"], a: 0 },
+        { q: "مَاذَا يُوجَدُ فِي العَسَلِ؟", o: ["شِفَاءٌ لِلنَّاسِ", "مَرَضٌ خَطِيرٌ"], a: 0 },
+        { q: "مَنْ نَصَحَ عَامِرًا بِتَنَاوُلِ العَسَلِ؟", o: ["حَازِمٌ", "الطَّبِيبُ"], a: 0 },
+        { q: "هَلِ السُّوقُ كَانَ بَعِيداً؟", o: ["لا، كَانَ قَرِيباً", "نَعَمْ، كَانَ بَعِيداً"], a: 0 },
+        { q: "هَلْ تَنَاوَلَ عَامِرٌ أَيَّ دَوَاءٍ طِبِّيٍّ؟", o: ["لَمْ يَتَنَاوَلْ", "تَنَاوَلَ كَثِيراً"], a: 0 },
+        { q: "مَنْ شَفَى عَامِراً؟", o: ["اللَّهُ سُبْحَانَهُ وَتَعَالَى", "الطَّبِيبُ"], a: 0 }
+    ];
+    
+    readingMCQ.forEach((item, index) => {
+        questions.push({ type: 'mcq', section: `قِرَاءَةٌ وَاسْتِيعَابٌ (${index + 1}/20)`, reading: readingParagraph, text: item.q, options: item.o, answer: item.a });
+    });
+
+    const readingTF = [
+        { q: "شَعَرَ عَامِرٌ بِأَلَمٍ شَدِيدٍ فِي رَأْسِهِ.", a: 1 },
+        { q: "قَابَلَ عَامِرٌ الطَّبِيبَ فِي العِيَادَةِ.", a: 1 },
+        { q: "العَسَلُ فِيهِ شِفَاءٌ لِلنَّاسِ.", a: 0 },
+        { q: "اشْتَرَى عَامِرٌ العَسَلَ مِنَ السُّوقِ.", a: 0 },
+        { q: "تَنَاوَلَ عَامِرٌ الدَّوَاءَ بَعْدَ الغَدَاءِ.", a: 1 },
+        { q: "السُّوقُ الَّذِي يَبِيعُ العَسَلَ قَرِيبٌ.", a: 0 },
+        { q: "شَفَى اللَّهُ عَامِراً بَعْدَ تَنَاوُلِ العَسَلِ.", a: 0 },
+        { q: "حَازِمٌ هُوَ المَرِيضُ فِي هَذِهِ القِصَّةِ.", a: 1 },
+        { q: "نَصَحَ حَازِمٌ صَدِيقَهُ بِزِيَارَةِ المُسْتَشْفَى.", a: 1 },
+        { q: "لَمْ يَشْتَكِ عَامِرٌ مِنْ أَيِّ شَيْءٍ.", a: 1 }
+    ];
+    
+    readingTF.forEach((item, index) => {
+        questions.push({ type: 'tf', section: `قِرَاءَةٌ وَاسْتِيعَابٌ (${index + 11}/20)`, reading: readingParagraph, text: item.q, options: ["صَحِيح", "خَطَأ"], answer: item.a });
+    });
+
+    // 2. أسئلة مفردات (اختيار من متعدد - 15 سؤال)
+    const vocabMCQ = [
+        { q: "........ النَّاسُ يَتَّبِعُونَ الحِمْيَةَ لِيَنْقُصَ وَزْنُهُمْ.", o: ["أَصْبَحَ", "قَرَأَ", "نَامَ"], a: 0 },
+        { q: "البَدَانَةُ سَبَبٌ لِأَمْرَاضٍ ........ مِثْلَ السُّكَّرِيِّ.", o: ["خَطِيرَةٍ", "صِحِّيَّةٍ", "نَظِيفَةٍ"], a: 0 },
+        { q: "يَجِبُ أَنْ نَبْتَعِدَ عَنِ ........ وَالسُّكَّرِيَّاتِ.", o: ["الدُّهُونِ", "الفَوَاكِهِ", "الخُضْرَوَاتِ"], a: 0 },
+        { q: "ذَهَبَتْ فَاطِمَةُ إِلَى ........ لِأَنَّهَا مَرِيضَةٌ.", o: ["الطَّبِيبَةِ", "المَكْتَبَةِ", "المَلْعَبِ"], a: 0 },
+        { q: "أَنَا أَشْعُرُ بِـ........ فِي صَدْرِي.", o: ["أَلَمٍ", "رَاحَةٍ", "فَرَحٍ"], a: 0 },
+        { q: "الطَّعَامُ ........ مُفِيدٌ جِدّاً لِلصِّحَّةِ.", o: ["الصِّحِّيُّ", "المُضِرُّ", "الفَاسِدُ"], a: 0 },
+        { q: "يَنْصَحُ الأَطِبَّاءُ بِمُمَارَسَةِ ........ يَوْمِيّاً.", o: ["الرِّيَاضَةِ", "النَّوْمِ", "الأَكْلِ"], a: 0 },
+        { q: "لَمْ ........ عَامِرٌ أَيَّ دَوَاءٍ.", o: ["يَتَنَاوَلْ", "يَقْرَأْ", "يَلْعَبْ"], a: 0 },
+        { q: "اشْتَرَيْتُ الخُضْرَوَاتِ مِنْ ........ الْمَرْكَزِيِّ.", o: ["السُّوقِ", "المُسْتَشْفَى", "العِيَادَةِ"], a: 0 },
+        { q: "........ السُّكَّرِيُّ يُصِيبُ الشَّخْصَ السَّمِينَ كَثِيراً.", o: ["مَرَضُ", "شِفَاءُ", "صِحَّةُ"], a: 0 },
+        { q: "نَحْنُ نَأْكُلُ الخُبْزَ ........ لِأَنَّهُ صِحِّيٌّ.", o: ["الأَسْمَرَ", "الأَبْيَضَ", "السُّكَّرِيَّ"], a: 0 },
+        { q: "الإِسْلامُ يَدْعُو إِلَى الأَكْلِ ........ .", o: ["القَلِيلِ", "الكَثِيرِ", "الفَاسِدِ"], a: 0 },
+        { q: "الرَّجُلُ ........ هُوَ المَرِيضُ فِي المَاضِي.", o: ["النَّحِيفُ", "السَّمِينُ", "الطَّوِيلُ"], a: 0 },
+        { q: "شَفَاكَ ........ يَا صَدِيقِي.", o: ["اللَّهُ", "الطَّبِيبُ", "المُمَرِّضُ"], a: 0 },
+        { q: "وَزْنِي ........ بَعْدَ مُمَارَسَةِ الرِّيَاضَةِ.", o: ["نَقَصَ", "زَادَ", "ارْتَفَعَ"], a: 0 }
+    ];
+    vocabMCQ.forEach((item) => {
+        questions.push({ type: 'mcq', section: "الْمُفْرَدَاتُ وَالتَّعْبِيرَاتُ (اختيار من متعدد)", text: item.q, options: item.o, answer: item.a });
+    });
+
+    // 3. أسئلة صح وخطأ مفردات (15 سؤال)
+    const vocabTF = [
+        { q: "كَلِمَة (بَدَانَة) تَعْنِي النَّحَافَةَ.", a: 1 },
+        { q: "كَلِمَة (شِفَاء) هِيَ عَكْسُ كَلِمَة (مَرَض).", a: 0 },
+        { q: "تَنَاوُلُ السُّكَّرِ كَثِيراً يُسَبِّبُ السُّكَّرِيَّ.", a: 0 },
+        { q: "الأَطِبَّاءُ يَنْصَحُونَ بِأَكْلِ الدُّهُونِ كَثِيراً.", a: 1 },
+        { q: "الشَّخْصُ السَّمِينُ هُوَ الَّذِي وَزْنُهُ ثَقِيلٌ.", a: 0 },
+        { q: "المُسْتَشْفَى هُوَ مَكَانٌ لِبَيْعِ الفَوَاكِهِ.", a: 1 },
+        { q: "نَقُولُ لِلْمَرِيضِ: (شَفَاكَ اللَّهُ).", a: 0 },
+        { q: "الخُبْزُ الأَسْمَرُ مُضِرٌّ بِالصِّحَّةِ.", a: 1 },
+        { q: "الإِنْسَانُ يَنْبَغِي أَنْ يَلْعَبَ الرِّيَاضَةَ.", a: 0 },
+        { q: "الدَّوَاءُ نَشْتَرِيهِ مِنَ الصَّيْدَلِيَّةِ.", a: 0 },
+        { q: "الأَلَمُ هُوَ الشُّعُورُ بِالرَّاحَةِ.", a: 1 },
+        { q: "الحِمْيَةُ تَعْنِي تَنَظِيمَ الأَكْلِ لِلصِّحَّةِ.", a: 0 },
+        { q: "الخُضْرَوَاتُ تُسَبِّبُ زِيَادَةَ الوَزْنِ.", a: 1 },
+        { q: "نَشْرَبُ المَاءَ لِأَنَّهُ ضَرُورِيٌّ لِلْجِسْمِ.", a: 0 },
+        { q: "ضَغْطُ الدَّمِ لَيْسَ مِنَ الأَمْرَاضِ.", a: 1 }
+    ];
+    vocabTF.forEach((item) => {
+        questions.push({ type: 'tf', section: "الْمُفْرَدَاتُ وَالمَعَانِي (صَحْ أَمْ خَطَأ)", text: item.q, options: ["صَحِيح", "خَطَأ"], answer: item.a });
+    });
+
+    // 4. المفرد والجمع والمضاد (15 سؤال)
+    const spaList = [
+        { q: "مَا جَمْعُ كَلِمَةِ (مَرَض)؟", o: ["أَمْرَاضٌ", "مَرْضَى", "مُمَرِّضُونَ"], a: 0 },
+        { q: "مَا مُفْرَدُ كَلِمَةِ (أَطِبَّاء)؟", o: ["طَبِيبٌ", "طِبٌّ", "طَبِيبَةٌ"], a: 0 },
+        { q: "مَا مُضَادُّ كَلِمَةِ (سَمِين)؟", o: ["نَحِيفٌ", "طَوِيلٌ", "قَصِيرٌ"], a: 0 },
+        { q: "مَا جَمْعُ كَلِمَةِ (دَوَاء)؟", o: ["أَدْوِيَةٌ", "أَدْوَاءٌ", "مُدَاوَاةٌ"], a: 0 },
+        { q: "مَا مُفْرَدُ كَلِمَةِ (آلام)؟", o: ["أَلَمٌ", "أَلِيمٌ", "مُتَأَلِّمٌ"], a: 0 },
+        { q: "مَا مُضَادُّ كَلِمَةِ (مُفِيد)؟", o: ["مُضِرٌّ", "صِحِّيٌّ", "نَظِيفٌ"], a: 0 },
+        { q: "مَا جَمْعُ كَلِمَةِ (سَبَب)؟", o: ["أَسْبَابٌ", "مُسَبِّبَاتٌ", "سُبُلٌ"], a: 0 },
+        { q: "مَا مُفْرَدُ كَلِمَةِ (فَوَاكِه)؟", o: ["فَاكِهَةٌ", "فُكَهَاءُ", "تَفَكُّهٌ"], a: 0 },
+        { q: "مَا مُضَادُّ كَلِمَةِ (كَثِير)؟", o: ["قَلِيلٌ", "صَغِيرٌ", "بَعِيدٌ"], a: 0 },
+        { q: "مَا جَمْعُ كَلِمَةِ (طَعَام)؟", o: ["أَطْعِمَةٌ", "مَطَاعِمُ", "طَاعِمُونَ"], a: 0 },
+        { q: "مَا مُفْرَدُ كَلِمَةِ (أَسْنَان)؟", o: ["سِنٌّ", "سُنَّةٌ", "مُسِنٌّ"], a: 0 },
+        { q: "مَا مُضَادُّ كَلِمَةِ (ارْتَفَعَ)؟", o: ["انْخَفَضَ", "صَعِدَ", "زَادَ"], a: 0 },
+        { q: "مَا جَمْعُ كَلِمَةِ (سُوق)؟", o: ["أَسْوَاقٌ", "سَائِقُونَ", "سَوَائِقُ"], a: 0 },
+        { q: "مَا مُفْرَدُ كَلِمَةِ (دُهُون)؟", o: ["دُهْنٌ", "دَاهِنٌ", "مُدْهِنٌ"], a: 0 },
+        { q: "مَا مُضَادُّ كَلِمَةِ (قَرِيب)؟", o: ["بَعِيدٌ", "غَرِيبٌ", "عَجِيبٌ"], a: 0 }
+    ];
+    spaList.forEach((item) => {
+        questions.push({ type: 'mcq', section: "الْمُفْرَدُ وَالْجَمْعُ وَالْمُضَادُّ", text: item.q, options: item.o, answer: item.a });
+    });
+
+    // 5. املأ الفراغ (قائمة منسدلة - 15 سؤال)
+    const dropAnswers = ["بِأَلَمٍ", "يَفْحَصُ", "نَتَنَاوَلُ", "صَيْدَلِيَّة", "شِفَاءٌ", "نَصَحَنِي", "حِمْيَةً", "نَبْتَعِدُ", "مُضِرٌّ", "مُفِيدٌ", "عِيَادَةِ", "بَدَانَةُ", "يَنْقُصَ", "الرِّيَاضَةَ", "وَزْنِي"];
+    const dropQuestions = [
+        { q: "شَعَرَ المَرِيضُ ........ فِي بَطْنِهِ.", a: "بِأَلَمٍ" },
+        { q: "الطَّبِيبُ ........ المَرِيضَ فِي الغُرْفَةِ.", a: "يَفْحَصُ" },
+        { q: "نَحْنُ ........ الطَّعَامَ فِي المَطْعَمِ.", a: "نَتَنَاوَلُ" },
+        { q: "اشْتَرَيْتُ الدَّوَاءَ مِنَ الـ........ المَرْكَزِيَّةِ.", a: "صَيْدَلِيَّة" },
+        { q: "فِي العَسَلِ ........ لِلنَّاسِ.", a: "شِفَاءٌ" },
+        { q: "........ الطَّبِيبُ بِتَرْكِ السُّكَّرِ.", a: "نَصَحَنِي" },
+        { q: "اتَّبَعْتُ ........ قَاسِيَةً لِأُنْقِصَ وَزْنِي.", a: "حِمْيَةً" },
+        { q: "يَجِبُ أَنْ ........ عَنِ الأَكْلِ الكَثِيرِ.", a: "نَبْتَعِدُ" },
+        { q: "تَنَاوُلُ الدُّهُونِ ........ بِالصِّحَّةِ.", a: "مُضِرٌّ" },
+        { q: "شُرْبُ المَاءِ ........ جِدّاً لِلْجِسْمِ.", a: "مُفِيدٌ" },
+        { q: "ذَهَبْتُ إِلَى ........ الطَّبِيبِ مُبَكِّراً.", a: "عِيَادَةِ" },
+        { q: "الـ........ تُسَبِّبُ مَرَضَ السُّكَّرِيِّ.", a: "بَدَانَةُ" },
+        { q: "مَارَسْتُ المَشْيَ لِكَيْ ........ وَزْنِي.", a: "يَنْقُصَ" },
+        { q: "أَلْعَبُ ........ مَعَ أَصْدِقَائِي كُلَّ صَبَاحٍ.", a: "الرِّيَاضَةَ" },
+        { q: "زَادَ ........ لِأَنَّنِي أَكَلْتُ حَلْوَى كَثِيرَةً.", a: "وَزْنِي" }
+    ];
+    dropQuestions.forEach((item) => {
+        questions.push({ type: 'dropdown', section: "امْلَإِ الفَرَاغَ بِالكَلِمَةِ الْمُنَاسِبَةِ", text: item.q, options: dropAnswers, answer: item.a });
+    });
+
+    // 6. ترتيب الجمل (15 سؤال)
+    const sentencesToOrder = [
+        ["شَعَرَ", "عَامِرٌ", "بِآلامٍ", "فِي", "بَطْنِهِ."],
+        ["ذَهَبَ", "الرَّجُلُ", "إِلَى", "السُّوقِ", "مُبَكِّراً."],
+        ["اشْتَرَى", "المَرِيضُ", "الدَّوَاءَ", "مِنَ", "الصَّيْدَلِيَّةِ."],
+        ["فِي", "العَسَلِ", "شِفَاءٌ", "لِلنَّاسِ", "جَمِيعاً."],
+        ["يَنْصَحُ", "الطَّبِيبُ", "بِمُمَارَسَةِ", "الرِّيَاضَةِ", "دَائِماً."],
+        ["البَدَانَةُ", "سَبَبٌ", "لِأَمْرَاضٍ", "خَطِيرَةٍ", "جِدّاً."],
+        ["تَنَاوَلْتُ", "طَعَاماً", "صِحِّيّاً", "فِي", "الصَّبَاحِ."],
+        ["يَجِبُ", "أَنْ", "نَبْتَعِدَ", "عَنِ", "السُّكَّرِيَّاتِ."],
+        ["فَحَصَتِ", "الطَّبِيبَةُ", "فَاطِمَةَ", "فِي", "العِيَادَةِ."],
+        ["نَقَصَ", "وَزْنِي", "بَعْدَ", "اتِّبَاعِ", "الحِمْيَةِ."],
+        ["الطَّعَامُ", "الأَبْيَضُ", "مُضِرٌّ", "بِصِحَّةِ", "الإِنْسَانِ."],
+        ["سَأَذْهَبُ", "إِلَى", "المُسْتَشْفَى", "لِأُقَابِلَ", "الطَّبِيبَ."],
+        ["لَمْ", "يَتَنَاوَلْ", "عَامِرٌ", "أَيَّ", "دَوَاءٍ."],
+        ["الإِسْلامُ", "يَدْعُو", "إِلَى", "الأَكْلِ", "القَلِيلِ."],
+        ["أَشْعُرُ", "بِتَحَسُّنٍ", "بَعْدَ", "تَنَاوُلِ", "العَسَلِ."]
+    ];
+    sentencesToOrder.forEach((sentence) => {
+        let scrambled = [...sentence].sort(() => Math.random() - 0.5);
+        questions.push({ type: 'order', section: "رَتِّبِي الكَلِمَاتِ لِتُصْبِحَ جُمْلَةً مُفِيدَةً", text: "رَتِّبِي الكَلِمَاتِ التَّالِيَةَ:", scrambled: scrambled, correctOrder: sentence.join(" ") });
+    });
+
+    // 7. إنشاء الجمل (15 سؤال - تصحيح يدوي)
+    const writingWords = ["سُكَّرِيٌّ", "ضَغْطُ الدَّمِ", "حِمْيَةٌ", "نَحِيفٌ", "مُسْتَشْفَى", "يَفْحَصُ", "وِقَايَةٌ", "عِيَادَةٌ", "أَلَمٌ", "بَدَانَةٌ", "نَشَوِيَّاتٌ", "طَاقَةٌ", "يَتَحَسَّنُ", "يَتَجَنَّبُ", "يَنْصَحُ"];
+    writingWords.forEach((word) => {
+        questions.push({ type: 'textarea', section: "التَّعْبِيرُ الكِتَابِيُّ (تُصَحَّحُ يَدَوِيّاً)", text: `ضَعِي هَذِهِ الكَلِمَةَ فِي جُمْلَةٍ مِنْ إِنْشَائِكِ: ( ${word} )` });
+    });
+
+    // --- نظام التحكم بالأسئلة ---
+    let currentPage = 0;
+    let score = 0;
+
+    function startTest() {
+        document.getElementById('welcomeScreen').style.display = 'none';
+        document.getElementById('testArea').style.display = 'block';
+        renderQuestion();
+    }
+
+    function renderQuestion() {
+        const container = document.getElementById('questionContainer');
+        container.innerHTML = '';
+        
+        if(currentPage >= questions.length) {
+            document.getElementById('progressText').style.display = 'none';
+            document.querySelector('.controls').style.display = 'none';
+            let autoScore = questions.length - 15; // استبعاد الأسئلة المقالية
+            container.innerHTML = `<h2 style='color:var(--secondary)'>أَحْسَنْتِ! لَقَدْ أَنْهَيْتِ الاِخْتِبَارَ.</h2>
+                                   <div class='welcome-box'><h3>نَتِيجَتُكِ فِي الأَسْئِلَةِ الآلِيَّةِ: ${score} / ${autoScore}</h3>
+                                   <p>مُلاحَظَة: أَسْئِلَةُ الكِتَابَةِ سَيَقُومُ المُعَلِّمُ بِتَصْحِيحِهَا لاحِقاً.</p></div>`;
+            return;
+        }
+
+        const q = questions[currentPage];
+        document.getElementById('progressText').innerText = `القِسْم: ${q.section} | السُّؤَال ${currentPage + 1} مِنْ ${questions.length}`;
+        document.getElementById('prevBtn').disabled = currentPage === 0;
+
+        let html = `<h3>${q.text}</h3>`;
+        if (q.reading) {
+            html += `<div class="reading-box">${q.reading}</div>`;
+        }
+
+        if (q.type === 'mcq' || q.type === 'tf') {
+            q.options.forEach((opt, idx) => {
+                html += `<div class="option" onclick="checkMCQ(this, ${idx}, ${q.answer})">${opt}</div>`;
+            });
+        } 
+        else if (q.type === 'dropdown') {
+            let optsHtml = q.options.map(o => `<option value="${o}">${o}</option>`).join('');
+            html += `<select onchange="checkDropdown(this, '${q.answer}')">
+                        <option value="">-- اِخْتَارِي الإِجَابَةَ الصَّحِيحَةَ --</option>
+                        ${optsHtml}
+                     </select>`;
+        } 
+        else if (q.type === 'order') {
+            html += `<div class="scrambled-words" id="scrambledBox">`;
+            q.scrambled.forEach(w => {
+                html += `<div class="word-btn" onclick="moveWord(this)">${w}</div>`;
+            });
+            html += `</div><div class="answer-box" id="answerBox"></div>`;
+            html += `<input type="hidden" id="correctOrderVal" value="${q.correctOrder}">`;
+        } 
+        else if (q.type === 'textarea') {
+            html += `<textarea rows="4" placeholder="اُكْتُبِي جُمْلَتَكِ هُنَا بِاللُّغَةِ العَرَبِيَّةِ..."></textarea>
+                     <p style="color:#e74c3c; font-size:0.85em; margin-top:10px;">* هَذَا السُّؤَالُ يُصَحَّحُ يَدَوِيّاً.</p>`;
+        }
+
+        container.innerHTML = html;
+    }
+
+    // دوال التحقق والتصحيح
+    function checkMCQ(el, selectedIdx, correctIdx) {
+        if(el.parentElement.dataset.answered) return;
+        el.parentElement.dataset.answered = "true";
+        
+        let allOptions = el.parentElement.querySelectorAll('.option');
+        if(selectedIdx === correctIdx) {
+            el.classList.add('correct');
+            score++;
+        } else {
+            el.classList.add('wrong');
+            allOptions[correctIdx].classList.add('correct');
+        }
+        setTimeout(() => { changePage(1); }, 1500); // انتقال تلقائي بعد ثانية ونصف
+    }
+
+    function checkDropdown(selectEl, correctStr) {
+        if(selectEl.dataset.answered) return;
+        if(selectEl.value === correctStr) {
+            selectEl.style.backgroundColor = "var(--correct)";
+            selectEl.dataset.answered = "true";
+            score++;
+            setTimeout(() => { changePage(1); }, 1000);
+        } else {
+            selectEl.style.backgroundColor = "var(--wrong)";
+            setTimeout(() => { selectEl.style.backgroundColor = "white"; selectEl.value = ""; }, 1000);
+        }
+    }
+
+    window.moveWord = function(el) {
+        const scrambledBox = document.getElementById('scrambledBox');
+        const answerBox = document.getElementById('answerBox');
+        
+        if (answerBox.dataset.answered) return;
+
+        if (el.parentElement.id === 'scrambledBox') {
+            answerBox.appendChild(el);
+        } else {
+            scrambledBox.appendChild(el);
+        }
+
+        // تحقق تلقائي عند اكتمال الكلمات
+        if (scrambledBox.children.length === 0) {
+            const correctOrder = document.getElementById('correctOrderVal').value;
+            const currentOrder = Array.from(answerBox.children).map(btn => btn.innerText).join(" ");
+            
+            if (currentOrder === correctOrder) {
+                answerBox.style.backgroundColor = "var(--correct)";
+                answerBox.style.borderColor = "#27ae60";
+                answerBox.dataset.answered = "true";
+                score++;
+                setTimeout(() => { changePage(1); }, 1500);
+            } else {
+                answerBox.style.backgroundColor = "var(--wrong)";
+                setTimeout(() => { answerBox.style.backgroundColor = "#f8f9fa"; }, 1000);
+            }
+        }
+    };
+
+    function changePage(step) {
+        currentPage += step;
+        if (currentPage < 0) currentPage = 0;
+        renderQuestion();
+    }
+</script>
+
+</body>
+</html>
