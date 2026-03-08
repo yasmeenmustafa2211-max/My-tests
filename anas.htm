@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اختبار تحديد المستوى - المبتدئ الثاني</title>
+    <style>
+        /* التنسيقات العامة والخلفية الوردية الفاتحة */
+        body {
+            background-color: #FFE4E1; /* لون وردي فاتح */
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        /* حاوية الاختبار */
+        #quiz-container {
+            background-color: white;
+            width: 100%;
+            max-width: 800px;
+            border-radius: 20px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 4px solid #FFB6C1;
+        }
+
+        /* تنسيق الصفحات */
+        .page {
+            display: none;
+            padding: 40px 30px;
+            text-align: center;
+            animation: fadeIn 0.5s;
+        }
+        .active-page {
+            display: block;
+        }
+
+        /* خطوط ورؤوس الأسئلة واضحة وكبيرة */
+        .question-title {
+            font-size: 32px;
+            color: #333;
+            margin-bottom: 30px;
+            line-height: 1.5;
+            font-weight: bold;
+        }
+
+        .question-image {
+            font-size: 100px; /* استخدام الرموز كصور بسيطة وواضحة */
+            margin-bottom: 20px;
+        }
+
+        /* تنسيق الخيارات */
+        .options-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+
+        .option {
+            background-color: #ffffff;
+            border: 3px solid #ddd;
+            border-radius: 15px;
+            padding: 20px;
+            font-size: 28px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            color: #444;
+            font-weight: bold;
+        }
+
+        .option:hover {
+            background-color: #f9f9f9;
+            transform: scale(1.02);
+        }
+
+        /* التفاعل اللوني الصارم حسب المطلوب */
+        .option.correct {
+            background-color: #D4EDDA !important; /* أخضر فاتح */
+            border-color: #28A745 !important;
+            color: #155724;
+            cursor: default;
+        }
+
+        .option.wrong {
+            background-color: #FFF3CD !important; /* أصفر فاتح */
+            border-color: #FFC107 !important;
+            color: #856404;
+            cursor: default;
+        }
+
+        .option.disabled {
+            pointer-events: none;
+        }
+
+        /* أزرار التشغيل والتنقل */
+        .btn-audio {
+            background-color: #4CAF50;
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 15px 30px;
+            font-size: 24px;
+            cursor: pointer;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+        }
+
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            border-top: 2px solid #eee;
+            padding-top: 20px;
+        }
+
+        .nav-btn {
+            background-color: #FF69B4;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            font-size: 24px;
+            border-radius: 10px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        
+        .nav-btn:disabled {
+            background-color: #ccc;
+            cursor: not-allowed;
+        }
+
+        /* شاشة النتيجة */
+        .result-screen {
+            text-align: center;
+        }
+        .stars {
+            font-size: 60px;
+            color: gold;
+            margin-bottom: 20px;
+            animation: bounce 1s infinite alternate;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes bounce {
+            from { transform: translateY(0); }
+            to { transform: translateY(-20px); }
+        }
+    </style>
+</head>
+<body>
+
+<div id="quiz-container">
+    <!-- سيتم حقن الصفحات هنا عبر الجافاسكربت -->
+</div>
+
+<script>
+    // هيكلة البيانات: مصفوفة تحتوي على جميع الأسئلة
+    const questions = [
+        // القسم الأول: الحروف والتهجئة
+        {
+            bg: "#F0F8FF", // لون فاتح جداً (أزرق ثلجي)
+            title: "السُّؤَالُ الأَوَّل: اقْرَئِي الكَلِمَةَ، ثُمَّ اخْتَارِي الحَرْفَ النَّاقِصَ:",
+            image: "🦆",
+            text: "بَـ ... ـة",
+            options: ["ط", "ـطـ", "ـط"],
+            correct: 1 // الفهرس 1 يعني "ـطـ"
+        },
+        // القسم الثاني: الاستماع
+        {
+            bg: "#F5FFFA", // لون فاتح جداً (أخضر نعناعي)
+            title: "السُّؤَالُ الثَّانِي: اسْتَمِعِي إِلَى المَقْطَعِ الصَّوْتِيِّ، ثُمَّ اخْتَارِي الكَلِمَةَ الصَّحِيحَةَ:",
+            audio: "مِفْتَاحٌ",
+            options: ["بَابٌ", "مِفْتَاحٌ", "كِتَابٌ"],
+            correct: 1
+        },
+        // القسم الثالث: الصورة والكلمة
+        {
+            bg: "#FFF0F5", // لون فاتح جداً (لافندر بلش)
+            title: "السُّؤَالُ الثَّالِث: انْظُرِي إِلَى الصُّورَةِ، ثُمَّ اخْتَارِي الكَلِمَةَ المُعَبِّرَةَ عَنْهَا:",
+            image: "🚪",
+            options: ["مَكْتَبٌ", "نَافِذَةٌ", "بَابٌ"],
+            correct: 2
+        },
+        // القسم الرابع: تراكيب الإشارة (استماع)
+        {
+            bg: "#FFFFE0", // لون فاتح جداً (أصفر عاجي)
+            title: "السُّؤَالُ الرَّابِع: اسْتَمِعِي، ثُمَّ اخْتَارِي الجُمْلَةَ المُطَابِقَةَ لِمَا سَمِعْتِهِ:",
+            audio: "هَذِهِ نَافِذَةٌ",
+            options: ["هَذَا بَابٌ", "هَذِهِ نَافِذَةٌ", "هَذَا كِتَابٌ"],
+            correct: 1
+        },
+        // القسم الخامس: ما ومن (للعاقل وغير العاقل)
+        {
+            bg: "#FDF5E6", // لون فاتح جداً
+            title: "السُّؤَالُ الخَامِس: انْظُرِي إِلَى صُورَةِ (الطَّالِبَة)، أَيُّ سُؤَالٍ هُوَ الصَّحِيح؟",
+            image: "👧",
+            options: ["مَا هَذِهِ؟", "مَنْ هَذِهِ؟"],
+            correct: 1
+        },
+        // القسم السادس: صح أم خطأ (صورة وجملة)
+        {
+            bg: "#F0FFF0", // لون فاتح جداً (ندى العسل)
+            title: "السُّؤَالُ السَّادِس: اقْرَئِي الجُمْلَةَ وَطَابِقِيهَا مَعَ الصُّورَةِ.. هَلْ هِيَ (صَح) أَم (خَطَأ)؟",
+            image: "🪟",
+            text: "هَذَا بَابٌ",
+            options: ["صَح ✔️", "خَطَأ ❌"],
+            correct: 1
+        },
+        // القسم السابع: الكلمة الصحيحة إملائياً
+        {
+            bg: "#FFF5EE", // لون فاتح جداً (صدفة البحر)
+            title: "السُّؤَالُ السَّابِع: اخْتَارِي الكَلِمَةَ المَكْتُوبَةَ بِشَكْلٍ صَحِيحٍ إِمْلَائِيًّا:",
+            options: ["نَافِذَةٌ", "نَافِيذَةٌ", "نَافِذَهٌ"],
+            correct: 0
+        },
+        // القسم الثامن: ترتيب الحروف
+        {
+            bg: "#F8F8FF", // لون فاتح جداً
+            title: "السُّؤَالُ الثَّامِن: رَتِّبِي هَذِهِ الحُرُوفَ (ب - ا - ك - ت) لِتُصْبِحَ كَلِمَةً صَحِيحَةً:",
+            options: ["مَكْتَبٌ", "كِتَابٌ", "كَاتِبٌ"],
+            correct: 1
+        },
+        // القسم التاسع: الحركات الطويلة والقصيرة
+        {
+            bg: "#E6E6FA", // لون فاتح جداً (لافندر)
+            title: "السُّؤَالُ التَّاسِع: اخْتَارِي الكَلِمَةَ الَّتِي بِهَا مَدٌّ طَوِيلٌ بِالأَلِف (ـا):",
+            options: ["كُرْسِيٌّ", "كِتَابٌ", "بِطْرِيقٌ"],
+            correct: 1
+        },
+        // القسم العاشر: سؤال ممتع إضافي
+        {
+            bg: "#FFF8DC", // لون فاتح جداً
+            title: "السُّؤَالُ العَاشِر: حَيَوَانٌ يُعْطِينَا الحَلِيبَ، مَا هُوَ؟",
+            image: "🐄",
+            options: ["بَطَّةٌ", "دَجَاجَةٌ", "بَقَرَةٌ"],
+            correct: 2
+        }
+    ];
+
+    let currentPage = 0;
+    let score = 0;
+    const container = document.getElementById('quiz-container');
+
+    // دالة إنشاء واجهة الاختبار ديناميكياً
+    function renderQuiz() {
+        container.innerHTML = ""; // تفريغ الحاوية
+
+        questions.forEach((q, index) => {
+            const pageDiv = document.createElement('div');
+            pageDiv.className = `page ${index === 0 ? 'active-page' : ''}`;
+            pageDiv.id = `page-${index}`;
+            pageDiv.style.backgroundColor = q.bg; // لون مختلف لكل شريحة
+
+            let contentHTML = `<div class="question-title">${q.title}</div>`;
+
+            if (q.image) {
+                contentHTML += `<div class="question-image">${q.image}</div>`;
+            }
+
+            if (q.text) {
+                contentHTML += `<div class="question-title" style="font-size:40px; color:#c0392b;">${q.text}</div>`;
+            }
+
+            if (q.audio) {
+                contentHTML += `<button class="btn-audio" onclick="playAudio('${q.audio}')">🔊 اسْتَمِعِي</button>`;
+            }
+
+            contentHTML += `<div class="options-grid" id="options-${index}">`;
+            q.options.forEach((opt, optIndex) => {
+                contentHTML += `<div class="option" onclick="checkAnswer(${index}, ${optIndex}, this)">${opt}</div>`;
+            });
+            contentHTML += `</div>`;
+
+            // أزرار التنقل
+            contentHTML += `<div class="nav-buttons">
+                <button class="nav-btn" onclick="prevPage(${index})" ${index === 0 ? 'style="visibility:hidden;"' : ''}>قَبْل</button>
+                <button class="nav-btn" id="next-btn-${index}" onclick="nextPage(${index})" disabled>بَعْد</button>
+            </div>`;
+
+            pageDiv.innerHTML = contentHTML;
+            container.appendChild(pageDiv);
+        });
+
+        // صفحة النتيجة النهائية
+        const resultPage = document.createElement('div');
+        resultPage.className = 'page';
+        resultPage.id = `page-${questions.length}`;
+        resultPage.style.backgroundColor = "#FFFFF0";
+        resultPage.innerHTML = `
+            <div class="result-screen">
+                <div class="stars">⭐⭐🌟⭐⭐</div>
+                <div class="question-title" id="final-text" style="font-size:36px; color:#2c3e50;"></div>
+            </div>
+        `;
+        container.appendChild(resultPage);
+    }
+
+    // دالة التحقق من الإجابة (تفاعلية ولونية ولحظية)
+    function checkAnswer(qIndex, optIndex, selectedElement) {
+        const q = questions[qIndex];
+        
+        // منع الإجابة مرة أخرى (لا توجد إمكانية للإعادة)
+        if (q.answered) return; 
+        q.answered = true;
+
+        const optionsContainer = document.getElementById(`options-${qIndex}`);
+        const allOptions = optionsContainer.children;
+
+        // تعطيل كل الخيارات
+        for(let i=0; i<allOptions.length; i++) {
+            allOptions[i].classList.add('disabled');
+        }
+
+        // تظليل الخيار الصحيح أو الخاطئ (على الخيار نفسه فقط)
+        if (optIndex === q.correct) {
+            selectedElement.classList.add('correct');
+            score++;
+        } else {
+            selectedElement.classList.add('wrong');
+            // إبراز الخيار الصحيح تلقائياً بالأخضر
+            allOptions[q.correct].classList.add('correct');
+        }
+
+        // تفعيل زر "بعد"
+        document.getElementById(`next-btn-${qIndex}`).disabled = false;
+    }
+
+    // التنقل للصفحة التالية
+    function nextPage(currentIndex) {
+        document.getElementById(`page-${currentIndex}`).classList.remove('active-page');
+        document.getElementById(`page-${currentIndex + 1}`).classList.add('active-page');
+        
+        // إذا وصلنا لصفحة النتيجة
+        if(currentIndex + 1 === questions.length) {
+            showResult();
+        }
+    }
+
+    // التنقل للصفحة السابقة
+    function prevPage(currentIndex) {
+        document.getElementById(`page-${currentIndex}`).classList.remove('active-page');
+        document.getElementById(`page-${currentIndex - 1}`).classList.add('active-page');
+    }
+
+    // إظهار النتيجة مطابقة للنص المطلوب
+    function showResult() {
+        const resultText = `اكتمل الاختبار! الدرجة: ${score} / ${questions.length}. أحسنتِ إتمام الاختبار التجريبي.`;
+        document.getElementById('final-text').innerText = resultText;
+    }
+
+    // دالة نطق الصوت (باستخدام محرك المتصفح للغة العربية)
+    function playAudio(text) {
+        if ('speechSynthesis' in window) {
+            const utterance = new SpeechSynthesisUtterance(text);
+            utterance.lang = 'ar-SA'; // نطق عربي
+            utterance.rate = 0.8; // إبطاء الصوت قليلاً ليناسب الأطفال
+            window.speechSynthesis.speak(utterance);
+        } else {
+            alert("عذراً، المتصفح لا يدعم ميزة الصوت.");
+        }
+    }
+
+    // بدء تشغيل الاختبار
+    renderQuiz();
+</script>
+
+</body>
+</html>
