@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>الاختبار الشامل - المبتدئ الثاني</title>
+<style>
+    body {
+        background-color: #FFE4E1; 
+        font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        margin: 0; padding: 20px;
+        display: flex; justify-content: center; align-items: center;
+        min-height: 100vh;
+    }
+    #quiz-container {
+        background-color: white; width: 100%; max-width: 900px;
+        border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        overflow: hidden; border: 5px solid #FFB6C1;
+    }
+    .page { display: none; padding: 40px 30px; text-align: center; animation: fadeIn 0.5s; }
+    .active-page { display: block; }
+    .question-title { font-size: 34px; color: #2c3e50; margin-bottom: 25px; line-height: 1.6; font-weight: bold; }
+    .question-image { font-size: 110px; margin-bottom: 20px; }
+    .question-text { font-size: 45px; color: #c0392b; font-weight: bold; margin-bottom: 25px; }
+    .options-grid { display: flex; flex-direction: column; gap: 15px; margin-bottom: 30px; }
+    .option {
+        background-color: #ffffff; border: 3px solid #ddd; border-radius: 15px;
+        padding: 20px; font-size: 30px; cursor: pointer; transition: all 0.3s ease;
+        color: #333; font-weight: bold;
+    }
+    .option:hover { background-color: #f9f9f9; transform: scale(1.02); }
+    .option.correct { background-color: #D4EDDA !important; border-color: #28A745 !important; color: #155724; cursor: default; }
+    .option.wrong { background-color: #FFF3CD !important; border-color: #FFC107 !important; color: #856404; cursor: default; }
+    .option.disabled { pointer-events: none; }
+    .btn-audio {
+        background-color: #4CAF50; color: white; border: none; border-radius: 50px;
+        padding: 15px 35px; font-size: 26px; cursor: pointer; margin-bottom: 25px;
+        font-weight: bold; box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+    .nav-buttons {
+        display: flex; justify-content: space-between; margin-top: 30px;
+        border-top: 2px solid #eee; padding-top: 20px;
+    }
+    .nav-btn {
+        background-color: #FF69B4; color: white; border: none; padding: 15px 40px;
+        font-size: 24px; border-radius: 10px; cursor: pointer; font-weight: bold;
+    }
+    .nav-btn:disabled { background-color: #ccc; cursor: not-allowed; }
+    .result-screen { text-align: center; }
+    .stars { font-size: 70px; color: gold; margin-bottom: 20px; animation: bounce 1s infinite alternate; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    @keyframes bounce { from { transform: translateY(0); } to { transform: translateY(-20px); } }
+    .q-counter { font-size: 20px; color: #7f8c8d; margin-bottom: 15px; font-weight: bold; }
+</style>
+</head>
+<body>
+
+<div id="quiz-container"></div>
+
+<script>
+const sectionsData = [
+    {
+        title: "القِسْمُ الأَوَّل: اقْرَئِي الكَلِمَةَ، ثُمَّ اخْتَارِي شَكْلَ الحَرْفِ النَّاقِصِ الصَّحِيح:",
+        bg: "#F0F8FF", type: "text",
+        qs: [
+            // أول الكلمة
+            {txt:"...ـقَرَةٌ", opts:["بَـ","ـبَـ","بَ"], ans:0},
+            {txt:"...ـعْلَبٌ", opts:["ثَـ","ـثَـ","ثَ"], ans:0},
+            {txt:"...ـمَلٌ", opts:["جَـ","ـجَـ","جَ"], ans:0},
+            {txt:"...ـتَابٌ", opts:["كِـ","ـكِـ","كِ"], ans:0},
+            {txt:"...ـرْسِيٌّ", opts:["كُـ","ـكُـ","كُ"], ans:0},
+            // وسط الكلمة
+            {txt:"سَـ...ـَكَةٌ", opts:["مَ","ـمَـ","ـمَ"], ans:1},
+            {txt:"مِـ...ـتَاحٌ", opts:["فْ","ـفْـ","ـفْ"], ans:1},
+            {txt:"نَـ...ـلَةٌ", opts:["حْ","ـحْـ","ـحْ"], ans:1},
+            {txt:"شَـ...ـَرَةٌ", opts:["جَ","ـجَـ","ـجَ"], ans:1},
+            {txt:"بَـ...ـرَةٌ", opts:["قَ","ـقَـ","ـقَ"], ans:1},
+            // آخر الكلمة متصل
+            {txt:"كَلْـ...", opts:["بٌ","ـبٌ","ـبٌـ"], ans:1},
+            {txt:"ثَلْـ...", opts:["جٌ","ـجٌ","ـجٌـ"], ans:1},
+            {txt:"دِيـ...", opts:["كٌ","ـكٌ","ـكٌـ"], ans:1},
+            // آخر الكلمة منفصل
+            {txt:"تَا...", opts:["جٌ","ـجٌ","جٌـ"], ans:0},
+            {txt:"تِمْسَا...", opts:["حٌ","ـحٌ","حٌـ"], ans:0}
+        ]
+    },
+    {
+        title: "القِسْمُ الثَّانِي: اسْتَمِعِي لِلْكَلِمَةِ، ثُمَّ اخْتَارِي الإِجَابَةَ الصَّحِيحَةَ:",
+        bg: "#F5FFFA", type: "audio_word",
+        qs: [
+            {audio:"هَاتِفٌ", opts:["هَاتِفٌ","وَرْدَةٌ","يَدٌ"], ans:0}, {audio:"وَرْدَةٌ", opts:["يَدٌ","وَرْدَةٌ","يَمَامَةٌ"], ans:1},
+            {audio:"يَدٌ", opts:["أَسَدٌ","بَابٌ","يَدٌ"], ans:2}, {audio:"يَمَامَةٌ", opts:["يَمَامَةٌ","تَاجٌ","تِمْسَاحٌ"], ans:0},
+            {audio:"أَسَدٌ", opts:["ثَعْلَبٌ","أَسَدٌ","جَزَرٌ"], ans:1}, {audio:"بَابٌ", opts:["حِمَارٌ","خَرُوفٌ","بَابٌ"], ans:2},
+            {audio:"تَاجٌ", opts:["تَاجٌ","دِيكٌ","ذَيْلٌ"], ans:0}, {audio:"تِمْسَاحٌ", opts:["رُمَّانٌ","تِمْسَاحٌ","هَاتِفٌ"], ans:1},
+            {audio:"ثَعْلَبٌ", opts:["يَدٌ","أَسَدٌ","ثَعْلَبٌ"], ans:2}, {audio:"جَزَرٌ", opts:["جَزَرٌ","بَابٌ","دِيكٌ"], ans:0},
+            {audio:"حِمَارٌ", opts:["تِمْسَاحٌ","حِمَارٌ","رُمَّانٌ"], ans:1}, {audio:"خَرُوفٌ", opts:["أَسَدٌ","ثَعْلَبٌ","خَرُوفٌ"], ans:2},
+            {audio:"دِيكٌ", opts:["دِيكٌ","جَزَرٌ","هَاتِفٌ"], ans:0}, {audio:"ذَيْلٌ", opts:["وَرْدَةٌ","ذَيْلٌ","حِمَارٌ"], ans:1},
+            {audio:"رُمَّانٌ", opts:["يَمَامَةٌ","خَرُوفٌ","رُمَّانٌ"], ans:2}
+        ]
+    },
+    {
+        title: "القِسْمُ الثَّالِث: انْظُرِي إِلَى الصُّورَةِ، ثُمَّ اخْتَارِي الكَلِمَةَ الْمُعَبِّرَةَ:",
+        bg: "#FFF0F5", type: "image",
+        qs: [
+            {img:"🦒", opts:["زَرَافَةٌ","سَاعَةٌ","شَمْسٌ"], ans:0}, {img:"⌚", opts:["صَابُونٌ","سَاعَةٌ","ضِرْسٌ"], ans:1},
+            {img:"☀️", opts:["طَائِرَةٌ","عِنَبٌ","شَمْسٌ"], ans:2}, {img:"🧼", opts:["صَابُونٌ","غَسَّالَةٌ","فَرَاشَةٌ"], ans:0},
+            {img:"🦷", opts:["قِطَارٌ","ضِرْسٌ","كِتَابٌ"], ans:1}, {img:"✈️", opts:["مِفْتَاحٌ","نَجْمَةٌ","طَائِرَةٌ"], ans:2},
+            {img:"🍇", opts:["عِنَبٌ","هَرَمٌ","سَاعَةٌ"], ans:0}, {img:"🧺", opts:["شَمْسٌ","غَسَّالَةٌ","ضِرْسٌ"], ans:1},
+            {img:"🦋", opts:["طَائِرَةٌ","عِنَبٌ","فَرَاشَةٌ"], ans:2}, {img:"🚂", opts:["قِطَارٌ","كِتَابٌ","مِفْتَاحٌ"], ans:0},
+            {img:"📖", opts:["نَجْمَةٌ","كِتَابٌ","هَرَمٌ"], ans:1}, {img:"🔑", opts:["زَرَافَةٌ","صَابُونٌ","مِفْتَاحٌ"], ans:2},
+            {img:"⭐", opts:["نَجْمَةٌ","قِطَارٌ","غَسَّالَةٌ"], ans:0}, {img:"⛺", opts:["فَرَاشَةٌ","خَيْمَةٌ","عِنَبٌ"], ans:1},
+            {img:"🏔️", opts:["ضِرْسٌ","شَمْسٌ","جَبَلٌ"], ans:2}
+        ]
+    },
+    {
+        title: "القِسْمُ الرَّابِع: اسْتَمِعِي، ثُمَّ اخْتَارِي الْجُمْلَةَ الصَّحِيحَةَ:",
+        bg: "#FFFFE0", type: "audio_sent",
+        qs: [
+            {audio:"هَذَا بَيْتٌ", opts:["هَذَا بَيْتٌ","هَذِهِ نَافِذَةٌ","هَذَا مَكْتَبٌ"], ans:0}, {audio:"هَذِهِ مِرْوَحَةٌ", opts:["هَذَا حُوتٌ","هَذِهِ مِرْوَحَةٌ","هَذَا دَفْتَرٌ"], ans:1},
+            {audio:"هَذَا قَلَمٌ", opts:["هَذِهِ دَجَاجَةٌ","هَذِهِ دَرَّاجَةٌ","هَذَا قَلَمٌ"], ans:2}, {audio:"هَذِهِ بَطَّةٌ", opts:["هَذِهِ بَطَّةٌ","هَذَا كُرْسِيٌّ","هَذِهِ طَاوِلَةٌ"], ans:0},
+            {audio:"هَذَا سَرِيرٌ", opts:["هَذِهِ حَقِيبَةٌ","هَذَا سَرِيرٌ","هَذَا حِذَاءٌ"], ans:1}, {audio:"هَذِهِ حَقِيبَةٌ", opts:["هَذَا بَيْتٌ","هَذَا مَكْتَبٌ","هَذِهِ حَقِيبَةٌ"], ans:2},
+            {audio:"هَذَا مَكْتَبٌ", opts:["هَذَا مَكْتَبٌ","هَذِهِ مِرْوَحَةٌ","هَذَا قَلَمٌ"], ans:0}, {audio:"هَذَا حُوتٌ", opts:["هَذِهِ بَطَّةٌ","هَذَا حُوتٌ","هَذَا دَفْتَرٌ"], ans:1},
+            {audio:"هَذِهِ دَجَاجَةٌ", opts:["هَذَا كُرْسِيٌّ","هَذَا سَرِيرٌ","هَذِهِ دَجَاجَةٌ"], ans:2}, {audio:"هَذَا دَفْتَرٌ", opts:["هَذَا دَفْتَرٌ","هَذِهِ نَافِذَةٌ","هَذَا حِذَاءٌ"], ans:0},
+            {audio:"هَذِهِ دَرَّاجَةٌ", opts:["هَذَا قَلَمٌ","هَذِهِ دَرَّاجَةٌ","هَذِهِ طَاوِلَةٌ"], ans:1}, {audio:"هَذَا كُرْسِيٌّ", opts:["هَذِهِ حَقِيبَةٌ","هَذِهِ دَجَاجَةٌ","هَذَا كُرْسِيٌّ"], ans:2},
+            {audio:"هَذِهِ طَاوِلَةٌ", opts:["هَذِهِ طَاوِلَةٌ","هَذَا بَيْتٌ","هَذَا مَكْتَبٌ"], ans:0}, {audio:"هَذَا حِذَاءٌ", opts:["هَذِهِ مِرْوَحَةٌ","هَذَا حِذَاءٌ","هَذَا حُوتٌ"], ans:1},
+            {audio:"هَذِهِ نَافِذَةٌ", opts:["هَذَا دَفْتَرٌ","هَذَا قَلَمٌ","هَذِهِ نَافِذَةٌ"], ans:2}
+        ]
+    },
+    {
+        title: "القِسْمُ الخَامِس: انْظُرِي لِلصُّورَةِ، وَاخْتَارِي السُّؤَالَ الْمُنَاسِبَ:",
+        bg: "#FDF5E6", type: "image",
+        qs: [
+            {img:"👧", opts:["مَنْ هَذِهِ؟","مَا هَذِهِ؟"], ans:0}, {img:"🔔", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:1},
+            {img:"👨‍⚕️", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:0}, {img:"🚗", opts:["مَنْ هَذِهِ؟","مَا هَذِهِ؟"], ans:1},
+            {img:"👦", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:0}, {img:"🌙", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:1},
+            {img:"👩‍🏫", opts:["مَنْ هَذِهِ؟","مَا هَذِهِ؟"], ans:0}, {img:"🐢", opts:["مَنْ هَذِهِ؟","مَا هَذِهِ؟"], ans:1},
+            {img:"🎣", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:0}, {img:"🧊", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:1},
+            {img:"👩‍⚕️", opts:["مَنْ هَذِهِ؟","مَا هَذِهِ؟"], ans:0}, {img:"👁️", opts:["مَنْ هَذِهِ؟","مَا هَذِهِ؟"], ans:1},
+            {img:"👷", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:0}, {img:"🪓", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:1},
+            {img:"👶", opts:["مَنْ هَذَا؟","مَا هَذَا؟"], ans:0}
+        ]
+    },
+    {
+        title: "القِسْمُ السَّادِس: هَلْ الْجُمْلَةُ تُطَابِقُ الصُّورَةَ؟ (صَح) أَمْ (خَطَأ)؟",
+        bg: "#F0FFF0", type: "true_false",
+        qs: [
+            {img:"🚪", txt:"هَذَا بَابٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:0}, {img:"🍎", txt:"هَذِهِ مَوْزَةٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:1},
+            {img:"🐪", txt:"هَذَا جَمَلٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:0}, {img:"🐟", txt:"هَذِهِ طَائِرَةٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:1},
+            {img:"🐈", txt:"هَذِهِ قِطَّةٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:0}, {img:"🌲", txt:"هَذَا بَحْرٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:1},
+            {img:"🛏️", txt:"هَذَا سَرِيرٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:0}, {img:"🚢", txt:"هَذَا قِطَارٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:1},
+            {img:"🐘", txt:"هَذَا فِيلٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:0}, {img:"🐄", txt:"هَذَا كَلْبٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:1},
+            {img:"🍓", txt:"هَذِهِ فَرَاوْلَةٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:0}, {img:"☁️", txt:"هَذَا شَمْسٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:1},
+            {img:"🍅", txt:"هَذِهِ طَمَاطِمٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:0}, {img:"🦅", txt:"هَذِهِ سَمَكَةٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:1},
+            {img:"🏔️", txt:"هَذَا جَبَلٌ", opts:["صَح ✔️","خَطَأ ❌"], ans:0}
+        ]
+    },
+    {
+        title: "القِسْمُ السَّابِع: اخْتَارِي الكَلِمَةَ الْمَكْتُوبَةَ إِمْلَائِيًّا بِشَكْلٍ صَحِيح:",
+        bg: "#FFF5EE", type: "spelling",
+        qs: [
+            {opts:["تُفَّاحَةٌ","تُفَاحَةٌ","تُفَّاهَةٌ"], ans:0}, {opts:["تُعْبَانٌ","ثُعْبَانٌ","سُعْبَانٌ"], ans:1},
+            {opts:["طَمَاطِمٌ","طَمَاتِمٌ","تَمَاطِمٌ"], ans:0}, {opts:["سُنْدُوقٌ","صُنْدُوقٌ","صُنْدُوكٌ"], ans:1},
+            {opts:["سَفِينَةٌ","صَفِينَةٌ","سَفِينَطٌ"], ans:0}, {opts:["جَمَلٌ","جَمَلْ","غَمَلٌ"], ans:0},
+            {opts:["هِصَانٌ","حِسَانٌ","حِصَانٌ"], ans:2}, {opts:["خَيْمَةٌ","حَيْمَةٌ","خَيْمطٌ"], ans:0},
+            {opts:["دُبٌ","دُبٌّ","ذُبٌّ"], ans:1}, {opts:["ذُبَابَةٌ","زُبَابَةٌ","ظُبَابَةٌ"], ans:0},
+            {opts:["رِيصَةٌ","رِيشَةٌ","رِشَةٌ"], ans:1}, {opts:["زَهْرَةٌ","ذَهْرَةٌ","ظَهْرَةٌ"], ans:0},
+            {opts:["سِكِّينٌ","صِكِّينٌ","سِقِّينٌ"], ans:0}, {opts:["شُبَّاكٌ","شُبَّاقٌ","سُبَّاكٌ"], ans:0},
+            {opts:["طُيُورٌ","تُيُورٌ","طُيُوصٌ"], ans:0}
+        ]
+    },
+    {
+        title: "القِسْمُ الثَّامِن: رَتِّبِي الْحُرُوفَ لِتُصْبِحَ كَلِمَةً صَحِيحَةً:",
+        bg: "#F8F8FF", type: "text",
+        qs: [
+            {txt:"ب - ح - ر", opts:["حَبْرٌ","بَحْرٌ","رِبْحٌ"], ans:1}, {txt:"ت - و - ت", opts:["تُوتٌ","وَتِدٌ","يَتُوبُ"], ans:0},
+            {txt:"ج - ب - ن", opts:["نَجِيبٌ","جُبْنٌ","بَنَجٌ"], ans:1}, {txt:"خ - و - خ", opts:["أَخٌ","خَوْخٌ","كُوخٌ"], ans:1},
+            {txt:"د - ر - س", opts:["سَرْدٌ","رَدَسَ","دَرْسٌ"], ans:2}, {txt:"ر - أ - س", opts:["سَأَرَ","رَأْسٌ","أَسَرَ"], ans:1},
+            {txt:"ز - ي - ت", opts:["زَيْتٌ","تَيِزٌ","يَزِتُ"], ans:0}, {txt:"س - و - ر", opts:["رَسُولٌ","سُورٌ","نُسُورٌ"], ans:1},
+            {txt:"ص - و - ف", opts:["فُوصٌ","وَصْفٌ","صُوفٌ"], ans:2}, {txt:"ط - ي - ن", opts:["طِينٌ","يَنِطٌ","نِيطٌ"], ans:0},
+            {txt:"ع - ي - د", opts:["عِيدٌ","دِيعٌ","يَعِدُ"], ans:0}, {txt:"غ - ا - ر", opts:["رَاغٌ","غَارٌ","فَاغٌ"], ans:1},
+            {txt:"ث - و - م", opts:["ثُومٌ","مُوثٌ","يَمُوثُ"], ans:0}, {txt:"ق - و - س", opts:["سُوقٌ","قَوْسٌ","وَقْسٌ"], ans:1},
+            {txt:"ك - أ - س", opts:["سَأَكَ","أَكْسَ","كَأْسٌ"], ans:2}
+        ]
+    },
+    {
+        title: "القِسْمُ التَّاسِع: اخْتَارِي الكَلِمَةَ الَّتِي بِهَا:",
+        bg: "#E6E6FA", type: "text",
+        qs: [
+            {txt:"مَدٌّ بِالأَلِف (ـا)", opts:["طَاوُوسٌ","طُيُورٌ","تِينٌ"], ans:0}, {txt:"مَدٌّ بِالْيَاء (ـي)", opts:["بَابٌ","حِذَاءٌ","سَرِيرٌ"], ans:2},
+            {txt:"مَدٌّ بِالْوَاو (ـو)", opts:["قِطَارٌ","كُوبٌ","حَقِيبَةٌ"], ans:1}, {txt:"مَدٌّ بِالأَلِف (ـا)", opts:["مَحْمُودٌ","صُورَةٌ","كِتَابٌ"], ans:2},
+            {txt:"مَدٌّ بِالْيَاء (ـي)", opts:["عُودٌ","نُورٌ","طَبِيبٌ"], ans:2}, {txt:"مَدٌّ بِالْوَاو (ـو)", opts:["صُوفٌ","طَائِرَةٌ","فِيلٌ"], ans:0},
+            {txt:"مَدٌّ بِالأَلِف (ـا)", opts:["طِينٌ","غُرَابٌ","دُبٌّ"], ans:1}, {txt:"مَدٌّ بِالْيَاء (ـي)", opts:["مَوْزٌ","دِيكٌ","صُورَةٌ"], ans:1},
+            {txt:"مَدٌّ بِالْوَاو (ـو)", opts:["تَاجٌ","خَوْخٌ","نُجُومٌ"], ans:2}, {txt:"مَدٌّ بِالأَلِف (ـا)", opts:["تُفَّاحٌ","تِينٌ","ثُومٌ"], ans:0},
+            {txt:"مَدٌّ بِالْيَاء (ـي)", opts:["مِفْتَاحٌ","عَصِيرٌ","شُبَّاكٌ"], ans:1}, {txt:"مَدٌّ بِالْوَاو (ـو)", opts:["صُنْدُوقٌ","سَاعَةٌ","قَمَرٌ"], ans:0},
+            {txt:"مَدٌّ بِالأَلِف (ـا)", opts:["نَمْلَةٌ","بَقَرَةٌ","حِصَانٌ"], ans:2}, {txt:"مَدٌّ بِالْيَاء (ـي)", opts:["دَفْتَرٌ","سِكِّينٌ","طَاوِلَةٌ"], ans:1},
+            {txt:"مَدٌّ بِالْوَاو (ـو)", opts:["أَسَدٌ","خَرُوفٌ","قِرْدٌ"], ans:1}
+        ]
+    },
+    {
+        title: "القِسْمُ العَاشِر: أَمْطِرِينَا بِذَكَائِكِ! أَيْنَ الْإِجَابَةُ الصَّحِيحَة؟",
+        bg: "#FFF8DC", type: "text",
+        qs: [
+            {txt:"حَيَوَانٌ يُعْطِينَا الحَلِيبَ؟", opts:["بَقَرَةٌ","دَجَاجَةٌ","حِصَانٌ"], ans:0}, {txt:"حَيَوَانٌ رَقَبَتُهُ طَوِيلَةٌ؟", opts:["فِيلٌ","زَرَافَةٌ","كَلْبٌ"], ans:1},
+            {txt:"حَيَوَانٌ يَنْبَحُ؟", opts:["قِطَّةٌ","ثَعْلَبٌ","كَلْبٌ"], ans:2}, {txt:"يَطِيرُ فِي السَّمَاءِ؟", opts:["سَمَكَةٌ","عُصْفُورٌ","أَرْنَبٌ"], ans:1},
+            {txt:"فَاكِهَةٌ لَوْنُهَا أَحْمَر؟", opts:["تُفَّاحٌ","مَوْزٌ","لَيْمُونٌ"], ans:0}, {txt:"مَا لَوْنُ الشَّمْسِ؟", opts:["أَزْرَقُ","أَصْفَرُ","أَخْضَرُ"], ans:1},
+            {txt:"شَيْءٌ نَقْرَؤُهُ؟", opts:["كِتَابٌ","كُوبٌ","سَرِيرٌ"], ans:0}, {txt:"شَيْءٌ نَكْتُبُ بِهِ؟", opts:["مِلْعَقَةٌ","قَلَمٌ","مِفْتَاحٌ"], ans:1},
+            {txt:"مَكَانٌ نَنَامُ فِيهِ؟", opts:["مَكْتَبٌ","نَافِذَةٌ","سَرِيرٌ"], ans:2}, {txt:"شَيْءٌ نَشْرَبُ فِيهِ؟", opts:["كُوبٌ","كُرْسِيٌّ","سَاعَةٌ"], ans:0},
+            {txt:"شَكْلٌ لَهُ ثَلَاثَةُ أَضْلَاعٍ؟", opts:["مُرَبَّعٌ","مُثَلَّثٌ","دَائِرَةٌ"], ans:1}, {txt:"يَنْزِلُ فِي فَصْلِ الشِّتَاءِ؟", opts:["شَمْسٌ","ثَلْجٌ","نَارٌ"], ans:1},
+            {txt:"حَشَرَةٌ تُعْطِينَا العَسَلَ؟", opts:["ذُبَابَةٌ","نَحْلَةٌ","نَمْلَةٌ"], ans:1}, {txt:"شَيْءٌ نَلْبَسُهُ فِي القَدَمِ؟", opts:["قُبَّعَةٌ","نَظَّارَةٌ","حِذَاءٌ"], ans:2},
+            {txt:"حَيَوَانٌ يَقُولُ (مِيَاو)؟", opts:["كَلْبٌ","قِطَّةٌ","بَقَرَةٌ"], ans:1}
+        ]
+    }
+];
+
+// تسطيح المصفوفة ليكون كل سؤال في صفحة
+const flatQuestions = [];
+sectionsData.forEach(sec => {
+    sec.qs.forEach(q => {
+        flatQuestions.push({
+            secTitle: sec.title, bg: sec.bg, type: sec.type, ...q
+        });
+    });
+});
+
+let score = 0;
+const container = document.getElementById('quiz-container');
+
+function renderQuiz() {
+    container.innerHTML = "";
+    
+    flatQuestions.forEach((q, index) => {
+        const pageDiv = document.createElement('div');
+        pageDiv.className = `page ${index === 0 ? 'active-page' : ''}`;
+        pageDiv.id = `page-${index}`;
+        pageDiv.style.backgroundColor = q.bg;
+
+        let contentHTML = `<div class="q-counter">السُّؤَال: ${index + 1} مِنْ ${flatQuestions.length}</div>`;
+        contentHTML += `<div class="question-title">${q.secTitle}</div>`;
+
+        // بناء المحتوى بناءً على نوع السؤال
+        if (q.type === 'image' || q.type === 'true_false') {
+            contentHTML += `<div class="question-image">${q.img}</div>`;
+            if(q.txt) contentHTML += `<div class="question-text">${q.txt}</div>`;
+        } 
+        else if (q.type === 'audio_word' || q.type === 'audio_sent') {
+            contentHTML += `<button class="btn-audio" onclick="playAudio('${q.audio}')">🔊 اسْتَمِعِي بِالتَّرْكِيز</button>`;
+        } 
+        else if (q.type === 'text') {
+            contentHTML += `<div class="question-text">${q.txt}</div>`;
+        }
+        else if (q.type === 'spelling') {
+             // لا يحتاج نص إضافي، العنوان يكفي
+        }
+
+        // الخيارات
+        contentHTML += `<div class="options-grid" id="options-${index}">`;
+        q.opts.forEach((opt, optIndex) => {
+            contentHTML += `<div class="option" onclick="checkAnswer(${index}, ${optIndex}, this)">${opt}</div>`;
+        });
+        contentHTML += `</div>`;
+
+        // أزرار التنقل
+        contentHTML += `<div class="nav-buttons">
+            <button class="nav-btn" onclick="prevPage(${index})" ${index === 0 ? 'style="visibility:hidden;"' : ''}>قَبْل</button>
+            <button class="nav-btn" id="next-btn-${index}" onclick="nextPage(${index})" disabled>بَعْد</button>
+        </div>`;
+
+        pageDiv.innerHTML = contentHTML;
+        container.appendChild(pageDiv);
+    });
+
+    // صفحة النتيجة النهائية
+    const resultPage = document.createElement('div');
+    resultPage.className = 'page';
+    resultPage.id = `page-${flatQuestions.length}`;
+    resultPage.style.backgroundColor = "#FFFFF0";
+    resultPage.innerHTML = `
+        <div class="result-screen">
+            <div class="stars">⭐⭐🌟⭐⭐</div>
+            <div class="question-title" id="final-text" style="font-size:38px; color:#2c3e50;"></div>
+        </div>
+    `;
+    container.appendChild(resultPage);
+}
+
+function checkAnswer(qIndex, optIndex, selectedElement) {
+    const q = flatQuestions[qIndex];
+    if (q.answered) return; 
+    q.answered = true;
+
+    const optionsContainer = document.getElementById(`options-${qIndex}`);
+    const allOptions = optionsContainer.children;
+
+    for(let i=0; i<allOptions.length; i++) {
+        allOptions[i].classList.add('disabled');
+    }
+
+    if (optIndex === q.ans) {
+        selectedElement.classList.add('correct');
+        score++;
+    } else {
+        selectedElement.classList.add('wrong');
+        allOptions[q.ans].classList.add('correct');
+    }
+
+    document.getElementById(`next-btn-${qIndex}`).disabled = false;
+}
+
+function nextPage(currentIndex) {
+    document.getElementById(`page-${currentIndex}`).classList.remove('active-page');
+    document.getElementById(`page-${currentIndex + 1}`).classList.add('active-page');
+    if(currentIndex + 1 === flatQuestions.length) { showResult(); }
+}
+
+function prevPage(currentIndex) {
+    document.getElementById(`page-${currentIndex}`).classList.remove('active-page');
+    document.getElementById(`page-${currentIndex - 1}`).classList.add('active-page');
+}
+
+function showResult() {
+    const resultText = `اكتمل الاختبار! الدرجة: ${score} / ${flatQuestions.length}. أحسنتِ إتمام الاختبار التجريبي.`;
+    document.getElementById('final-text').innerText = resultText;
+}
+
+function playAudio(text) {
+    if ('speechSynthesis' in window) {
+        const utterance = new SpeechSynthesisUtterance(text);
+        utterance.lang = 'ar-SA';
+        utterance.rate = 0.8;
+        window.speechSynthesis.speak(utterance);
+    } else {
+        alert("عذراً، المتصفح لا يدعم ميزة الصوت.");
+    }
+}
+
+renderQuiz();
+</script>
+</body>
+</html>
