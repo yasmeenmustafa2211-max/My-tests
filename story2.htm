@@ -1,0 +1,777 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>اخْتِبَارُ قِصَّةِ: رِحْلَةُ الْبَحْثِ عَنْ سَكَنٍ مُرِيحٍ</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Tajawal:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Tajawal', sans-serif;
+            background-color: #f4f7f6;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            font-size: 18px;
+            line-height: 1.8;
+        }
+        .container {
+            max-width: 1000px;
+            margin: auto;
+            background: #fff;
+            padding: 30px;
+            border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        h1, h2, h3 {
+            text-align: center;
+            color: #2c3e50;
+        }
+        .page {
+            display: none;
+            animation: fadeIn 0.5s;
+        }
+        .page.active {
+            display: block;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .story-container {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 20px;
+        }
+        .story-content {
+            flex: 3;
+            background: #fafafa;
+            padding: 20px;
+            border-radius: 10px;
+            border: 1px solid #ddd;
+        }
+        .vocab-sidebar {
+            flex: 1;
+            background: #eef2f3;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #c8d6e5;
+            min-width: 250px;
+        }
+        .vocab-sidebar h3 {
+            margin-top: 0;
+            color: #2980b9;
+        }
+        .vocab-table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 16px;
+        }
+        .vocab-table th, .vocab-table td {
+            border: 1px solid #bdc3c7;
+            padding: 8px;
+            text-align: right;
+        }
+        .vocab-table th {
+            background-color: #34495e;
+            color: white;
+        }
+        .info-box {
+            background: #dff9fb;
+            border-right: 5px solid #00a8ff;
+            padding: 15px;
+            margin-bottom: 20px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+        .question-card {
+            background: #fff;
+            border: 1px solid #e0e0e0;
+            padding: 15px;
+            margin-bottom: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+        .question-text {
+            font-weight: bold;
+            margin-bottom: 10px;
+            color: #34495e;
+        }
+        .options button {
+            background: #ecf0f1;
+            border: 2px solid #bdc3c7;
+            padding: 10px 20px;
+            margin: 5px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-family: 'Tajawal', sans-serif;
+            transition: 0.3s;
+        }
+        .options button:hover:not(:disabled) {
+            background: #dcdde1;
+        }
+        .options button:disabled {
+            cursor: not-allowed;
+            color: #2c3e50;
+        }
+        .correct {
+            background-color: #2ecc71 !important;
+            color: white !important;
+            border-color: #27ae60 !important;
+        }
+        .incorrect {
+            background-color: #f1c40f !important; /* لون أصفر للإجابة الخاطئة */
+            color: #333 !important;
+            border-color: #f39c12 !important;
+        }
+        .correction-text {
+            color: #27ae60;
+            font-weight: bold;
+            margin-right: 10px;
+            font-size: 16px;
+        }
+        .word-bank {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            justify-content: center;
+            background: #dfe6e9;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            font-weight: bold;
+            color: #2d3436;
+        }
+        .word-bank span {
+            background: #fff;
+            padding: 5px 15px;
+            border: 1px solid #b2bec3;
+            border-radius: 4px;
+        }
+        select {
+            font-size: 16px;
+            padding: 5px;
+            font-family: 'Tajawal', sans-serif;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            outline: none;
+        }
+        textarea {
+            width: 100%;
+            height: 60px;
+            font-family: 'Tajawal', sans-serif;
+            font-size: 16px;
+            padding: 10px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+            resize: none;
+            margin-top: 5px;
+        }
+        .nav-buttons {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 30px;
+            padding-top: 20px;
+            border-top: 2px solid #ecf0f1;
+        }
+        .nav-buttons button {
+            background: #2980b9;
+            color: #fff;
+            border: none;
+            padding: 12px 25px;
+            font-size: 18px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-family: 'Tajawal', sans-serif;
+            font-weight: bold;
+        }
+        .nav-buttons button:hover:not(:disabled) {
+            background: #1f618d;
+        }
+        .nav-buttons button:disabled {
+            background: #bdc3c7;
+            cursor: not-allowed;
+        }
+        .result-container {
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            color: #2c3e50;
+            padding: 40px;
+            background: #ecf0f1;
+            border-radius: 10px;
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    
+    <!-- الصفحة الأولى: القصة والمفردات -->
+    <div class="page active" id="page-0">
+        <h1>رِحْلَةُ الْبَحْثِ عَنْ سَكَنٍ مُرِيحٍ</h1>
+        
+        <div class="info-box">
+            عُنْوَانُ الْقِصَّةِ: رِحْلَةُ الْبَحْثِ عَنْ سَكَنٍ مُرِيحٍ<br>
+            تَدُورُ أَحْدَاثُ الْقِصَّةِ فِي زَمَنِ: شَهْرِ الصَّيْفِ قَبْلَ بِدَايَةِ الْعَامِ الدِّرَاسِيِّ.<br>
+            فِي مَكَانِ: مَدِينَةِ الْقَاهِرَةِ (فِي حَيِّ الْعَبَّاسِيَّةِ وَحَيِّ الْحُسَيْنِ).<br>
+            شَخْصِيَّاتُ الْقِصَّةِ: الطَّالِبُ "عُمَرُ"، مُوَظَّفُ مَكْتَبِ الْعَقَارَاتِ (السِّمْسَارُ)، مَالِكُ الْعَقَارِ، وَالْبَوَّابُ.<br>
+            الْمُشْكِلَةُ: صُعُوبَةُ إِيجَادِ سَكَنٍ مُنَاسِبٍ وَنَظِيفٍ بِسِعْرٍ مَعْقُولٍ.<br>
+            نَوْعُ الْقِصَّةِ: طَوِيلَةٌ.
+        </div>
+
+        <div class="story-container">
+            <div class="story-content">
+                <p>كَانَ "عُمَرُ" شَابًّا يَدْرُسُ فِي <b>عَاصِمَةِ</b> الْبِلَادِ. كَانَ <b>يَعِيشُ</b> فِي <b>قَرْيَةٍ</b> بَعِيدَةٍ، ثُمَّ انْتَقَلَ إِلَى <b>مَدِينَةٍ</b> كَبِيرَةٍ لِلدِّرَاسَةِ. فِي الْبِدَايَةِ، سَكَنَ فِي <b>سَكَنِ طُلَّابٍ</b>، لَكِنَّهُ لَمْ يَكُنْ <b>مُرِيحًا</b>، وَكَانَ <b>مُزْدَحِمًا</b> جِدًّا. قَرَّرَ عُمَرُ أَنْ <b>يَعْزِلَ</b> (يَرْحَلَ) مِنْ هُنَاكَ، وَأَنْ يَبْحَثَ عَنْ <b>شِقَّةٍ</b> جَدِيدَةٍ، لِأَنَّهُ يُرِيدُ أَنْ <b>يَسْكُنَ</b> بِمُفْرَدِهِ. ذَهَبَ إِلَى <b>مَكْتَبِ عَقَارَاتٍ</b> <b>قَرِيبٍ</b> مِنْ جَامِعَتِهِ. قَالَ لِلْمُوَظَّفِ: "مِنْ فَضْلِكَ، أُرِيدُ <b>شِقَّةً مَفْرُوشَةً</b> <b>لِلْإِيجَارِ</b>".</p>
+
+                <p>أَخَذَهُ الْمُوَظَّفُ لِيُشَاهِدَ عِدَّةَ شُقَقٍ، فَذَهَبَا أَوَّلًا إِلَى <b>حَيٍّ سَكَنِيٍّ</b> فِي الْعَبَّاسِيَّةِ. دَخَلَا إِلَى <b>عِمَارَةٍ</b> قَدِيمَةٍ، وَكَانَتِ الشَّقَّةُ فِي الطَّابِقِ الْأَخِيرِ. لَمْ يَكُنْ هُنَاكَ <b>مِصْعَدٌ</b>، فَصَعِدَا عَلَى <b>سُلَّمٍ</b> طَوِيلٍ. كَانَ الْمَكَانُ <b>عَالِيًا</b> جِدًّا، وَالشَّقَّةُ <b>ضَيِّقَةً</b> وَ<b>مُتَّسِخَةً</b>. ثُمَّ شَاهَدَ <b>بَيْتًا</b> آخَرَ، لَكِنَّهُ كَانَ غَيْرَ مَفْرُوشٍ وَإِيجَارُهُ <b>غَالٍ</b> جِدًّا. رَفَضَ عُمَرُ هَذِهِ الشُّقَقَ، فَقَالَ لَهُ الْمُوَظَّفُ إِنَّ لَدَيْهِمْ شِقَّةً أُخْرَى فِي حَيِّ الْحُسَيْنِ تُطِلُّ عَلَى <b>شَارِعٍ</b> رَئِيسِيٍّ، وَمِنْ جِهَةٍ أُخْرَى تُطِلُّ عَلَى <b>حَدِيقَةٍ</b> جَمِيلَةٍ.</p>
+
+                <p>وَصَلَ عُمَرُ إِلَى <b>الْمَبْنَى</b> الْجَدِيدِ، وَوَجَدَهُ مَبْنًى <b>جَمِيلًا</b>. اسْتَقْبَلَهُمَا <b>بَوَّابُ</b> الْعِمَارَةِ عِنْدَ <b>بَابِ</b> الْمَدْخَلِ. أَمَامَ الْمَبْنَى، كَانَ يُوجَدُ <b>مَوْقِفُ سَيَّارَاتٍ</b> وَاسِعٌ، يُحِيطُ بِهِ <b>سُورٌ</b> طَوِيلٌ. دَخَلَا الْعِمَارَةَ، وَرَكِبَا الْمِصْعَدَ لِلصُّعُودِ إِلَى الطَّابِقِ الثَّالِثِ. أَخْرَجَ الْمُوَظَّفُ <b>مِفْتَاحًا</b> مِنْ جَيْبِهِ، وَفَتَحَ بَابَ الشَّقَّةِ.</p>
+
+                <p>دَخَلَ عُمَرُ وَوَجَدَ <b>صَالَةً</b> كَبِيرَةً. كَانَ <b>الْأَثَاثُ</b> فِيهَا <b>جَدِيدًا</b> وَ<b>نَظِيفًا</b>. كَانَتِ الصَّالَةُ تَحْتَوِي عَلَى <b>غُرْفَةِ جُلُوسٍ</b> بِهَا <b>أَرِيكَةٌ</b> مُرِيحَةٌ، وَ<b>كُرْسِيٌّ</b> صَغِيرٌ، وَأَمَامَهُمَا <b>طَاوِلَةٌ</b> خَشَبِيَّةٌ. عَلَى <b>الْأَرْضِيَّةِ</b> كَانَتْ تُوجَدُ <b>سَجَّادَةٌ</b> حَمْرَاءُ، وَعَلَى كُلِّ <b>نَافِذَةٍ</b> كَانَتْ هُنَاكَ <b>سِتَارَةٌ</b> بَيْضَاءُ. نَظَرَ عُمَرُ إِلَى <b>السَّقْفِ</b>، فَرَأَى مَرْوَحَةً، وَفِي <b>الْحَائِطِ</b> مُعَلَّقَةٌ <b>صُورَةٌ</b> جَمِيلَةٌ وَ<b>سَاعَةُ حَائِطٍ</b>. كَانَ هُنَاكَ أَيْضًا <b>تِلْفَازٌ</b> كَبِيرٌ <b>فِي الْوَسَطِ</b>، وَبِجِوَارِهِ <b>مِصْبَاحٌ</b> مُضِيءٌ. خَرَجَ عُمَرُ إِلَى <b>الشُّرْفَةِ</b> لِيَرَى الْمَنْظَرَ الرَّائِعَ.</p>
+
+                <p>بَعْدَ ذَلِكَ، دَخَلَ عُمَرُ إِلَى <b>غُرْفَةِ نَوْمٍ</b> وَاسِعَةٍ، وَرَأَى فِيهَا <b>سَرِيرًا</b> كَبِيرًا وَ<b>خِزَانَةَ مَلَابِسَ</b> وَ<b>مِرْآةً</b> جَمِيلَةً. وَفِي غُرْفَةِ الْمَكْتَبِ، وَجَدَ مَكْتَبًا لَكِنَّهَا كَانَتْ تَحْتَاجُ إِلَى كَنَبَةٍ. كَانَ هُنَاكَ أَيْضًا <b>مُكَيِّفٌ</b> لِتَبْرِيدِ الْجَوِّ. ثُمَّ انْتَقَلَ لِيَرَى <b>الْمَطْبَخَ</b>. كَانَ الْمَطْبَخُ <b>وَاسِعًا</b>، وَفِيهِ <b>ثَلَّاجَةٌ</b> كَبِيرَةٌ وَ<b>فُرْنٌ</b> لِلطَّبْخِ. وَأَخِيرًا، دَخَلَ <b>الْحَمَّامَ</b>، فَوَجَدَهُ وَاسِعًا جِدًّا، وَبِهِ <b>غَسَّالَةٌ</b> لِلْمَلَابِسِ. الشَّقَّةُ كُلُّهَا كَانَتْ جَيِّدَةً، وَلَيْسَتْ فِي <b>الطَّابِقِ الْأَرْضِيِّ</b>، بَلْ فِي دَوْرٍ مُتَكَرِّرٍ كَمَا أَرَادَ، وَأَيْضًا لَيْسَتْ فِي <b>الطَّابِقِ الْأَوَّلِ</b>.</p>
+
+                <p>سَأَلَ عُمَرُ: "كَمِ <b>الْإِيجَارُ</b> فِي <b>الشَّهْرِ</b>؟" أَجَابَ الْمُوَظَّفُ بِأَنَّهُ أَلْفُ جُنَيْهٍ مِصْرِيٍّ، وَهُوَ سِعْرٌ <b>رَخِيصٌ</b> وَلَيْسَ غَالِيًا، وَالْمَكَانُ هُنَا <b>هَادِئٌ</b> وَقَرِيبٌ مِنَ السُّوقِ وَلَيْسَ <b>بَعِيدًا</b> عَنِ الْجَامِعَةِ. وَافَقَ عُمَرُ عَلَى الشَّقَّةِ، وَأَرَادَ أَنْ <b>يَسْتَأْجِرَ</b> الْمَكَانَ لِمُدَّةِ <b>سَنَةٍ</b> كَامِلَةٍ لِيَكُونَ مَحَلَّ <b>إِقَامَةٍ</b> لَهُ. اتَّصَلَ الْمُوَظَّفُ بِـ <b>مَالِكِ الْعَقَارِ</b> لِيَحْضُرَ وَيَكْتُبَا <b>عَقْدَ إِيجَارٍ</b>. بَعْدَ سَاعَةٍ، حَضَرَ الْمُؤَجِّرُ صَاحِبُ الشَّقَّةِ، وَدَفَعَ عُمَرُ <b>الْمَالَ</b>، ثُمَّ أَصْبَحَ هُوَ <b>الْمُسْتَأْجِرَ</b> الْجَدِيدَ لِهَذَا <b>الْمَنْزِلِ</b>.</p>
+
+                <p>فِي الْيَوْمِ التَّالِي، بَدَأَ عُمَرُ <b>يَنْتَقِلُ</b> إِلَى شَقَّتِهِ الْجَدِيدَةِ. تَعَرَّفَ عَلَى <b>جَارٍ</b> طَيِّبٍ يَسْكُنُ بِجِوَارِهِ، وَأَصْبَحَ لَهُ <b>جِيرَانٌ</b> مُمْتَازُونَ. كَانَ عُمَرُ شَابًّا مُنَظَّمًا؛ عِنْدَمَا <b>يَدْخُلُ</b> الْمَنْزِلَ، <b>يُغْلِقُ</b> الْبَابَ خَلْفَهُ، ثُمَّ <b>يَفْتَحُ</b> النَّوَافِذَ لِيُدْخِلَ الْهَوَاءَ النَّقِيَّ. بَعْدَ ذَلِكَ، <b>يُنَظِّفُ</b> الصَّالَةَ، وَ<b>يَكْنُسُ</b> الْأَرْضِيَّةَ، وَ<b>يُمَسِّحُ</b> الْغُبَارَ عَنِ الْأَثَاثِ، ثُمَّ <b>يُرَتِّبُ</b> السَّرِيرَ. عِنْدَمَا يَشْعُرُ بِالْجُوعِ، يَدْخُلُ الْمَطْبَخَ وَ<b>يَطْبُخُ</b> طَعَامَهُ اللَّذِيذَ. ثُمَّ <b>يَجْلِسُ</b> أَمَامَ التِّلْفَازِ. وَعِنْدَ وَقْتِ الصَّلَاةِ، <b>يَتَوَضَّأُ</b> فِي الْحَمَّامِ. وَفِي الْمَسَاءِ، <b>يَسْتَقْبِلُ</b> أَصْدِقَاءَهُ، وَبَعْدَ أَنْ <b>يَخْرُجُوا</b>، يَدْخُلُ غُرْفَتَهُ وَ<b>يَنَامُ</b> مُبَكِّرًا. كَانَ عُمَرُ يَعْلَمُ أَنَّ عَلَيْهِ أَنْ <b>يَدْفَعَ</b> <b>فَاتُورَةَ</b> الْكَهْرَبَاءِ وَ<b>الْخَدَمَاتِ</b> كُلَّ شَهْرٍ لِلشَّرِكَةِ الَّتِي <b>تَبْنِي</b> وَتُدِيرُ هَذِهِ الْعَقَارَاتِ.</p>
+            </div>
+            
+            <div class="vocab-sidebar">
+                <h3>مُفْرَدَاتٌ مُهِمَّةٌ</h3>
+                <table class="vocab-table">
+                    <tr><th>الْكَلِمَة</th><th>اللُّغَةُ الرُّوسِيَّة</th></tr>
+                    <tr><td>اسْتِئْجَار</td><td>Аренда</td></tr>
+                    <tr><td>مَفْرُوشَة</td><td>Меблированная</td></tr>
+                    <tr><td>شُرْفَة</td><td>Балкон</td></tr>
+                    <tr><td>الطَّابِق</td><td>Этаж</td></tr>
+                    <tr><td>مِصْعَد</td><td>Лифт</td></tr>
+                    <tr><td>التَّأْمِين</td><td>Залог / Депозит</td></tr>
+                    <tr><td>أُجْرَة السَّمْسَرَة</td><td>Комиссия маклера</td></tr>
+                    <tr><td>خِزَانَة مَلَابِس</td><td>Шкаф для одежды</td></tr>
+                    <tr><td>مِرْآة</td><td>Зеркало</td></tr>
+                    <tr><td>أَثَاث</td><td>Мебель</td></tr>
+                    <tr><td>كَنَبَة</td><td>Диван</td></tr>
+                    <tr><td>مَائِدَة الطَّعَام</td><td>Обеденный стол</td></tr>
+                    <tr><td>مَوْقِد</td><td>Плита</td></tr>
+                    <tr><td>غَسَّالَة</td><td>Стиральная машина</td></tr>
+                    <tr><td>الْمُؤَجِّر</td><td>Арендодатель</td></tr>
+                    <tr><td>الْعَقْد</td><td>Договор / Контракт</td></tr>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- الصفحة الثانية: القسم الأول (اختيار من متعدد) عدد 10 أسئلة -->
+    <div class="page" id="page-1">
+        <h2>الْقِسْمُ الْأَوَّلُ: اخْتَرْ الْإِجَابَةَ الصَّحِيحَةَ (10 نِقَاطٍ)</h2>
+        
+        <div class="question-card" id="mcq-1">
+            <div class="question-text">1. أَيْنَ يَدْرُسُ الشَّابُّ عُمَرُ؟</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-1')">فِي عَاصِمَةِ الْبِلَادِ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-1')">فِي قَرْيَتِهِ الصَّغِيرَةِ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-1')">فِي خَارِجِ الْبِلَادِ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-2">
+            <div class="question-text">2. لِمَاذَا قَرَّرَ عُمَرُ أَنْ يَتْرُكَ سَكَنَ الطُّلَّابِ؟</div>
+            <div class="options">
+                <button onclick="handleMCQ(this, false, 'mcq-2')">لِأَنَّهُ غَالٍ جِدًّا</button>
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-2')">لِأَنَّهُ مُزْدَحِمٌ وَغَيْرُ مُرِيحٍ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-2')">لِأَنَّهُ بَعِيدٌ عَنِ الْجَامِعَةِ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-3">
+            <div class="question-text">3. مَاذَا طَلَبَ عُمَرُ مِنْ مُوَظَّفِ الْعَقَارَاتِ (السِّمْسَارِ)؟</div>
+            <div class="options">
+                <button onclick="handleMCQ(this, false, 'mcq-3')">مَحَلًّا تِجَارِيًّا لِلْبَيْعِ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-3')">سَكَنَ طُلَّابٍ جَدِيدًا</button>
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-3')">شِقَّةً مَفْرُوشَةً لِلْإِيجَارِ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-4">
+            <div class="question-text">4. لِمَاذَا رَفَضَ عُمَرُ الشَّقَّةَ الْأُولَى فِي حَيِّ الْعَبَّاسِيَّةِ؟</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-4')">لِأَنَّهَا ضَيِّقَةٌ وَمُتَّسِخَةٌ وَفِي الدَّوْرِ الْأَخِيرِ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-4')">لِأَنَّهَا قَرِيبَةٌ جِدًّا مِنَ السُّوقِ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-4')">لِأَنَّ إِيجَارَهَا كَانَ غَالِيًا جِدًّا</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-5">
+            <div class="question-text">5. عَلَى مَاذَا تُطِلُّ الشَّقَّةُ الثَّانِيَةُ الَّتِي فِي حَيِّ الْحُسَيْنِ؟</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-5')">عَلَى شَارِعٍ رَئِيسِيٍّ وَحَدِيقَةٍ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-5')">عَلَى الْبَحْرِ وَالشَّاطِئِ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-5')">عَلَى السُّوقِ الْمُزْدَحِمِ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-6">
+            <div class="question-text">6. مَاذَا يُوجَدُ فِي صَالَةِ الشَّقَّةِ الْجَدِيدَةِ؟</div>
+            <div class="options">
+                <button onclick="handleMCQ(this, false, 'mcq-6')">ثَلَّاجَةٌ وَمَوْقِدٌ وَغَسَّالَةٌ</button>
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-6')">أَرِيكَةٌ مُرِيحَةٌ وَتِلْفَازٌ وَطَاوِلَةٌ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-6')">سَرِيرٌ كَبِيرٌ وَخِزَانَةُ مَلَابِسَ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-7">
+            <div class="question-text">7. فِي أَيِّ طَابِقٍ تَقَعُ الشَّقَّةُ الثَّانِيَةُ الَّتِي اسْتَأْجَرَهَا عُمَرُ؟</div>
+            <div class="options">
+                <button onclick="handleMCQ(this, false, 'mcq-7')">فِي الطَّابِقِ الْأَرْضِيِّ</button>
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-7')">فِي الطَّابِقِ الثَّالِثِ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-7')">فِي الطَّابِقِ الْعَاشِرِ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-8">
+            <div class="question-text">8. كَمْ كَانَ إِيجَارُ الشَّقَّةِ الْجَدِيدَةِ فِي الشَّهْرِ؟</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-8')">أَلْفُ جُنَيْهٍ مِصْرِيٍّ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-8')">أَلْفَانِ وَخَمْسُمِائَةِ جُنَيْهٍ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-8')">ثَلَاثَةُ آلَافِ جُنَيْهٍ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-9">
+            <div class="question-text">9. مَعَ مَنْ كَتَبَ عُمَرُ عَقْدَ الْإِيجَارِ بَعْدَ أَنْ دَفَعَ الْمَالَ؟</div>
+            <div class="options">
+                <button onclick="handleMCQ(this, false, 'mcq-9')">مَعَ بَوَّابِ الْعِمَارَةِ</button>
+                <button onclick="handleMCQ(this, false, 'mcq-9')">مَعَ جَارِهِ الْجَدِيدِ</button>
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-9')">مَعَ مَالِكِ الْعَقَارِ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="mcq-10">
+            <div class="question-text">10. مَاذَا يَفْعَلُ عُمَرُ بَعْدَ أَنْ يَخْرُجَ أَصْدِقَاؤُهُ مِنَ الشَّقَّةِ فِي الْمَسَاءِ؟</div>
+            <div class="options">
+                <button onclick="handleMCQ(this, false, 'mcq-10')">يَذْهَبُ لِلسُّوقِ لِيَشْتَرِيَ الطَّعَامَ</button>
+                <button class="correct-btn" onclick="handleMCQ(this, true, 'mcq-10')">يَدْخُلُ غُرْفَتَهُ وَيَنَامُ مُبَكِّرًا</button>
+                <button onclick="handleMCQ(this, false, 'mcq-10')">يَطْبُخُ الطَّعَامَ اللَّذِيذَ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+    </div>
+
+    <!-- الصفحة الثالثة: القسم الثاني (صح أو خطأ) عدد 10 أسئلة -->
+    <div class="page" id="page-2">
+        <h2>الْقِسْمُ الثَّانِي: صَحِيحٌ أَمْ خَطَأٌ؟ (10 نِقَاطٍ)</h2>
+
+        <div class="question-card" id="tf-1">
+            <div class="question-text">1. كَانَ عُمَرُ يَعِيشُ فِي مَدِينَةٍ كَبِيرَةٍ مُنْذُ وِلَادَتِهِ.</div>
+            <div class="options">
+                <button onclick="handleTF(this, false, 'tf-1')">صَحِيحٌ</button>
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-1')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-2">
+            <div class="question-text">2. الشَّقَّةُ الْأُولَى فِي حَيِّ الْعَبَّاسِيَّةِ لَمْ يَكُنْ بِهَا مِصْعَدٌ لِلصُّعُودِ.</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-2')">صَحِيحٌ</button>
+                <button onclick="handleTF(this, false, 'tf-2')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-3">
+            <div class="question-text">3. الْبَيْتُ الثَّانِي الَّذِي شَاهَدَهُ عُمَرُ كَانَ مَفْرُوشًا وَإِيجَارُهُ رَخِيصٌ جِدًّا.</div>
+            <div class="options">
+                <button onclick="handleTF(this, false, 'tf-3')">صَحِيحٌ</button>
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-3')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-4">
+            <div class="question-text">4. عِمَارَةُ الشَّقَّةِ الْجَدِيدَةِ بِهَا مَوْقِفٌ وَاسِعٌ لِلسَّيَّارَاتِ.</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-4')">صَحِيحٌ</button>
+                <button onclick="handleTF(this, false, 'tf-4')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-5">
+            <div class="question-text">5. كَانَتْ غُرْفَةُ الْمَكْتَبِ فِي الشَّقَّةِ تَحْتَاجُ إِلَى كَنَبَةٍ لِتَكُونَ مُكْتَمِلَةً.</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-5')">صَحِيحٌ</button>
+                <button onclick="handleTF(this, false, 'tf-5')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-6">
+            <div class="question-text">6. لَمْ يَكُنْ هُنَاكَ غَسَّالَةٌ لِلْمَلَابِسِ فِي حَمَّامِ الشَّقَّةِ الْجَدِيدَةِ.</div>
+            <div class="options">
+                <button onclick="handleTF(this, false, 'tf-6')">صَحِيحٌ</button>
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-6')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-7">
+            <div class="question-text">7. وَافَقَ عُمَرُ عَلَى اسْتِئْجَارِ الشَّقَّةِ لِمُدَّةِ سَنَةٍ كَامِلَةٍ.</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-7')">صَحِيحٌ</button>
+                <button onclick="handleTF(this, false, 'tf-7')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-8">
+            <div class="question-text">8. تَعَرَّفَ عُمَرُ عَلَى جِيرَانٍ مُمْتَازِينَ بَعْدَ انْتِقَالِهِ إِلَى الشَّقَّةِ.</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-8')">صَحِيحٌ</button>
+                <button onclick="handleTF(this, false, 'tf-8')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-9">
+            <div class="question-text">9. عُمَرُ شَابٌّ غَيْرُ مُنَظَّمٍ، لَا يُنَظِّفُ شَقَّتَهُ وَلَا يُمَسِّحُ الْغُبَارَ.</div>
+            <div class="options">
+                <button onclick="handleTF(this, false, 'tf-9')">صَحِيحٌ</button>
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-9')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+
+        <div class="question-card" id="tf-10">
+            <div class="question-text">10. يَدْفَعُ عُمَرُ فَاتُورَةَ الْكَهْرَبَاءِ وَالْخَدَمَاتِ كُلَّ شَهْرٍ لِلشَّرِكَةِ.</div>
+            <div class="options">
+                <button class="correct-btn" onclick="handleTF(this, true, 'tf-10')">صَحِيحٌ</button>
+                <button onclick="handleTF(this, false, 'tf-10')">خَطَأٌ</button>
+            </div>
+            <span class="correction-text"></span>
+        </div>
+    </div>
+
+    <!-- الصفحة الرابعة: القسم الثالث (املأ الفراغ) عدد 9 أسئلة -->
+    <div class="page" id="page-3">
+        <h2>الْقِسْمُ الثَّالِثُ: امْلَأِ الْفَرَاغَ بِالْكَلِمَةِ الْمُنَاسِبَةِ (9 نِقَاطٍ)</h2>
+        <p style="text-align:center;">اخْتَرْ الْكَلِمَةَ الْمُنَاسِبَةَ مِنَ الْقَائِمَةِ الْمُنْسَدِلَةِ لِإِكْمَالِ الْجُمَلِ.</p>
+        
+        <div class="word-bank">
+            <span>مُزْدَحِمًا</span> <span>يَعْزِلَ</span> <span>مَفْرُوشَةً</span> 
+            <span>مِصْعَدٌ</span> <span>ضَيِّقَةً</span> <span>مِفْتَاحًا</span> 
+            <span>أَرِيكَةٌ</span> <span>عَقْدَ</span> <span>فَاتُورَةَ</span>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">1. كَانَ سَكَنُ الطُّلَّابِ 
+                <select onchange="handleBlank(this, 'مُزْدَحِمًا')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                </select> 
+                جِدًّا وَغَيْرَ مُرِيحٍ لِلدِّرَاسَةِ وَالنَّوْمِ.
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">2. قَرَّرَ عُمَرُ أَنْ 
+                <select onchange="handleBlank(this, 'يَعْزِلَ')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                </select> 
+                مِنْ مَكَانِهِ الْقَدِيمِ وَيَبْحَثَ عَنْ بَيْتٍ آخَرَ هَادِئٍ.
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">3. طَلَبَ الشَّابُّ مِنَ السِّمسَارِ شِقَّةً 
+                <select onchange="handleBlank(this, 'مَفْرُوشَةً')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                </select> 
+                لِأَنَّهُ لَا يَمْلِكُ أَيَّ أَثَاثٍ فِي الْمَدِينَةِ.
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">4. الشَّقَّةُ الَّتِي فِي الطَّابِقِ الْأَخِيرِ لَمْ يَكُنْ فِيهَا 
+                <select onchange="handleBlank(this, 'مِصْعَدٌ')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                </select> 
+                لِلصُّعُودِ بِسُهُولَةٍ بَدَلًا مِنَ السُّلَّمِ.
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">5. لَمْ تُعْجِبْهُ الشَّقَّةُ الْأُولَى أَبَدًا لِأَنَّهَا كَانَتْ 
+                <select onchange="handleBlank(this, 'ضَيِّقَةً')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                </select> 
+                وَمُتَّسِخَةً.
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">6. أَخْرَجَ مُوَظَّفُ الْعَقَارَاتِ 
+                <select onchange="handleBlank(this, 'مِفْتَاحًا')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                </select> 
+                مِنْ جَيْبِهِ لِيَفْتَحَ بَابَ الشَّقَّةِ لِلشَّابِّ.
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">7. فِي غُرْفَةِ الْجُلُوسِ كَانَتْ هُنَاكَ 
+                <select onchange="handleBlank(this, 'أَرِيكَةٌ')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                </select> 
+                مُرِيحَةٌ جِدًّا لِلْجُلُوسِ عَلَيْهَا لِمُشَاهَدَةِ التِّلْفَازِ.
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">8. حَضَرَ مَالِكُ الْعَقَارِ الْمُؤَجِّرُ لِيَكْتُبَ 
+                <select onchange="handleBlank(this, 'عَقْدَ')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                </select> 
+                الْإِيجَارِ مَعَ الشَّابِّ عُمَرَ لِمُدَّةِ سَنَةٍ.
+            </div>
+        </div>
+
+        <div class="question-card">
+            <div class="question-text">9. يَجِبُ عَلَى السَّاكِنِ أَنْ يَدْفَعَ 
+                <select onchange="handleBlank(this, 'فَاتُورَةَ')">
+                    <option value="">-- اخْتَرْ --</option>
+                    <option value="ضَيِّقَةً">ضَيِّقَةً</option>
+                    <option value="مُزْدَحِمًا">مُزْدَحِمًا</option>
+                    <option value="مِفْتَاحًا">مِفْتَاحًا</option>
+                    <option value="يَعْزِلَ">يَعْزِلَ</option>
+                    <option value="عَقْدَ">عَقْدَ</option>
+                    <option value="فَاتُورَةَ">فَاتُورَةَ</option>
+                    <option value="مَفْرُوشَةً">مَفْرُوشَةً</option>
+                    <option value="أَرِيكَةٌ">أَرِيكَةٌ</option>
+                    <option value="مِصْعَدٌ">مِصْعَدٌ</option>
+                </select> 
+                الْكَهْرَبَاءِ وَالْخَدَمَاتِ كُلَّ شَهْرٍ فِي مَوْعِدِهَا.
+            </div>
+        </div>
+    </div>
+
+    <!-- الصفحة الخامسة: القسم الرابع (المفردات الصعبة) 10 كلمات -->
+    <div class="page" id="page-4">
+        <h2>الْقِسْمُ الرَّابِعُ: تَكْوِينُ الْجُمَلِ</h2>
+        <p style="text-align:center;">اكْتُبْ جُمْلَةً مُفِيدَةً بِاسْتِخْدَامِ أَهَمِّ وَأَصْعَبِ (10) كَلِمَاتٍ وَرَدَتْ فِي الْقِصَّةِ:</p>
+        
+        <div class="question-card">
+            <div class="question-text">1. يَعْزِلُ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">2. عَقَارَاتٌ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">3. مُتَّسِخَةً</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">4. أَرِيكَةٌ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">5. سِتَارَةٌ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">6. السَّقْفِ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">7. مُكَيِّفٌ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">8. إِقَامَةٍ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">9. الْمُسْتَأْجِرَ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+        <div class="question-card">
+            <div class="question-text">10. فَاتُورَةَ</div><textarea placeholder="اكْتُبِي الْجُمْلَةَ هُنَا..."></textarea>
+        </div>
+    </div>
+
+    <!-- الصفحة السادسة: النتيجة النهائية -->
+    <div class="page" id="page-5">
+        <h2>النَّتِيجَةُ النِّهَائِيَّةُ</h2>
+        <div class="result-container" id="final-score"></div>
+        <p style="text-align:center; margin-top:20px; color:#7f8c8d;">* أُحْسِنْتِ دِرَاسَةَ الْقِصَّةِ! لَا تَنْسَيْ عَرْضَ الْجُمَلِ فِي الْقِسْمِ الرَّابِعِ عَلَى مُعَلِّمَتِكِ لِتَقْيِيمِهَا.</p>
+    </div>
+
+    <!-- أزرار التنقل -->
+    <div class="nav-buttons">
+        <button id="btn-prev" onclick="changePage(-1)" disabled>السَّابِقُ</button>
+        <button id="btn-next" onclick="changePage(1)">التَّالِي لِبَدْءِ الِاخْتِبَارِ</button>
+    </div>
+
+</div>
+
+<script>
+    let score = 0;
+    const maxScore = 29; // (10 MCQ + 10 TF + 9 Fill-in-the-blank)
+
+    // التحقق من الاختيار من متعدد
+    function handleMCQ(btn, isCorrect, groupId) {
+        let container = document.getElementById(groupId);
+        let buttons = container.querySelectorAll("button");
+        buttons.forEach(b => b.disabled = true);
+        
+        let correctBtn = container.querySelector(".correct-btn");
+        
+        if (isCorrect) {
+            btn.classList.add("correct");
+            score++;
+        } else {
+            btn.classList.add("incorrect");
+            correctBtn.classList.add("correct");
+            container.querySelector(".correction-text").innerText = "الْإِجَابَةُ الصَّحِيحَةُ هِيَ: " + correctBtn.innerText;
+        }
+    }
+
+    // التحقق من الصح والخطأ
+    function handleTF(btn, isCorrect, groupId) {
+        let container = document.getElementById(groupId);
+        let buttons = container.querySelectorAll("button");
+        buttons.forEach(b => b.disabled = true);
+        
+        let correctBtn = container.querySelector(".correct-btn");
+        
+        if (isCorrect) {
+            btn.classList.add("correct");
+            score++;
+        } else {
+            btn.classList.add("incorrect");
+            correctBtn.classList.add("correct");
+            container.querySelector(".correction-text").innerText = "الْإِجَابَةُ الصَّحِيحَةُ: " + correctBtn.innerText;
+        }
+    }
+
+    // التحقق من إملاء الفراغ
+    function handleBlank(selectElem, correctVal) {
+        selectElem.disabled = true;
+        if (selectElem.value === correctVal) {
+            selectElem.classList.add("correct");
+            score++;
+        } else {
+            selectElem.classList.add("incorrect");
+            let span = document.createElement("span");
+            span.innerHTML = ` ( الصَّوَابُ: ${correctVal} )`;
+            span.style.color = "#27ae60";
+            span.style.fontWeight = "bold";
+            selectElem.parentNode.appendChild(span);
+        }
+    }
+
+    // التنقل بين الصفحات
+    let currentPage = 0;
+    const totalPages = 6;
+
+    function changePage(step) {
+        document.getElementById(`page-${currentPage}`).classList.remove("active");
+        currentPage += step;
+        document.getElementById(`page-${currentPage}`).classList.add("active");
+
+        // زر السابق
+        document.getElementById("btn-prev").disabled = (currentPage === 0);
+        
+        // زر التالي أو النتيجة
+        let nextBtn = document.getElementById("btn-next");
+        if (currentPage === totalPages - 1) {
+            nextBtn.style.display = "none";
+            document.getElementById("final-score").innerHTML = `لَقَدْ حَصَلْتِ عَلَى <br> <span style='font-size:50px; color:#27ae60;'>${score}</span> <br> مِنْ ${maxScore} فِي الْأَسْئِلَةِ الْمَوْضُوعِيَّةِ.`;
+        } else {
+            nextBtn.style.display = "inline-block";
+            if (currentPage === 0) nextBtn.innerText = "التَّالِي لِبَدْءِ الِاخْتِبَارِ";
+            else if (currentPage === totalPages - 2) nextBtn.innerText = "إِنْهَاءُ وَعَرْضُ النَّتِيجَةِ";
+            else nextBtn.innerText = "التَّالِي";
+        }
+    }
+</script>
+
+</body>
+</html>
